@@ -1,0 +1,135 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import { Supporter } from '@/lib/types';
+import AppShell from '@/components/app-shell';
+import { Heart, Send, Flame, MessageCircle } from 'lucide-react';
+
+export default function SupportersPage() {
+  const [supporters, setSupporters] = useState<Supporter[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [name, setName] = useState('');
+  const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      const { data } = await supabase.from('supporters').select('*').order('created_at', { ascending: false });
+      setSupporters(data || []);
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() || !message.trim()) return;
+    setSubmitting(true);
+    const { data } = await supabase
+      .from('supporters')
+      .insert({ name: name.trim(), message: message.trim() })
+      .select();
+    if (data && data.length > 0) {
+      setSupporters(prev => [data[0], ...prev]);
+      setMessage('');
+      setSubmitting(false);
+    }
+  };
+
+  function timeAgo(dateStr: string) {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return "À l'instant";
+    if (mins < 60) return `Il y a ${mins} min`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `Il y a ${hours}h`;
+    const days = Math.floor(hours / 24);
+    return `Il y a ${days}j`;
+  }
+
+  const COLORS = ['from-green-400 to-green-600', 'from-blue-400 to-blue-600', 'from-amber-400 to-amber-600', 'from-red-400 to-red-600', 'from-teal-400 to-teal-600'];
+
+  return (
+    <AppShell>
+      <div className="space-y-5 pt-4">
+        {/* Header Card */}
+        <div className="rounded-2xl bg-gradient-to-br from-rose-500 via-red-500 to-orange-600 p-5 text-white shadow-xl">
+          <div className="flex items-center gap-2 mb-2">
+            <Flame size={20} />
+            <span className="text-sm font-bold">Ambiance du Quartier</span>
+          </div>
+          <p className="text-sm text-white/80 leading-relaxed">
+            Sama ASC représente tout le quartier! Exprimez votre soutien et garantissez l&apos;ambiance!
+          </p>
+          <div className="flex items-center gap-2 mt-3">
+            <Heart size={16} className="animate-pulse" />
+            <span className="text-sm font-medium">{supporters.length} messages de soutien</span>
+          </div>
+        </div>
+
+        {/* Post Form */}
+        <form onSubmit={handleSubmit} className="rounded-2xl bg-white p-4 shadow-lg space-y-3">
+          <div className="flex items-center gap-2 mb-1">
+            <MessageCircle size={16} className="text-green-600" />
+            <span className="text-sm font-bold text-gray-700">Votre message</span>
+          </div>
+          <input
+            type="text"
+            placeholder="Votre nom"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
+          />
+          <textarea
+            placeholder="Votre message de soutien..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            rows={3}
+            className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 resize-none"
+          />
+          <button
+            type="submit"
+            disabled={!name.trim() || !message.trim() || submitting}
+            className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            <Send size={16} />
+            {submitting ? 'Envoi...' : 'Envoyer'}
+          </button>
+        </form>
+
+        {/* Messages */}
+        <div className="space-y-3">
+          {supporters.map((s, idx) => (
+            <div
+              key={s.id}
+              className="rounded-xl bg-white p-4 shadow-md hover-lift"
+            >
+              <div className="flex items-start gap-3">
+                <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${COLORS[idx % COLORS.length]} flex items-center justify-center flex-shrink-0 shadow-sm`}>
+                  <span className="text-white text-xs font-bold">
+                    {s.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-semibold text-sm text-gray-900">{s.name}</span>
+                    <span className="text-[10px] text-gray-400">{timeAgo(s.created_at)}</span>
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed">{s.message}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {supporters.length === 0 && !loading && (
+            <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+              <Heart size={40} className="mb-3 opacity-50" />
+              <p className="text-sm">Soyez le premier à soutenir l&apos;équipe!</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </AppShell>
+  );
+}
