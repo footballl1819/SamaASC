@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Match, Player, MatchVote } from '@/lib/types';
 import AppShell from '@/components/app-shell';
+import { useTeam } from '@/contexts/team-context';
 import { Trophy, Calendar, MapPin, ThumbsUp, Check } from 'lucide-react';
 
 function formatDate(dateStr: string) {
@@ -12,6 +13,7 @@ function formatDate(dateStr: string) {
 }
 
 export default function ResultatsPage() {
+  const { team } = useTeam();
   const [matches, setMatches] = useState<Match[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [votes, setVotes] = useState<MatchVote[]>([]);
@@ -22,10 +24,12 @@ export default function ResultatsPage() {
 
   useEffect(() => {
     async function load() {
+      if (!team) return;
+      
       const [mRes, pRes, vRes] = await Promise.all([
-        supabase.from('matches').select('*').in('status', ['completed', 'live']).order('match_date', { ascending: false }),
-        supabase.from('players').select('*').order('name'),
-        supabase.from('match_votes').select('*'),
+        supabase.from('matches').select('*').eq('team_id', team.id).in('status', ['completed', 'live']).order('match_date', { ascending: false }),
+        supabase.from('players').select('*').eq('team_id', team.id).order('name'),
+        supabase.from('match_votes').select('*').eq('team_id', team.id),
       ]);
       setMatches(mRes.data || []);
       setPlayers(pRes.data || []);
@@ -33,13 +37,13 @@ export default function ResultatsPage() {
       setLoading(false);
     }
     load();
-  }, []);
+  }, [team]);
 
   const handleVote = async (matchId: string, playerId: string) => {
-    if (!voterName.trim()) return;
+    if (!voterName.trim() || !team) return;
     const { data } = await supabase
       .from('match_votes')
-      .insert({ match_id: matchId, player_id: playerId, voter_name: voterName.trim() })
+      .insert({ match_id: matchId, player_id: playerId, voter_name: voterName.trim(), team_id: team.id })
       .select();
     if (data && data.length > 0) {
       setVotes(prev => [...prev, data[0]]);

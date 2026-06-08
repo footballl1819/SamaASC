@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Supporter } from '@/lib/types';
 import AppShell from '@/components/app-shell';
+import { useTeam } from '@/contexts/team-context';
 import { Heart, Send, Flame, MessageCircle } from 'lucide-react';
 
 export default function SupportersPage() {
+  const { team } = useTeam();
   const [supporters, setSupporters] = useState<Supporter[]>([]);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState('');
@@ -15,20 +17,22 @@ export default function SupportersPage() {
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase.from('supporters').select('*').order('created_at', { ascending: false });
+      if (!team) return;
+      
+      const { data } = await supabase.from('supporters').select('*').eq('team_id', team.id).order('created_at', { ascending: false });
       setSupporters(data || []);
       setLoading(false);
     }
     load();
-  }, []);
+  }, [team]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !message.trim()) return;
+    if (!name.trim() || !message.trim() || !team) return;
     setSubmitting(true);
     const { data } = await supabase
       .from('supporters')
-      .insert({ name: name.trim(), message: message.trim() })
+      .insert({ name: name.trim(), message: message.trim(), team_id: team.id })
       .select();
     if (data && data.length > 0) {
       setSupporters(prev => [data[0], ...prev]);

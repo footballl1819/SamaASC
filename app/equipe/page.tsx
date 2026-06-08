@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Player, Coach, PlayerStat, MatchLineup, Match, POSITION_LABELS } from '@/lib/types';
 import AppShell from '@/components/app-shell';
+import { useTeam } from '@/contexts/team-context';
 import { Shirt, User, Target, Footprints, Trophy, Medal, ChevronDown } from 'lucide-react';
 
 const FORMATIONS: Record<string, { slot: number; x: number; y: number; label: string }[]> = {
@@ -49,6 +50,7 @@ const FORMATIONS: Record<string, { slot: number; x: number; y: number; label: st
 };
 
 export default function EquipePage() {
+  const { team } = useTeam();
   const [players, setPlayers] = useState<Player[]>([]);
   const [coach, setCoach] = useState<Coach | null>(null);
   const [stats, setStats] = useState<PlayerStat[]>([]);
@@ -62,12 +64,14 @@ export default function EquipePage() {
 
   useEffect(() => {
     async function load() {
+      if (!team) return;
+      
       const [pRes, cRes, sRes, mRes, lRes] = await Promise.all([
-        supabase.from('players').select('*').order('jersey_number'),
-        supabase.from('coach').select('*').limit(1),
-        supabase.from('player_stats').select('*, player:players(*)').order('goals', { ascending: false }),
-        supabase.from('matches').select('*').order('match_date', { ascending: false }),
-        supabase.from('match_lineup').select('*'),
+        supabase.from('players').select('*').eq('team_id', team.id).order('jersey_number'),
+        supabase.from('coach').select('*').eq('team_id', team.id).limit(1),
+        supabase.from('player_stats').select('*, player:players(*)').eq('team_id', team.id).order('goals', { ascending: false }),
+        supabase.from('matches').select('*').eq('team_id', team.id).order('match_date', { ascending: false }),
+        supabase.from('match_lineup').select('*').eq('team_id', team.id),
       ]);
       setPlayers(pRes.data || []);
       if (cRes.data && cRes.data.length > 0) setCoach(cRes.data[0]);
@@ -83,7 +87,7 @@ export default function EquipePage() {
       setLoading(false);
     }
     load();
-  }, []);
+  }, [team]);
 
   if (loading) {
     return (

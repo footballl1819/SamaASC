@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { icon: ScrollText, label: 'Résultats', path: '/resultats' },
   { icon: Heart, label: 'Supporters', path: '/supporters' },
   { icon: Settings, label: 'Admin', path: '/admin' },
+  { icon: Settings, label: 'Paramètres', path: '/parametres' },
 ];
 
 export default function BottomNav() {

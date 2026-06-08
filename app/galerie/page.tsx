@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { GalleryItem } from '@/lib/types';
 import AppShell from '@/components/app-shell';
+import { useTeam } from '@/contexts/team-context';
 import { Image as ImageIcon, Play, X, ZoomIn } from 'lucide-react';
 
 export default function GaleriePage() {
+  const { team } = useTeam();
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
@@ -14,12 +16,14 @@ export default function GaleriePage() {
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase.from('gallery').select('*').order('created_at', { ascending: false });
+      if (!team) return;
+      
+      const { data } = await supabase.from('gallery').select('*').eq('team_id', team.id).order('created_at', { ascending: false });
       setItems(data || []);
       setLoading(false);
     }
     load();
-  }, []);
+  }, [team]);
 
   if (loading) {
     return (

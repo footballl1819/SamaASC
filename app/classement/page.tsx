@@ -4,16 +4,20 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Standing } from '@/lib/types';
 import AppShell from '@/components/app-shell';
+import { useTeam } from '@/contexts/team-context';
 import { Trophy } from 'lucide-react';
 
 export default function ClassementPage() {
+  const { team } = useTeam();
   const [standings, setStandings] = useState<Standing[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCompetition, setSelectedCompetition] = useState<string>('');
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase.from('standings').select('*').order('competition_name').order('position');
+      if (!team) return;
+      
+      const { data } = await supabase.from('standings').select('*').eq('team_id', team.id).order('competition_name').order('position');
       setStandings(data || []);
       if (data && data.length > 0) {
         setSelectedCompetition(data[0].competition_name);
@@ -21,7 +25,7 @@ export default function ClassementPage() {
       setLoading(false);
     }
     load();
-  }, []);
+  }, [team]);
 
   if (loading) {
     return (
@@ -35,7 +39,7 @@ export default function ClassementPage() {
 
   const competitions = Array.from(new Set(standings.map(s => s.competition_name)));
   const filtered = standings.filter(s => s.competition_name === selectedCompetition);
-  const ourTeam = filtered.find(s => s.team_name === 'Sama ASC');
+  const ourTeam = filtered.find(s => s.team_name === team?.name);
 
   return (
     <AppShell>
@@ -125,12 +129,12 @@ export default function ClassementPage() {
               <div>Pts</div>
               <div>Diff</div>
             </div>
-            {filtered.map((team, idx) => {
-              const isUs = team.team_name === 'Sama ASC';
-              const diff = team.goals_for - team.goals_against;
+            {filtered.map((standing, idx) => {
+              const isUs = standing.team_name === team?.name;
+              const diff = standing.goals_for - standing.goals_against;
               return (
                 <div
-                  key={team.id}
+                  key={standing.id}
                   className={`grid grid-cols-[32px_1fr_32px_32px_32px_32px_32px_40px] gap-1 px-3 py-2.5 text-xs items-center transition-colors duration-200 ${
                     isUs
                       ? 'bg-green-50 border-l-2 border-green-600'
@@ -140,17 +144,17 @@ export default function ClassementPage() {
                   } ${idx < filtered.length - 1 ? 'border-b border-gray-100' : ''}`}
                 >
                   <div className={`font-bold ${isUs ? 'text-green-600' : 'text-gray-400'}`}>
-                    {team.position}
+                    {standing.position}
                   </div>
                   <div className={`font-semibold truncate ${isUs ? 'text-green-700' : 'text-gray-800'}`}>
-                    {team.team_name}
+                    {standing.team_name}
                   </div>
-                  <div className="text-gray-500 text-center">{team.played}</div>
-                  <div className="text-gray-500 text-center">{team.won}</div>
-                  <div className="text-gray-500 text-center">{team.drawn}</div>
-                  <div className="text-gray-500 text-center">{team.lost}</div>
+                  <div className="text-gray-500 text-center">{standing.played}</div>
+                  <div className="text-gray-500 text-center">{standing.won}</div>
+                  <div className="text-gray-500 text-center">{standing.drawn}</div>
+                  <div className="text-gray-500 text-center">{standing.lost}</div>
                   <div className={`font-bold text-center ${isUs ? 'text-green-600' : 'text-gray-700'}`}>
-                    {team.points}
+                    {standing.points}
                   </div>
                   <div className={`text-center ${diff > 0 ? 'text-green-600' : diff < 0 ? 'text-red-500' : 'text-gray-400'}`}>
                     {diff > 0 ? '+' : ''}{diff}

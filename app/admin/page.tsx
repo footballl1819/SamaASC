@@ -4,6 +4,8 @@ import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Player, Match, Announcement, Standing, GalleryItem, Coach, PlayerStat, MatchLineup, POSITION_LABELS } from '@/lib/types';
 import AppShell from '@/components/app-shell';
+import FileUpload from '@/components/file-upload';
+import { useTeam } from '@/contexts/team-context';
 import { Users, Calendar, Megaphone, Trophy, Image, Settings, Plus, Trash2, Edit2, Save, X, ChevronDown, Target, Shirt, Check } from 'lucide-react';
 
 type Tab = 'players' | 'matches' | 'lineup' | 'announcements' | 'standings' | 'gallery' | 'coach' | 'stats';
@@ -20,6 +22,7 @@ const TAB_CONFIG: { key: Tab; label: string; icon: typeof Users }[] = [
 ];
 
 export default function AdminPage() {
+  const { team } = useTeam();
   const [tab, setTab] = useState<Tab>('players');
   const [players, setPlayers] = useState<Player[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
@@ -42,15 +45,17 @@ export default function AdminPage() {
   const [standingsComp, setStandingsComp] = useState<string>('');
 
   const loadAll = useCallback(async () => {
+    if (!team) return;
+    
     const [p, m, a, s, g, c, ps, l] = await Promise.all([
-      supabase.from('players').select('*').order('jersey_number'),
-      supabase.from('matches').select('*').order('match_date', { ascending: false }),
-      supabase.from('announcements').select('*').order('created_at', { ascending: false }),
-      supabase.from('standings').select('*').order('competition_name').order('position'),
-      supabase.from('gallery').select('*').order('created_at', { ascending: false }),
-      supabase.from('coach').select('*').limit(1),
-      supabase.from('player_stats').select('*').order('goals', { ascending: false }),
-      supabase.from('match_lineup').select('*'),
+      supabase.from('players').select('*').eq('team_id', team.id).order('jersey_number'),
+      supabase.from('matches').select('*').eq('team_id', team.id).order('match_date', { ascending: false }),
+      supabase.from('announcements').select('*').eq('team_id', team.id).order('created_at', { ascending: false }),
+      supabase.from('standings').select('*').eq('team_id', team.id).order('competition_name').order('position'),
+      supabase.from('gallery').select('*').eq('team_id', team.id).order('created_at', { ascending: false }),
+      supabase.from('coach').select('*').eq('team_id', team.id).limit(1),
+      supabase.from('player_stats').select('*').eq('team_id', team.id).order('goals', { ascending: false }),
+      supabase.from('match_lineup').select('*').eq('team_id', team.id),
     ]);
     setPlayers(p.data || []);
     setMatches(m.data || []);
@@ -62,7 +67,7 @@ export default function AdminPage() {
     if (c.data && c.data.length > 0) setCoach(c.data[0]);
     if (s.data && s.data.length > 0) setStandingsComp(s.data[0].competition_name);
     setLoading(false);
-  }, []);
+  }, [team]);
 
   useEffect(() => { loadAll(); }, [loadAll]);
 
@@ -72,10 +77,13 @@ export default function AdminPage() {
   };
 
   const handlePlayerSubmit = async () => {
+    if (!team) return;
+    
     const payload = {
       name: form.name, photo_url: form.photo_url || null,
       position: form.position || 'DEF', jersey_number: form.jersey_number ? parseInt(form.jersey_number) : null,
       is_starter: form.is_starter === 'true',
+      team_id: team.id,
     };
     if (editing) { await supabase.from('players').update(payload).eq('id', editing); }
     else { await supabase.from('players').insert(payload); }
@@ -83,11 +91,14 @@ export default function AdminPage() {
   };
 
   const handleMatchSubmit = async () => {
+    if (!team) return;
+    
     const payload = {
       opponent: form.opponent, match_date: form.match_date, match_time: form.match_time || null,
       venue: form.venue || null, competition: form.competition || null, is_home: form.is_home !== 'false',
       status: form.status || 'upcoming', score_home: form.score_home ? parseInt(form.score_home) : null,
       score_away: form.score_away ? parseInt(form.score_away) : null, formation: form.formation || '4-3-3',
+      team_id: team.id,
     };
     if (editing) { await supabase.from('matches').update(payload).eq('id', editing); }
     else { await supabase.from('matches').insert(payload); }
@@ -95,18 +106,23 @@ export default function AdminPage() {
   };
 
   const handleAnnouncementSubmit = async () => {
-    const payload = { title: form.title, content: form.content, type: form.type || 'other', event_date: form.event_date || null };
+    if (!team) return;
+    
+    const payload = { title: form.title, content: form.content, type: form.type || 'other', event_date: form.event_date || null, team_id: team.id };
     if (editing) { await supabase.from('announcements').update(payload).eq('id', editing); }
     else { await supabase.from('announcements').insert(payload); }
     setShowForm(false); setEditing(null); setForm({}); loadAll();
   };
 
   const handleStandingSubmit = async () => {
+    if (!team) return;
+    
     const payload = {
       competition_name: form.competition_name, position: parseInt(form.position) || 0,
       team_name: form.team_name, points: parseInt(form.points) || 0, played: parseInt(form.played) || 0,
       won: parseInt(form.won) || 0, drawn: parseInt(form.drawn) || 0, lost: parseInt(form.lost) || 0,
       goals_for: parseInt(form.goals_for) || 0, goals_against: parseInt(form.goals_against) || 0,
+      team_id: team.id,
     };
     if (editing) { await supabase.from('standings').update(payload).eq('id', editing); }
     else { await supabase.from('standings').insert(payload); }
@@ -114,24 +130,31 @@ export default function AdminPage() {
   };
 
   const handleGallerySubmit = async () => {
-    const payload = { type: form.type || 'image', url: form.url, caption: form.caption || null, event_type: form.event_type || 'other' };
+    if (!team) return;
+    
+    const payload = { type: form.type || 'image', url: form.url, caption: form.caption || null, event_type: form.event_type || 'other', team_id: team.id };
     if (editing) { await supabase.from('gallery').update(payload).eq('id', editing); }
     else { await supabase.from('gallery').insert(payload); }
     setShowForm(false); setEditing(null); setForm({}); loadAll();
   };
 
   const handleCoachSubmit = async () => {
-    const payload = { name: form.name, photo_url: form.photo_url || null, role: form.role || 'Entraineur' };
+    if (!team) return;
+    
+    const payload = { name: form.name, photo_url: form.photo_url || null, role: form.role || 'Entraineur', team_id: team.id };
     if (coach) { await supabase.from('coach').update(payload).eq('id', coach.id); }
     else { await supabase.from('coach').insert(payload); }
     setForm({}); loadAll();
   };
 
   const handleStatSubmit = async () => {
+    if (!team) return;
+    
     const payload = {
       player_id: form.player_id, competition_name: form.competition_name,
       goals: parseInt(form.goals) || 0, assists: parseInt(form.assists) || 0,
       matches_played: parseInt(form.matches_played) || 0,
+      team_id: team.id,
     };
     if (editing) { await supabase.from('player_stats').update(payload).eq('id', editing); }
     else { await supabase.from('player_stats').insert(payload); }
@@ -139,18 +162,18 @@ export default function AdminPage() {
   };
 
   const handleSaveLineup = async () => {
-    if (!lineupMatchId) return;
+    if (!lineupMatchId || !team) return;
     // Save formation to match
     await supabase.from('matches').update({ formation: lineupFormation }).eq('id', lineupMatchId);
     // Delete existing lineup
     await supabase.from('match_lineup').delete().eq('match_id', lineupMatchId);
     // Insert new starters
     const inserts = lineupStarters.map((pid, idx) => ({
-      match_id: lineupMatchId, player_id: pid, position_slot: idx + 1, is_substitute: false,
+      match_id: lineupMatchId, player_id: pid, position_slot: idx + 1, is_substitute: false, team_id: team.id,
     }));
     // Insert substitutes
     lineupSubs.forEach((pid, idx) => {
-      inserts.push({ match_id: lineupMatchId, player_id: pid, position_slot: idx + 12, is_substitute: true });
+      inserts.push({ match_id: lineupMatchId, player_id: pid, position_slot: idx + 12, is_substitute: true, team_id: team.id });
     });
     if (inserts.length > 0) await supabase.from('match_lineup').insert(inserts);
     loadAll();
@@ -252,7 +275,11 @@ export default function AdminPage() {
           <div className="rounded-2xl bg-white p-4 shadow-lg space-y-3">
             <h3 className="text-sm font-bold text-gray-700">Informations Coach</h3>
             <Input label="Nom" field="name" placeholder="Nom du coach" />
-            <Input label="Photo URL" field="photo_url" placeholder="https://..." />
+            <FileUpload 
+              value={form.photo_url || null}
+              onChange={(url) => setForm(prev => ({ ...prev, photo_url: url }))}
+              label="Photo"
+            />
             <Input label="Rôle" field="role" placeholder="Entraineur" />
             <button onClick={handleCoachSubmit} className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 flex items-center justify-center gap-2">
               <Save size={16} />{coach ? 'Mettre à jour' : 'Ajouter'}
@@ -284,7 +311,11 @@ export default function AdminPage() {
                   <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
                 <Input label="Nom" field="name" placeholder="Nom du joueur" />
-                <Input label="Photo URL" field="photo_url" placeholder="https://..." />
+                <FileUpload 
+                  value={form.photo_url || null}
+                  onChange={(url) => setForm(prev => ({ ...prev, photo_url: url }))}
+                  label="Photo"
+                />
                 <Select label="Poste" field="position" options={[
                   { value: 'GK', label: 'Gardien' }, { value: 'DEF', label: 'Défenseur' },
                   { value: 'MIL', label: 'Milieu' }, { value: 'ATT', label: 'Attaquant' },
@@ -667,7 +698,12 @@ export default function AdminPage() {
                   <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
                 <Select label="Type" field="type" options={[{ value: 'image', label: 'Image' }, { value: 'video', label: 'Vidéo' }]} />
-                <Input label="URL" field="url" placeholder="https://..." />
+                <FileUpload 
+                  value={form.url || null}
+                  onChange={(url) => setForm(prev => ({ ...prev, url }))}
+                  label="Fichier"
+                  accept="image/*,video/*"
+                />
                 <Input label="Légende" field="caption" placeholder="Description..." />
                 <Select label="Type événement" field="event_type" options={[
                   { value: 'match', label: 'Match' }, { value: 'training', label: 'Entraînement' }, { value: 'other', label: 'Autre' },
