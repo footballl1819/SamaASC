@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Player, Match, Announcement, Standing, GalleryItem, Coach, PlayerStat, MatchLineup, POSITION_LABELS } from '@/lib/types';
 import AppShell from '@/components/app-shell';
@@ -22,7 +23,8 @@ const TAB_CONFIG: { key: Tab; label: string; icon: typeof Users }[] = [
 ];
 
 export default function AdminPage() {
-  const { team } = useTeam();
+  const router = useRouter();
+  const { team, user, loading: contextLoading } = useTeam();
   const [tab, setTab] = useState<Tab>('players');
   const [players, setPlayers] = useState<Player[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
@@ -43,6 +45,25 @@ export default function AdminPage() {
   const [lineupStarters, setLineupStarters] = useState<string[]>([]);
   const [lineupSubs, setLineupSubs] = useState<string[]>([]);
   const [standingsComp, setStandingsComp] = useState<string>('');
+
+  useEffect(() => {
+    // Check authentication
+    if (!contextLoading) {
+      if (!team) {
+        router.push('/login');
+        return;
+      }
+      if (!user) {
+        router.push('/user-login');
+        return;
+      }
+      // Check if user is admin
+      if (user.role !== 'admin') {
+        router.push('/');
+        return;
+      }
+    }
+  }, [team, user, contextLoading, router]);
 
   const loadAll = useCallback(async () => {
     if (!team) return;
@@ -225,7 +246,7 @@ export default function AdminPage() {
     </div>
   );
 
-  if (loading) {
+  if (loading || contextLoading) {
     return (<AppShell><div className="space-y-4 pt-4"><div className="h-12 rounded-xl bg-gray-100 animate-pulse" /><div className="h-64 rounded-2xl bg-gray-100 animate-pulse" /></div></AppShell>);
   }
 

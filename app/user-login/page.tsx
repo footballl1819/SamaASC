@@ -3,13 +3,22 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { User, ArrowRight, Plus } from 'lucide-react';
+import { Lock, User, ArrowRight, Plus } from 'lucide-react';
 
-export default function LoginPage() {
+export default function UserLoginPage() {
   const router = useRouter();
-  const [slug, setSlug] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const teamId = localStorage.getItem('currentTeamId');
+  const teamName = localStorage.getItem('currentTeamName');
+
+  if (!teamId) {
+    router.push('/login');
+    return null;
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,26 +26,28 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // Check if team exists with this slug
-      const { data: team, error: teamError } = await supabase
-        .from('teams')
+      // Check if user exists with these credentials in the team
+      const { data: user, error: userError } = await supabase
+        .from('users')
         .select('*')
-        .eq('slug', slug)
+        .eq('team_id', teamId)
+        .eq('username', username)
+        .eq('password', password)
         .single();
 
-      if (teamError || !team) {
-        setError('Équipe non trouvée');
+      if (userError || !user) {
+        setError('Identifiants incorrects');
         setLoading(false);
         return;
       }
 
-      // Store team info in localStorage
-      localStorage.setItem('currentTeamId', team.id);
-      localStorage.setItem('currentTeamSlug', team.slug);
-      localStorage.setItem('currentTeamName', team.name);
+      // Store user info in localStorage
+      localStorage.setItem('currentUserId', user.id);
+      localStorage.setItem('currentUserName', user.username);
+      localStorage.setItem('currentUserRole', user.role);
 
-      // Redirect to user login
-      router.push('/user-login');
+      // Redirect to home
+      router.push('/');
     } catch (err) {
       setError('Erreur lors de la connexion');
       setLoading(false);
@@ -51,8 +62,8 @@ export default function LoginPage() {
           <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl mx-auto mb-4 flex items-center justify-center">
             <span className="text-4xl">⚽</span>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Sama ASC</h1>
-          <p className="text-green-200">Connectez-vous à votre ASC</p>
+          <h1 className="text-3xl font-bold text-white mb-2">{teamName}</h1>
+          <p className="text-green-200">Connectez-vous à votre compte</p>
         </div>
 
         {/* Login Form */}
@@ -60,16 +71,33 @@ export default function LoginPage() {
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Identifiant de l'ASC (Slug)
+                Nom d'utilisateur
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                 <input
                   type="text"
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
-                  placeholder="Ex: mon-asc"
+                  placeholder="admin"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Mot de passe
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
+                  placeholder="••••••••"
                   required
                 />
               </div>
@@ -93,7 +121,7 @@ export default function LoginPage() {
                 </>
               ) : (
                 <>
-                  Continuer
+                  Se connecter
                   <ArrowRight size={18} />
                 </>
               )}
@@ -102,15 +130,24 @@ export default function LoginPage() {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500">
-              Votre ASC n'est pas encore inscrite ?{' '}
+              Pas encore de compte ?{' '}
               <button
-                onClick={() => router.push('/register')}
+                onClick={() => router.push('/user-register')}
                 className="text-green-600 font-medium hover:underline flex items-center justify-center gap-1"
               >
                 <Plus size={14} />
-                Créer une équipe
+                Créer un compte
               </button>
             </p>
+          </div>
+
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <button
+              onClick={() => router.push('/login')}
+              className="text-sm text-gray-400 hover:text-gray-600"
+            >
+              ← Changer d'équipe
+            </button>
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Match, Player, MatchVote } from '@/lib/types';
 import AppShell from '@/components/app-shell';
@@ -13,7 +14,8 @@ function formatDate(dateStr: string) {
 }
 
 export default function ResultatsPage() {
-  const { team } = useTeam();
+  const router = useRouter();
+  const { team, user, loading: contextLoading } = useTeam();
   const [matches, setMatches] = useState<Match[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [votes, setVotes] = useState<MatchVote[]>([]);
@@ -21,6 +23,20 @@ export default function ResultatsPage() {
   const [voterName, setVoterName] = useState('');
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
   const [votedFor, setVotedFor] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Check authentication
+    if (!contextLoading) {
+      if (!team) {
+        router.push('/login');
+        return;
+      }
+      if (!user) {
+        router.push('/user-login');
+        return;
+      }
+    }
+  }, [team, user, contextLoading, router]);
 
   useEffect(() => {
     async function load() {
@@ -66,7 +82,7 @@ export default function ResultatsPage() {
     return players.find(p => p.id === topId) || null;
   };
 
-  if (loading) {
+  if (loading || contextLoading) {
     return (
       <AppShell>
         <div className="space-y-4 pt-4">

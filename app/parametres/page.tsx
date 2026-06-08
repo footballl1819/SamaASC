@@ -1,23 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import AppShell from '@/components/app-shell';
+import { useTeam } from '@/contexts/team-context';
 import { Palette, Upload, Save, X, Check } from 'lucide-react';
 
-interface Team {
-  id: string;
-  name: string;
-  slug: string;
-  logo_url: string | null;
-  primary_color: string;
-  secondary_color: string;
-  accent_color: string;
-  description: string | null;
-}
-
 export default function ParametresPage() {
-  const [team, setTeam] = useState<Team | null>(null);
+  const router = useRouter();
+  const { team, user, loading: contextLoading } = useTeam();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -32,53 +24,36 @@ export default function ParametresPage() {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   useEffect(() => {
-    loadTeam();
-  }, []);
-
-  const loadTeam = async () => {
-    // For now, we'll load the first team or create a default one
-    // In a real app, this would be based on the logged-in user's team
-    const { data, error } = await supabase
-      .from('teams')
-      .select('*')
-      .limit(1)
-      .single();
-
-    if (data) {
-      setTeam(data);
-      setName(data.name);
-      setSlug(data.slug);
-      setDescription(data.description || '');
-      setPrimaryColor(data.primary_color);
-      setSecondaryColor(data.secondary_color);
-      setAccentColor(data.accent_color);
-      setLogoPreview(data.logo_url);
-    } else {
-      // Create default team if none exists
-      const { data: newTeam } = await supabase
-        .from('teams')
-        .insert({
-          name: 'Mon ASC',
-          slug: 'mon-asc',
-          primary_color: '#3b82f6',
-          secondary_color: '#1e40af',
-          accent_color: '#f59e0b',
-        })
-        .select()
-        .single();
-      
-      if (newTeam) {
-        setTeam(newTeam);
-        setName(newTeam.name);
-        setSlug(newTeam.slug);
-        setDescription(newTeam.description || '');
-        setPrimaryColor(newTeam.primary_color);
-        setSecondaryColor(newTeam.secondary_color);
-        setAccentColor(newTeam.accent_color);
+    // Check authentication
+    if (!contextLoading) {
+      if (!team) {
+        router.push('/login');
+        return;
+      }
+      if (!user) {
+        router.push('/user-login');
+        return;
+      }
+      // Check if user is admin
+      if (user.role !== 'admin') {
+        router.push('/');
+        return;
       }
     }
-    setLoading(false);
-  };
+  }, [team, user, contextLoading, router]);
+
+  useEffect(() => {
+    if (team) {
+      setName(team.name);
+      setSlug(team.slug);
+      setDescription(team.description || '');
+      setPrimaryColor(team.primary_color);
+      setSecondaryColor(team.secondary_color);
+      setAccentColor(team.accent_color);
+      setLogoPreview(team.logo_url);
+      setLoading(false);
+    }
+  }, [team]);
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -150,7 +125,7 @@ export default function ParametresPage() {
     }
   };
 
-  if (loading) {
+  if (loading || contextLoading) {
     return (
       <AppShell>
         <div className="space-y-4 pt-4">

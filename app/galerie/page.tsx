@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { GalleryItem } from '@/lib/types';
 import AppShell from '@/components/app-shell';
@@ -8,11 +9,26 @@ import { useTeam } from '@/contexts/team-context';
 import { Image as ImageIcon, Play, X, ZoomIn } from 'lucide-react';
 
 export default function GaleriePage() {
-  const { team } = useTeam();
+  const router = useRouter();
+  const { team, user, loading: contextLoading } = useTeam();
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
   const [filter, setFilter] = useState<string>('all');
+
+  useEffect(() => {
+    // Check authentication
+    if (!contextLoading) {
+      if (!team) {
+        router.push('/login');
+        return;
+      }
+      if (!user) {
+        router.push('/user-login');
+        return;
+      }
+    }
+  }, [team, user, contextLoading, router]);
 
   useEffect(() => {
     async function load() {
@@ -25,7 +41,7 @@ export default function GaleriePage() {
     load();
   }, [team]);
 
-  if (loading) {
+  if (loading || contextLoading) {
     return (
       <AppShell>
         <div className="grid grid-cols-2 gap-3 pt-4">

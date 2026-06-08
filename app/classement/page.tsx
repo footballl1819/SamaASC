@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Standing } from '@/lib/types';
 import AppShell from '@/components/app-shell';
@@ -8,10 +9,25 @@ import { useTeam } from '@/contexts/team-context';
 import { Trophy } from 'lucide-react';
 
 export default function ClassementPage() {
-  const { team } = useTeam();
+  const router = useRouter();
+  const { team, user, loading: contextLoading } = useTeam();
   const [standings, setStandings] = useState<Standing[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCompetition, setSelectedCompetition] = useState<string>('');
+
+  useEffect(() => {
+    // Check authentication
+    if (!contextLoading) {
+      if (!team) {
+        router.push('/login');
+        return;
+      }
+      if (!user) {
+        router.push('/user-login');
+        return;
+      }
+    }
+  }, [team, user, contextLoading, router]);
 
   useEffect(() => {
     async function load() {
@@ -27,7 +43,7 @@ export default function ClassementPage() {
     load();
   }, [team]);
 
-  if (loading) {
+  if (loading || contextLoading) {
     return (
       <AppShell>
         <div className="space-y-4 pt-4">

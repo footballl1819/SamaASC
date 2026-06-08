@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Announcement, Match } from '@/lib/types';
 import AppShell from '@/components/app-shell';
+import { useTeam } from '@/contexts/team-context';
 import { Calendar, MapPin, Clock, Trophy, Dumbbell, Users, Megaphone, ChevronRight } from 'lucide-react';
 
 const TYPE_CONFIG: Record<string, { icon: typeof Calendar; color: string; bg: string; label: string }> = {
@@ -30,24 +32,42 @@ function daysUntil(dateStr: string) {
 }
 
 export default function AccueilPage() {
+  const router = useRouter();
+  const { team, user, loading: contextLoading } = useTeam();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [upcomingMatches, setUpcomingMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Check authentication
+    if (!contextLoading) {
+      if (!team) {
+        router.push('/login');
+        return;
+      }
+      if (!user) {
+        router.push('/user-login');
+        return;
+      }
+    }
+  }, [team, user, contextLoading, router]);
+
+  useEffect(() => {
     async function load() {
+      if (!team) return;
+      
       const [annRes, matchRes] = await Promise.all([
-        supabase.from('announcements').select('*').order('event_date', { ascending: true }),
-        supabase.from('matches').select('*').eq('status', 'upcoming').order('match_date', { ascending: true }),
+        supabase.from('announcements').select('*').eq('team_id', team.id).order('event_date', { ascending: true }),
+        supabase.from('matches').select('*').eq('team_id', team.id).eq('status', 'upcoming').order('match_date', { ascending: true }),
       ]);
       setAnnouncements(annRes.data || []);
       setUpcomingMatches(matchRes.data || []);
       setLoading(false);
     }
     load();
-  }, []);
+  }, [team]);
 
-  if (loading) {
+  if (loading || contextLoading) {
     return (
       <AppShell>
         <div className="space-y-4 pt-4">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Player, Coach, PlayerStat, MatchLineup, Match, POSITION_LABELS } from '@/lib/types';
 import AppShell from '@/components/app-shell';
@@ -50,7 +51,8 @@ const FORMATIONS: Record<string, { slot: number; x: number; y: number; label: st
 };
 
 export default function EquipePage() {
-  const { team } = useTeam();
+  const router = useRouter();
+  const { team, user, loading: contextLoading } = useTeam();
   const [players, setPlayers] = useState<Player[]>([]);
   const [coach, setCoach] = useState<Coach | null>(null);
   const [stats, setStats] = useState<PlayerStat[]>([]);
@@ -61,6 +63,20 @@ export default function EquipePage() {
   const [statsComp, setStatsComp] = useState<string>('all');
   const [selectedMatchId, setSelectedMatchId] = useState<string>('');
   const [selectedFormation, setSelectedFormation] = useState<string>('4-3-3');
+
+  useEffect(() => {
+    // Check authentication
+    if (!contextLoading) {
+      if (!team) {
+        router.push('/login');
+        return;
+      }
+      if (!user) {
+        router.push('/user-login');
+        return;
+      }
+    }
+  }, [team, user, contextLoading, router]);
 
   useEffect(() => {
     async function load() {
@@ -89,7 +105,7 @@ export default function EquipePage() {
     load();
   }, [team]);
 
-  if (loading) {
+  if (loading || contextLoading) {
     return (
       <AppShell>
         <div className="space-y-4 pt-4">

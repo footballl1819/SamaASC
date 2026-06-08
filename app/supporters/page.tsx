@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Supporter } from '@/lib/types';
 import AppShell from '@/components/app-shell';
@@ -8,12 +9,27 @@ import { useTeam } from '@/contexts/team-context';
 import { Heart, Send, Flame, MessageCircle } from 'lucide-react';
 
 export default function SupportersPage() {
-  const { team } = useTeam();
+  const router = useRouter();
+  const { team, user, loading: contextLoading } = useTeam();
   const [supporters, setSupporters] = useState<Supporter[]>([]);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    // Check authentication
+    if (!contextLoading) {
+      if (!team) {
+        router.push('/login');
+        return;
+      }
+      if (!user) {
+        router.push('/user-login');
+        return;
+      }
+    }
+  }, [team, user, contextLoading, router]);
 
   useEffect(() => {
     async function load() {
@@ -40,6 +56,16 @@ export default function SupportersPage() {
       setSubmitting(false);
     }
   };
+
+  if (loading || contextLoading) {
+    return (
+      <AppShell>
+        <div className="space-y-4 pt-4">
+          <div className="h-64 rounded-2xl bg-gray-100 animate-pulse" />
+        </div>
+      </AppShell>
+    );
+  }
 
   function timeAgo(dateStr: string) {
     const diff = Date.now() - new Date(dateStr).getTime();
