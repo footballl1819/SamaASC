@@ -62,7 +62,8 @@ export default function RegisterPage() {
         router.push('/user-login');
       }, 1500);
     } catch (err) {
-      setError('Erreur lors de la création de l\'équipe');
+      console.error('Erreur lors de la création de l\'équipe:', err);
+      setError('Erreur lors de la création de l\'équipe: ' + (err as Error).message);
       setLoading(false);
     }
   };
