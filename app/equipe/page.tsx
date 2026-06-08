@@ -80,7 +80,7 @@ export default function EquipePage() {
 
   useEffect(() => {
     async function load() {
-      if (!team) return;
+      if (!team || !supabase) return;
       
       const [pRes, cRes, sRes, mRes, lRes] = await Promise.all([
         supabase.from('players').select('*').eq('team_id', team.id).order('jersey_number'),

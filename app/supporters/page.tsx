@@ -33,7 +33,7 @@ export default function SupportersPage() {
 
   useEffect(() => {
     async function load() {
-      if (!team) return;
+      if (!team || !supabase) return;
       
       const { data } = await supabase.from('supporters').select('*').eq('team_id', team.id).order('created_at', { ascending: false });
       setSupporters(data || []);
@@ -44,7 +44,7 @@ export default function SupportersPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !message.trim() || !team) return;
+    if (!name.trim() || !message.trim() || !team || !supabase) return;
     setSubmitting(true);
     const { data } = await supabase
       .from('supporters')

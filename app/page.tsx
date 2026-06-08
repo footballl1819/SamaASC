@@ -54,7 +54,7 @@ export default function AccueilPage() {
 
   useEffect(() => {
     async function load() {
-      if (!team) return;
+      if (!team || !supabase) return;
       
       const [annRes, matchRes] = await Promise.all([
         supabase.from('announcements').select('*').eq('team_id', team.id).order('event_date', { ascending: true }),

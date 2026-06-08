@@ -66,7 +66,7 @@ export default function AdminPage() {
   }, [team, user, contextLoading, router]);
 
   const loadAll = useCallback(async () => {
-    if (!team) return;
+    if (!team || !supabase) return;
     
     const [p, m, a, s, g, c, ps, l] = await Promise.all([
       supabase.from('players').select('*').eq('team_id', team.id).order('jersey_number'),

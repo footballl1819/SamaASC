@@ -31,7 +31,7 @@ export default function ClassementPage() {
 
   useEffect(() => {
     async function load() {
-      if (!team) return;
+      if (!team || !supabase) return;
       
       const { data } = await supabase.from('standings').select('*').eq('team_id', team.id).order('competition_name').order('position');
       setStandings(data || []);

@@ -40,7 +40,7 @@ export default function ResultatsPage() {
 
   useEffect(() => {
     async function load() {
-      if (!team) return;
+      if (!team || !supabase) return;
       
       const [mRes, pRes, vRes] = await Promise.all([
         supabase.from('matches').select('*').eq('team_id', team.id).in('status', ['completed', 'live']).order('match_date', { ascending: false }),
@@ -56,7 +56,7 @@ export default function ResultatsPage() {
   }, [team]);
 
   const handleVote = async (matchId: string, playerId: string) => {
-    if (!voterName.trim() || !team) return;
+    if (!voterName.trim() || !team || !supabase) return;
     const { data } = await supabase
       .from('match_votes')
       .insert({ match_id: matchId, player_id: playerId, voter_name: voterName.trim(), team_id: team.id })
