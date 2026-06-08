@@ -116,7 +116,7 @@ export default function ParametresPage() {
       setTimeout(() => setSuccess(false), 3000);
       
       // Reload team data
-      await loadTeam();
+      window.location.reload();
     } catch (error) {
       console.error('Error saving team settings:', error);
       alert('Erreur lors de la sauvegarde');

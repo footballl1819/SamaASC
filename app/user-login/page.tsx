@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Lock, User, ArrowRight, Plus } from 'lucide-react';
@@ -11,12 +11,23 @@ export default function UserLoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [teamId, setTeamId] = useState<string | null>(null);
+  const [teamName, setTeamName] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
 
-  const teamId = localStorage.getItem('currentTeamId');
-  const teamName = localStorage.getItem('currentTeamName');
+  useEffect(() => {
+    setMounted(true);
+    const tid = localStorage.getItem('currentTeamId');
+    const tname = localStorage.getItem('currentTeamName');
+    setTeamId(tid);
+    setTeamName(tname);
+    
+    if (!tid) {
+      router.push('/login');
+    }
+  }, [router]);
 
-  if (!teamId) {
-    router.push('/login');
+  if (!mounted || !teamId) {
     return null;
   }
 
