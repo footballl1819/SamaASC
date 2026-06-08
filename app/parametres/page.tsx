@@ -115,7 +115,7 @@ export default function ParametresPage() {
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
       
-      // Reload team data
+      // Reload team data to reflect changes
       window.location.reload();
     } catch (error) {
       console.error('Error saving team settings:', error);
