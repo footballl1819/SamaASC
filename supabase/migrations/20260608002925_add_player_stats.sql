@@ -1,6 +1,7 @@
 -- Player statistics: goals and assists per player per competition
 CREATE TABLE player_stats (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
   player_id UUID REFERENCES players(id) ON DELETE CASCADE NOT NULL,
   competition_name TEXT NOT NULL,
   goals INTEGER DEFAULT 0,

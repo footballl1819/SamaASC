@@ -24,17 +24,18 @@ Vous pouvez les appliquer via:
 4. Configurez les permissions:
    - Public: true (pour permettre l'accès public aux images)
    - File size limit: 5MB (ou selon vos besoins)
-5. Ajoutez une politique RLS pour le bucket:
+5. Ajoutez une politique RLS pour le bucket via SQL Editor:
    ```sql
-   -- Activer RLS sur le bucket
-   ALTER STORAGE team-assets ENABLE ROW LEVEL SECURITY;
-
    -- Politique pour permettre l'upload public
    CREATE POLICY "Public Upload" ON storage.objects FOR INSERT 
    TO anon, authenticated WITH CHECK (bucket_id = 'team-assets');
 
    -- Politique pour permettre la lecture publique
    CREATE POLICY "Public Read" ON storage.objects FOR SELECT 
+   TO anon, authenticated USING (bucket_id = 'team-assets');
+
+   -- Politique pour permettre la mise à jour
+   CREATE POLICY "Public Update" ON storage.objects FOR UPDATE 
    TO anon, authenticated USING (bucket_id = 'team-assets');
    ```
 

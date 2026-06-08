@@ -39,14 +39,23 @@ export function TeamProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadTeam();
-    loadUser();
+    const initializeAuth = async () => {
+      try {
+        // First load team from localStorage
+        await loadTeam();
+        // Then load user
+        loadUser();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeAuth();
   }, []);
 
   const loadTeam = async () => {
     const teamId = localStorage.getItem('currentTeamId');
     if (!teamId) {
-      setLoading(false);
       return;
     }
 
@@ -57,15 +66,21 @@ export function TeamProvider({ children }: { children: ReactNode }) {
         .eq('id', teamId)
         .single();
 
-      if (error) throw error;
+      if (error || !data) {
+        // Team not found, clear localStorage
+        localStorage.removeItem('currentTeamId');
+        localStorage.removeItem('currentTeamSlug');
+        localStorage.removeItem('currentTeamName');
+        setTeam(null);
+        return;
+      }
       setTeam(data);
     } catch (error) {
       console.error('Error loading team:', error);
       localStorage.removeItem('currentTeamId');
       localStorage.removeItem('currentTeamSlug');
       localStorage.removeItem('currentTeamName');
-    } finally {
-      setLoading(false);
+      setTeam(null);
     }
   };
 
@@ -73,15 +88,18 @@ export function TeamProvider({ children }: { children: ReactNode }) {
     const userId = localStorage.getItem('currentUserId');
     const userName = localStorage.getItem('currentUserName');
     const userRole = localStorage.getItem('currentUserRole');
+    const teamId = localStorage.getItem('currentTeamId');
     
-    if (userId && userName && userRole) {
+    if (userId && userName && userRole && teamId) {
       setUser({
         id: userId,
-        team_id: localStorage.getItem('currentTeamId') || '',
+        team_id: teamId,
         username: userName,
-        name: userName, // You might want to store full name separately
+        name: userName,
         role: userRole as 'admin' | 'member',
       });
+    } else {
+      setUser(null);
     }
   };
 

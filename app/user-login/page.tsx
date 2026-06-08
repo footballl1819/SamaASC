@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { hashPassword, verifyPassword } from '@/lib/auth-utils';
 import { Lock, User, ArrowRight, Plus } from 'lucide-react';
 
 export default function UserLoginPage() {
@@ -37,16 +38,24 @@ export default function UserLoginPage() {
     setError('');
 
     try {
-      // Check if user exists with these credentials in the team
+      // Check if user exists with this username in the team
       const { data: user, error: userError } = await supabase
         .from('users')
         .select('*')
         .eq('team_id', teamId)
         .eq('username', username)
-        .eq('password', password)
         .single();
 
       if (userError || !user) {
+        setError('Identifiants incorrects');
+        setLoading(false);
+        return;
+      }
+
+      // Verify password
+      const isValid = await verifyPassword(password, user.password);
+      
+      if (!isValid) {
         setError('Identifiants incorrects');
         setLoading(false);
         return;

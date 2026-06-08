@@ -98,6 +98,20 @@ export default function LoginPage() {
                 </>
               )}
             </button>
+
+            <div className="mt-6 text-center border-t border-gray-200 pt-6">
+              <p className="text-sm text-gray-600 mb-3">
+                Vous n'avez pas encore d'équipe ?
+              </p>
+              <button
+                type="button"
+                onClick={() => router.push('/register')}
+                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-green-600 text-green-600 rounded-xl font-medium hover:bg-green-50 transition-colors"
+              >
+                <Plus size={18} />
+                Créer une nouvelle équipe
+              </button>
+            </div>
           </form>
 
           <div className="mt-6 text-center">

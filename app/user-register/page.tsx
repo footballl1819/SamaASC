@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { hashPassword } from '@/lib/auth-utils';
 import { User, Mail, Lock, ArrowRight, Check } from 'lucide-react';
 
 export default function UserRegisterPage() {
@@ -66,13 +67,16 @@ export default function UserRegisterPage() {
         return;
       }
 
+      // Hash password before storing
+      const hashedPassword = await hashPassword(password);
+
       // Create user
       const { data: user, error: userError } = await supabase
         .from('users')
         .insert({
           team_id: teamId,
           username,
-          password,
+          password: hashedPassword,
           name,
           role: 'member',
         })
