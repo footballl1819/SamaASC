@@ -17,6 +17,11 @@ export default function LoginPage() {
     setError('');
 
     try {
+      if (!supabase) {
+        setError('Erreur de connexion');
+        setLoading(false);
+        return;
+      }
       // Check if team exists with this slug
       const { data: team, error: teamError } = await supabase
         .from('teams')

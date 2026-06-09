@@ -38,6 +38,11 @@ export default function UserLoginPage() {
     setError('');
 
     try {
+      if (!supabase) {
+        setError('Erreur de connexion');
+        setLoading(false);
+        return;
+      }
       // Check if user exists with this username in the team
       const { data: user, error: userError } = await supabase
         .from('users')

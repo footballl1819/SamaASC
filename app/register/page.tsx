@@ -24,6 +24,11 @@ export default function RegisterPage() {
     setError('');
 
     try {
+      if (!supabase) {
+        setError('Erreur de connexion');
+        setLoading(false);
+        return;
+      }
       // Check if slug already exists
       const { data: existingTeam } = await supabase
         .from('teams')

@@ -53,6 +53,11 @@ export default function UserRegisterPage() {
     }
 
     try {
+      if (!supabase) {
+        setError('Erreur de connexion');
+        setLoading(false);
+        return;
+      }
       // Check if username already exists in this team
       const { data: existingUser } = await supabase
         .from('users')

@@ -74,6 +74,11 @@ export default function ParametresPage() {
     setSuccess(false);
 
     try {
+      if (!supabase) {
+        alert('Erreur de connexion');
+        setSaving(false);
+        return;
+      }
       let logoUrl = team.logo_url;
 
       // Upload logo if changed
