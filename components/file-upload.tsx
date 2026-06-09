@@ -51,6 +51,12 @@ export default function FileUpload({
 
       const { supabase } = await import('@/lib/supabase');
       
+      if (!supabase) {
+        setError('Erreur de connexion');
+        setUploading(false);
+        return;
+      }
+      
       const { error: uploadError } = await supabase.storage
         .from('team-assets')
         .upload(filePath, file);
