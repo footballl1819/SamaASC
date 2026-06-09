@@ -60,7 +60,14 @@ export function TeamProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        localStorage.removeItem('currentTeamId');
+        localStorage.removeItem('currentTeamSlug');
+        localStorage.removeItem('currentTeamName');
+        setTeam(null);
+        return;
+      }
+      const { data, error } = await supabase!
         .from('teams')
         .select('*')
         .eq('id', teamId)
