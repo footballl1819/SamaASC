@@ -93,12 +93,13 @@ export default function AdminPage() {
   useEffect(() => { loadAll(); }, [loadAll]);
 
   const handleDelete = async (table: string, id: string) => {
+    if (!supabase) return;
     await supabase.from(table).delete().eq('id', id);
     loadAll();
   };
 
   const handlePlayerSubmit = async () => {
-    if (!team) return;
+    if (!team || !supabase) return;
     
     const payload = {
       name: form.name, photo_url: form.photo_url || null,
@@ -112,7 +113,7 @@ export default function AdminPage() {
   };
 
   const handleMatchSubmit = async () => {
-    if (!team) return;
+    if (!team || !supabase) return;
     
     const payload = {
       opponent: form.opponent, match_date: form.match_date, match_time: form.match_time || null,
@@ -127,7 +128,7 @@ export default function AdminPage() {
   };
 
   const handleAnnouncementSubmit = async () => {
-    if (!team) return;
+    if (!team || !supabase) return;
     
     const payload = { title: form.title, content: form.content, type: form.type || 'other', event_date: form.event_date || null, team_id: team.id };
     if (editing) { await supabase.from('announcements').update(payload).eq('id', editing); }
@@ -136,7 +137,7 @@ export default function AdminPage() {
   };
 
   const handleStandingSubmit = async () => {
-    if (!team) return;
+    if (!team || !supabase) return;
     
     const payload = {
       competition_name: form.competition_name, position: parseInt(form.position) || 0,
@@ -151,7 +152,7 @@ export default function AdminPage() {
   };
 
   const handleGallerySubmit = async () => {
-    if (!team) return;
+    if (!team || !supabase) return;
     
     const payload = { type: form.type || 'image', url: form.url, caption: form.caption || null, event_type: form.event_type || 'other', team_id: team.id };
     if (editing) { await supabase.from('gallery').update(payload).eq('id', editing); }
@@ -160,7 +161,7 @@ export default function AdminPage() {
   };
 
   const handleCoachSubmit = async () => {
-    if (!team) return;
+    if (!team || !supabase) return;
     
     const payload = { name: form.name, photo_url: form.photo_url || null, role: form.role || 'Entraineur', team_id: team.id };
     if (coach) { await supabase.from('coach').update(payload).eq('id', coach.id); }
@@ -169,7 +170,7 @@ export default function AdminPage() {
   };
 
   const handleStatSubmit = async () => {
-    if (!team) return;
+    if (!team || !supabase) return;
     
     const payload = {
       player_id: form.player_id, competition_name: form.competition_name,
@@ -183,7 +184,7 @@ export default function AdminPage() {
   };
 
   const handleSaveLineup = async () => {
-    if (!lineupMatchId || !team) return;
+    if (!lineupMatchId || !team || !supabase) return;
     // Save formation to match
     await supabase.from('matches').update({ formation: lineupFormation }).eq('id', lineupMatchId);
     // Delete existing lineup
