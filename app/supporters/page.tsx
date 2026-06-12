@@ -13,9 +13,11 @@ export default function SupportersPage() {
   const { team, user, loading: contextLoading } = useTeam();
   const [supporters, setSupporters] = useState<Supporter[]>([]);
   const [loading, setLoading] = useState(true);
-  const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [selectedSticker, setSelectedSticker] = useState<string | null>(null);
+
+  const STICKERS = ['⚽', '🔥', '💪', '🎉', '👏', '❤️', '⭐', '🏆', '🚀', '💯'];
 
   useEffect(() => {
     // Check authentication
@@ -44,15 +46,20 @@ export default function SupportersPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !message.trim() || !team || !supabase) return;
+    if (!user || !message.trim() || !team || !supabase) return;
     setSubmitting(true);
     const { data } = await supabase
       .from('supporters')
-      .insert({ name: name.trim(), message: message.trim(), team_id: team.id })
+      .insert({ 
+        name: user.name || user.username, 
+        message: (selectedSticker ? selectedSticker + ' ' : '') + message.trim(), 
+        team_id: team.id 
+      })
       .select();
     if (data && data.length > 0) {
       setSupporters(prev => [data[0], ...prev]);
       setMessage('');
+      setSelectedSticker(null);
       setSubmitting(false);
     }
   };
@@ -104,13 +111,25 @@ export default function SupportersPage() {
             <MessageCircle size={16} className="text-green-600" />
             <span className="text-sm font-bold text-gray-700">Votre message</span>
           </div>
-          <input
-            type="text"
-            placeholder="Votre nom"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
-          />
+          
+          {/* Sticker Picker */}
+          <div className="flex gap-2 flex-wrap">
+            {STICKERS.map((sticker) => (
+              <button
+                key={sticker}
+                type="button"
+                onClick={() => setSelectedSticker(selectedSticker === sticker ? null : sticker)}
+                className={`text-2xl p-2 rounded-lg transition-all ${
+                  selectedSticker === sticker 
+                    ? 'bg-green-100 ring-2 ring-green-500 scale-110' 
+                    : 'bg-gray-100 hover:bg-gray-200'
+                }`}
+              >
+                {sticker}
+              </button>
+            ))}
+          </div>
+          
           <textarea
             placeholder="Votre message de soutien..."
             value={message}
@@ -120,7 +139,7 @@ export default function SupportersPage() {
           />
           <button
             type="submit"
-            disabled={!name.trim() || !message.trim() || submitting}
+            disabled={!message.trim() || submitting}
             className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <Send size={16} />
@@ -143,10 +162,10 @@ export default function SupportersPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-semibold text-sm text-gray-900">{s.name}</span>
                     <span className="text-[10px] text-gray-400">{timeAgo(s.created_at)}</span>
                   </div>
                   <p className="text-sm text-gray-600 leading-relaxed">{s.message}</p>
+                  <p className="text-xs text-gray-400 mt-1">- {s.name}</p>
                 </div>
               </div>
             </div>

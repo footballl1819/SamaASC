@@ -17,9 +17,8 @@ export default function ParametresPage() {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
-  const [primaryColor, setPrimaryColor] = useState('#3b82f6');
-  const [secondaryColor, setSecondaryColor] = useState('#1e40af');
-  const [accentColor, setAccentColor] = useState('#f59e0b');
+  const [backgroundColor, setBackgroundColor] = useState('#22c55e');
+  const [buttonColor, setButtonColor] = useState('#15803d');
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
@@ -47,9 +46,8 @@ export default function ParametresPage() {
       setName(team.name);
       setSlug(team.slug);
       setDescription(team.description || '');
-      setPrimaryColor(team.primary_color);
-      setSecondaryColor(team.secondary_color);
-      setAccentColor(team.accent_color);
+      setBackgroundColor(team.primary_color || '#22c55e');
+      setButtonColor(team.secondary_color || '#15803d');
       setLogoPreview(team.logo_url);
       setLoading(false);
     }
@@ -107,9 +105,9 @@ export default function ParametresPage() {
           name,
           slug,
           description,
-          primary_color: primaryColor,
-          secondary_color: secondaryColor,
-          accent_color: accentColor,
+          primary_color: backgroundColor,
+          secondary_color: buttonColor,
+          accent_color: buttonColor,
           logo_url: logoUrl,
           updated_at: new Date().toISOString(),
         })
@@ -265,57 +263,38 @@ export default function ParametresPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Couleur principale
+                Couleur de fond
               </label>
               <div className="flex items-center gap-3">
                 <input
                   type="color"
-                  value={primaryColor}
-                  onChange={(e) => setPrimaryColor(e.target.value)}
+                  value={backgroundColor}
+                  onChange={(e) => setBackgroundColor(e.target.value)}
                   className="w-12 h-12 rounded-lg border-2 border-gray-200 cursor-pointer"
                 />
                 <input
                   type="text"
-                  value={primaryColor}
-                  onChange={(e) => setPrimaryColor(e.target.value)}
+                  value={backgroundColor}
+                  onChange={(e) => setBackgroundColor(e.target.value)}
                   className="flex-1 rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
                 />
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Couleur secondaire
+                Couleur des boutons et champs
               </label>
               <div className="flex items-center gap-3">
                 <input
                   type="color"
-                  value={secondaryColor}
-                  onChange={(e) => setSecondaryColor(e.target.value)}
+                  value={buttonColor}
+                  onChange={(e) => setButtonColor(e.target.value)}
                   className="w-12 h-12 rounded-lg border-2 border-gray-200 cursor-pointer"
                 />
                 <input
                   type="text"
-                  value={secondaryColor}
-                  onChange={(e) => setSecondaryColor(e.target.value)}
-                  className="flex-1 rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Couleur d'accent
-              </label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={accentColor}
-                  onChange={(e) => setAccentColor(e.target.value)}
-                  className="w-12 h-12 rounded-lg border-2 border-gray-200 cursor-pointer"
-                />
-                <input
-                  type="text"
-                  value={accentColor}
-                  onChange={(e) => setAccentColor(e.target.value)}
+                  value={buttonColor}
+                  onChange={(e) => setButtonColor(e.target.value)}
                   className="flex-1 rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
                 />
               </div>
@@ -328,15 +307,11 @@ export default function ParametresPage() {
             <div className="flex gap-2">
               <div
                 className="w-16 h-16 rounded-lg shadow-md"
-                style={{ backgroundColor: primaryColor }}
+                style={{ backgroundColor: backgroundColor }}
               />
               <div
                 className="w-16 h-16 rounded-lg shadow-md"
-                style={{ backgroundColor: secondaryColor }}
-              />
-              <div
-                className="w-16 h-16 rounded-lg shadow-md"
-                style={{ backgroundColor: accentColor }}
+                style={{ backgroundColor: buttonColor }}
               />
             </div>
           </div>
