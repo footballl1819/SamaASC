@@ -5,7 +5,7 @@ import { useTeam } from '@/contexts/team-context';
 import { LogOut } from 'lucide-react';
 
 const TITLES: Record<string, string> = {
-  '/': 'Sama ASC',
+  '/': 'Accueil',
   '/equipe': 'Mon Équipe',
   '/classement': 'Classement',
   '/galerie': 'Galerie',
@@ -16,7 +16,7 @@ const TITLES: Record<string, string> = {
 
 export default function Header() {
   const pathname = usePathname();
-  const title = TITLES[pathname] || 'Sama ASC';
+  const title = TITLES[pathname] || 'Accueil';
   const { logout, team } = useTeam();
 
   return (
@@ -34,10 +34,10 @@ export default function Header() {
             {team?.logo_url ? (
               <img src={team.logo_url} alt="Logo" className="w-full h-full object-cover" />
             ) : (
-              <span className="text-white font-bold text-xs">SA</span>
+              <span className="text-white font-bold text-xs">{team?.name?.substring(0, 2).toUpperCase() || 'SA'}</span>
             )}
           </div>
-          <h1 className="text-lg font-bold text-gray-900 tracking-tight">{title}</h1>
+          <h1 className="text-lg font-bold text-gray-900 tracking-tight">{team?.name || title}</h1>
         </div>
         <div className="flex items-center gap-3">
           <div 

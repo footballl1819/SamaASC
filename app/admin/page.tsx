@@ -352,7 +352,7 @@ export default function AdminPage() {
         {tab === 'players' && (
           <>
             {!showForm && (
-              <button onClick={() => { setShowForm(true); setEditing(null); setForm({ position: 'DEF', is_starter: 'false' }); }}
+              <button onClick={() => { setShowForm(true); setEditing(null); setForm({ position: 'DEF' }); }}
                 className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 flex items-center justify-center gap-2">
                 <Plus size={16} /> Ajouter un joueur
               </button>
@@ -374,7 +374,6 @@ export default function AdminPage() {
                   { value: 'MIL', label: 'Milieu' }, { value: 'ATT', label: 'Attaquant' },
                 ]} />
                 <Input label="Numéro" field="jersey_number" type="number" placeholder="10" />
-                <Select label="Titulaire" field="is_starter" options={[{ value: 'true', label: 'Oui' }, { value: 'false', label: 'Non' }]} />
                 <button onClick={handlePlayerSubmit} className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 flex items-center justify-center gap-2">
                   <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
                 </button>
@@ -388,9 +387,9 @@ export default function AdminPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold text-sm text-gray-900 truncate">{p.name}</div>
-                    <div className="text-xs text-gray-400">{POSITION_LABELS[p.position]} {p.is_starter ? '- Titulaire' : '- Remplaçant'}</div>
+                    <div className="text-xs text-gray-400">{POSITION_LABELS[p.position]} - #{p.jersey_number}</div>
                   </div>
-                  <button onClick={() => startEdit(p, ['name','photo_url','position','jersey_number','is_starter'])} className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"><Edit2 size={14} /></button>
+                  <button onClick={() => startEdit(p, ['name','photo_url','position','jersey_number'])} className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"><Edit2 size={14} /></button>
                   <button onClick={() => handleDelete('players', p.id)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
                 </div>
               ))}
@@ -460,8 +459,8 @@ export default function AdminPage() {
                 <select value={lineupMatchId} onChange={e => setLineupMatchId(e.target.value)}
                   className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none bg-white font-medium">
                   <option value="">Choisir un match...</option>
-                  {upcomingMatches.map(m => (
-                    <option key={m.id} value={m.id}>vs {m.opponent} - {m.match_date}</option>
+                  {matches.map(m => (
+                    <option key={m.id} value={m.id}>vs {m.opponent} - {m.match_date} ({m.status})</option>
                   ))}
                 </select>
                 <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
@@ -648,7 +647,6 @@ export default function AdminPage() {
                   <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
                 <Input label="Compétition" field="competition_name" placeholder="Championnat..." />
-                <Input label="Position" field="position" type="number" />
                 <Input label="Équipe" field="team_name" placeholder="Nom équipe" />
                 <div className="grid grid-cols-3 gap-3">
                   <Input label="Points" field="points" type="number" />
@@ -667,14 +665,21 @@ export default function AdminPage() {
               </div>
             )}
             <div className="space-y-2">
-              {filteredStandings.map(s => (
+              {filteredStandings
+                .sort((a, b) => {
+                  if (b.points !== a.points) return b.points - a.points;
+                  const gdA = a.goals_for - a.goals_against;
+                  const gdB = b.goals_for - b.goals_against;
+                  return gdB - gdA;
+                })
+                .map((s, idx) => (
                 <div key={s.id} className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-md">
-                  <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center text-xs font-bold text-green-600">{s.position}</div>
+                  <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center text-xs font-bold text-green-600">{idx + 1}</div>
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold text-sm text-gray-900 truncate">{s.team_name}</div>
-                    <div className="text-xs text-gray-400">{s.competition_name} - {s.points} pts</div>
+                    <div className="text-xs text-gray-400">{s.competition_name} - {s.points} pts (GD: {s.goals_for - s.goals_against})</div>
                   </div>
-                  <button onClick={() => startEdit(s, ['competition_name','position','team_name','points','played','won','drawn','lost','goals_for','goals_against'])} className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"><Edit2 size={14} /></button>
+                  <button onClick={() => startEdit(s, ['competition_name','team_name','points','played','won','drawn','lost','goals_for','goals_against'])} className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"><Edit2 size={14} /></button>
                   <button onClick={() => handleDelete('standings', s.id)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
                 </div>
               ))}
@@ -698,7 +703,7 @@ export default function AdminPage() {
                   <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
                 <Select label="Joueur" field="player_id" options={players.map(p => ({ value: p.id, label: `${p.name} (${POSITION_LABELS[p.position]})` }))} />
-                <Input label="Compétition" field="competition_name" placeholder="Championnat du Quartier" />
+                <Select label="Compétition" field="competition_name" options={standingsCompetitions.map(c => ({ value: c, label: c }))} />
                 <div className="grid grid-cols-3 gap-3">
                   <Input label="Buts" field="goals" type="number" />
                   <Input label="Passes D." field="assists" type="number" />
