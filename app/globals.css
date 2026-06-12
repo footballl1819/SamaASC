@@ -52,10 +52,16 @@
     @apply transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl;
   }
   .btn-shadow {
-    @apply shadow-md hover:shadow-lg active:shadow-sm transition-shadow duration-200;
+    @apply shadow-md hover:shadow-xl hover:-translate-y-0.5 active:shadow-sm active:translate-y-0 transition-all duration-200;
   }
   .input-shadow {
-    @apply shadow-sm hover:shadow-md focus:shadow-lg transition-shadow duration-200;
+    @apply shadow-sm hover:shadow-lg focus:shadow-xl transition-shadow duration-200;
+  }
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02];
+  }
+  .icon-hover {
+    @apply transition-all duration-200 hover:scale-110 hover:rotate-3;
   }
 }
 

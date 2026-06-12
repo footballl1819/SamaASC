@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { Announcement, Match } from '@/lib/types';
 import AppShell from '@/components/app-shell';
 import { useTeam } from '@/contexts/team-context';
-import { Calendar, MapPin, Clock, Trophy, Dumbbell, Users, Megaphone, ChevronRight } from 'lucide-react';
+import { Calendar, MapPin, Clock, Trophy, Dumbbell, Users, Megaphone, ChevronRight, Home } from 'lucide-react';
 
 const TYPE_CONFIG: Record<string, { icon: typeof Calendar; color: string; bg: string; label: string }> = {
   match: { icon: Trophy, color: 'text-green-600', bg: 'bg-green-50 border-green-200', label: 'Match' },
@@ -113,6 +113,22 @@ export default function AccueilPage() {
   return (
     <AppShell>
       <div className="space-y-5 pt-4">
+        {/* Page Header with Icon */}
+        <div className="flex items-center gap-3">
+          <div 
+            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover"
+            style={{ 
+              background: team?.secondary_color ? `linear-gradient(135deg, ${team.secondary_color}, ${team.accent_color})` : 'linear-gradient(135deg, #22c55e, #15803d)'
+            }}
+          >
+            <Home size={24} className="text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Accueil</h1>
+            <p className="text-sm text-gray-500">Bienvenue sur {team?.name || 'votre ASC'}</p>
+          </div>
+        </div>
+
         {/* Hero / Next Match Banner */}
         {nextMatch && (
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-600 via-green-700 to-emerald-800 p-5 text-white shadow-xl">

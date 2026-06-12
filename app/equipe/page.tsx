@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { Player, Coach, PlayerStat, MatchLineup, Match, POSITION_LABELS } from '@/lib/types';
 import AppShell from '@/components/app-shell';
 import { useTeam } from '@/contexts/team-context';
-import { Shirt, User, Target, Footprints, Trophy, Medal, ChevronDown } from 'lucide-react';
+import { Shirt, User, Target, Footprints, Trophy, Medal, ChevronDown, Users } from 'lucide-react';
 
 const FORMATIONS: Record<string, { slot: number; x: number; y: number; label: string }[]> = {
   '4-3-3': [
@@ -202,6 +202,22 @@ export default function EquipePage() {
   return (
     <AppShell>
       <div className="space-y-5 pt-4">
+        {/* Page Header with Icon */}
+        <div className="flex items-center gap-3">
+          <div 
+            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover"
+            style={{ 
+              background: team?.secondary_color ? `linear-gradient(135deg, ${team.secondary_color}, ${team.accent_color})` : 'linear-gradient(135deg, #22c55e, #15803d)'
+            }}
+          >
+            <Users size={24} className="text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Mon Équipe</h1>
+            <p className="text-sm text-gray-500">Joueurs et composition</p>
+          </div>
+        </div>
+
         {/* Coach */}
         {coach && (
           <div className="rounded-xl bg-gradient-to-r from-green-600 to-green-700 p-4 shadow-lg flex items-center gap-3">

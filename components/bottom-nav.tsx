@@ -2,6 +2,7 @@
 
 import { Home, Users, Trophy, Image, ScrollText, Heart, Settings } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
+import { useTeam } from '@/contexts/team-context';
 
 const NAV_ITEMS = [
   { icon: Home, label: 'Accueil', path: '/' },
@@ -17,6 +18,7 @@ const NAV_ITEMS = [
 export default function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
+  const { team } = useTeam();
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-t border-gray-200/50 pb-safe">
@@ -28,11 +30,15 @@ export default function BottomNav() {
             <button
               key={item.path}
               onClick={() => router.push(item.path)}
-              className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all duration-300 min-w-[48px] ${
+              className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all duration-300 min-w-[48px] icon-hover ${
                 isActive
-                  ? 'bg-green-50 text-green-600 scale-105'
+                  ? 'scale-105'
                   : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
               }`}
+              style={{
+                backgroundColor: isActive ? (team?.secondary_color ? `${team.secondary_color}20` : 'rgba(34, 197, 94, 0.1)') : undefined,
+                color: isActive ? (team?.secondary_color || '#16a34a') : undefined,
+              }}
             >
               <div className={`relative ${isActive ? 'drop-shadow-sm' : ''}`}>
                 <Icon
@@ -41,11 +47,14 @@ export default function BottomNav() {
                   className="transition-all duration-300"
                 />
                 {isActive && (
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-green-600 rounded-full" />
+                  <div 
+                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
+                    style={{ backgroundColor: team?.secondary_color || '#16a34a' }}
+                  />
                 )}
               </div>
               <span className={`text-[10px] leading-tight font-medium transition-all duration-300 ${
-                isActive ? 'text-green-600' : 'text-gray-400'
+                isActive ? '' : 'text-gray-400'
               }`}>
                 {item.label}
               </span>

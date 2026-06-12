@@ -308,6 +308,22 @@ export default function AdminPage() {
   return (
     <AppShell>
       <div className="space-y-4 pt-4">
+        {/* Page Header with Icon */}
+        <div className="flex items-center gap-3">
+          <div 
+            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover"
+            style={{ 
+              background: team?.secondary_color ? `linear-gradient(135deg, ${team.secondary_color}, ${team.accent_color})` : 'linear-gradient(135deg, #22c55e, #15803d)'
+            }}
+          >
+            <Settings size={24} className="text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Administration</h1>
+            <p className="text-sm text-gray-500">Gestion de l'équipe</p>
+          </div>
+        </div>
+
         {/* Tab Selector */}
         <div className="flex gap-2 overflow-x-auto pb-1">
           {TAB_CONFIG.map(t => {
@@ -316,7 +332,10 @@ export default function AdminPage() {
             return (
               <button key={t.key} onClick={() => { setTab(t.key); setShowForm(false); setEditing(null); setForm({}); }}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all duration-300 ${
-                  isActive ? 'bg-green-600 text-white shadow-lg' : 'bg-white text-gray-600 shadow-md hover:shadow-lg'}`}>
+                  isActive ? 'text-white shadow-lg' : 'bg-white text-gray-600 shadow-md hover:shadow-lg'}`}
+                style={{
+                  backgroundColor: isActive ? (team?.secondary_color || '#22c55e') : undefined,
+                }}>
                 <Icon size={14} />{t.label}
               </button>
             );
@@ -334,7 +353,7 @@ export default function AdminPage() {
               label="Photo"
             />
             <Input label="Rôle" field="role" placeholder="Entraineur" />
-            <button onClick={handleCoachSubmit} className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 flex items-center justify-center gap-2">
+            <button onClick={handleCoachSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
               <Save size={16} />{coach ? 'Mettre à jour' : 'Ajouter'}
             </button>
             {coach && (
@@ -353,7 +372,7 @@ export default function AdminPage() {
           <>
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ position: 'DEF' }); }}
-                className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 flex items-center justify-center gap-2">
+                className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                 <Plus size={16} /> Ajouter un joueur
               </button>
             )}
@@ -402,7 +421,7 @@ export default function AdminPage() {
           <>
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ is_home: 'true', status: 'upcoming', formation: '4-3-3' }); }}
-                className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 flex items-center justify-center gap-2">
+                className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                 <Plus size={16} /> Ajouter un match
               </button>
             )}
@@ -576,7 +595,7 @@ export default function AdminPage() {
           <>
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ type: 'other' }); }}
-                className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 flex items-center justify-center gap-2">
+                className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                 <Plus size={16} /> Ajouter une annonce
               </button>
             )}
@@ -628,7 +647,8 @@ export default function AdminPage() {
                 {standingsCompetitions.map(c => (
                   <button key={c} onClick={() => setStandingsComp(c)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300 ${
-                      standingsComp === c ? 'bg-green-600 text-white shadow-lg' : 'bg-white text-gray-600 shadow-sm hover:shadow-md'}`}>
+                      standingsComp === c ? 'text-white shadow-lg' : 'bg-white text-gray-600 shadow-sm hover:shadow-md'}`}
+                    style={{ backgroundColor: standingsComp === c ? (team?.secondary_color || '#22c55e') : undefined }}>
                     {c}
                   </button>
                 ))}
@@ -636,7 +656,7 @@ export default function AdminPage() {
             )}
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ competition_name: standingsComp || '' }); }}
-                className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 flex items-center justify-center gap-2">
+                className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                 <Plus size={16} /> Ajouter au classement
               </button>
             )}
@@ -692,7 +712,7 @@ export default function AdminPage() {
           <>
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ goals: '0', assists: '0', matches_played: '0' }); }}
-                className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 flex items-center justify-center gap-2">
+                className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                 <Plus size={16} /> Ajouter des stats
               </button>
             )}
@@ -745,7 +765,7 @@ export default function AdminPage() {
           <>
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ type: 'image', event_type: 'other' }); }}
-                className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 flex items-center justify-center gap-2">
+                className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                 <Plus size={16} /> Ajouter un média
               </button>
             )}

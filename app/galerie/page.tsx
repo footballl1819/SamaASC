@@ -82,6 +82,23 @@ export default function GaleriePage() {
   return (
     <AppShell>
       <div className="space-y-4 pt-4">
+        {/* Page Header with Icon */}
+        <div className="flex items-center gap-3">
+          <div 
+            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover"
+            style={{ 
+              background: team?.secondary_color ? `linear-gradient(135deg, ${team.secondary_color}, ${team.accent_color})` : 'linear-gradient(135deg, #22c55e, #15803d)'
+            }}
+          >
+            <ImageIcon size={24} className="text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Galerie</h1>
+            <p className="text-sm text-gray-500">Photos et vidéos</p>
+          </div>
+        </div>
+
+        {/* Filter */}
         {/* Filters */}
         <div className="flex gap-2 overflow-x-auto pb-1">
           {eventTypes.map(type => (
@@ -90,9 +107,12 @@ export default function GaleriePage() {
               onClick={() => setFilter(type)}
               className={`px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300 capitalize ${
                 filter === type
-                  ? 'bg-green-600 text-white shadow-lg'
+                  ? 'text-white shadow-lg'
                   : 'bg-white text-gray-600 shadow-sm hover:shadow-md'
               }`}
+              style={{
+                backgroundColor: filter === type ? (team?.secondary_color || '#22c55e') : undefined,
+              }}
             >
               {type === 'all' ? 'Tout' : type}
             </button>

@@ -119,6 +119,22 @@ export default function SupportersPage() {
   return (
     <AppShell>
       <div className="space-y-5 pt-4">
+        {/* Page Header with Icon */}
+        <div className="flex items-center gap-3">
+          <div 
+            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover"
+            style={{ 
+              background: team?.secondary_color ? `linear-gradient(135deg, ${team.secondary_color}, ${team.accent_color})` : 'linear-gradient(135deg, #22c55e, #15803d)'
+            }}
+          >
+            <Heart size={24} className="text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Supporters</h1>
+            <p className="text-sm text-gray-500">Messages de soutien</p>
+          </div>
+        </div>
+
         {/* Header Card */}
         <div className="rounded-2xl bg-gradient-to-br from-rose-500 via-red-500 to-orange-600 p-5 text-white shadow-xl">
           <div className="flex items-center gap-2 mb-2">
@@ -150,9 +166,12 @@ export default function SupportersPage() {
                 onClick={() => setSelectedSticker(selectedSticker === sticker ? null : sticker)}
                 className={`text-2xl p-2 rounded-lg transition-all ${
                   selectedSticker === sticker 
-                    ? 'bg-green-100 ring-2 ring-green-500 scale-110' 
+                    ? 'ring-2 scale-110' 
                     : 'bg-gray-100 hover:bg-gray-200'
                 }`}
+                style={{
+                  backgroundColor: selectedSticker === sticker ? (team?.secondary_color ? `${team.secondary_color}20` : 'rgba(34, 197, 94, 0.1)') : undefined,
+                } as React.CSSProperties}
               >
                 {sticker}
               </button>
@@ -164,12 +183,16 @@ export default function SupportersPage() {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             rows={3}
-            className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 resize-none"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 resize-none"
+            style={{
+              '--tw-ring-color': team?.secondary_color || '#22c55e',
+            } as React.CSSProperties}
           />
           <button
             type="submit"
             disabled={!message.trim() || submitting}
-            className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            style={{ backgroundColor: team?.secondary_color || '#22c55e' }}
           >
             <Send size={16} />
             {submitting ? 'Envoi...' : 'Envoyer'}
