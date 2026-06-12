@@ -92,6 +92,37 @@ export default function AdminPage() {
 
   useEffect(() => { loadAll(); }, [loadAll]);
 
+  // Setup realtime subscriptions
+  useEffect(() => {
+    if (!team || !supabase) return;
+
+    const channels = [];
+    const tables = ['players', 'matches', 'announcements', 'standings', 'gallery', 'coach', 'player_stats', 'match_lineup'];
+
+    tables.forEach(table => {
+      const channel = supabase
+        .channel(`${table}-changes`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: table,
+            filter: `team_id=eq.${team.id}`,
+          },
+          () => {
+            loadAll();
+          }
+        )
+        .subscribe();
+      channels.push(channel);
+    });
+
+    return () => {
+      channels.forEach(channel => supabase.removeChannel(channel));
+    };
+  }, [team, loadAll]);
+
   const handleDelete = async (table: string, id: string) => {
     if (!supabase) return;
     await supabase.from(table).delete().eq('id', id);

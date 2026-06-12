@@ -39,6 +39,29 @@ export default function GaleriePage() {
       setLoading(false);
     }
     load();
+
+    // Setup realtime subscription
+    if (team && supabase) {
+      const channel = supabase
+        .channel('gallery-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'gallery',
+            filter: `team_id=eq.${team.id}`,
+          },
+          () => {
+            load();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
   }, [team]);
 
   if (loading || contextLoading) {

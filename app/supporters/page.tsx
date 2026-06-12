@@ -42,6 +42,35 @@ export default function SupportersPage() {
       setLoading(false);
     }
     load();
+
+    // Setup realtime subscription
+    if (team && supabase) {
+      const channel = supabase
+        .channel('supporters-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'supporters',
+            filter: `team_id=eq.${team.id}`,
+          },
+          (payload) => {
+            if (payload.eventType === 'INSERT') {
+              setSupporters(prev => [payload.new as Supporter, ...prev]);
+            } else if (payload.eventType === 'UPDATE') {
+              setSupporters(prev => prev.map(s => s.id === payload.new.id ? payload.new as Supporter : s));
+            } else if (payload.eventType === 'DELETE') {
+              setSupporters(prev => prev.filter(s => s.id !== payload.old.id));
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
   }, [team]);
 
   const handleSubmit = async (e: React.FormEvent) => {

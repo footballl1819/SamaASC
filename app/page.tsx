@@ -65,6 +65,35 @@ export default function AccueilPage() {
       setLoading(false);
     }
     load();
+
+    // Setup realtime subscriptions
+    if (team && supabase) {
+      const channels = [];
+      const tables = ['announcements', 'matches'];
+
+      tables.forEach(table => {
+        const channel = supabase
+          .channel(`${table}-changes`)
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: table,
+              filter: `team_id=eq.${team.id}`,
+            },
+            () => {
+              load();
+            }
+          )
+          .subscribe();
+        channels.push(channel);
+      });
+
+      return () => {
+        channels.forEach(channel => supabase.removeChannel(channel));
+      };
+    }
   }, [team]);
 
   if (loading || contextLoading) {

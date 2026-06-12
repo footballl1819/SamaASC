@@ -41,6 +41,29 @@ export default function ClassementPage() {
       setLoading(false);
     }
     load();
+
+    // Setup realtime subscription
+    if (team && supabase) {
+      const channel = supabase
+        .channel('standings-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'standings',
+            filter: `team_id=eq.${team.id}`,
+          },
+          () => {
+            load();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
   }, [team]);
 
   if (loading || contextLoading) {
