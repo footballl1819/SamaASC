@@ -61,7 +61,7 @@ export default function ClassementPage() {
         .subscribe();
 
       return () => {
-        supabase.removeChannel(channel);
+        supabase!.removeChannel(channel);
       };
     }
   }, [team]);

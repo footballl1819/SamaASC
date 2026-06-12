@@ -68,11 +68,11 @@ export default function AccueilPage() {
 
     // Setup realtime subscriptions
     if (team && supabase) {
-      const channels = [];
+      const channels: any[] = [];
       const tables = ['announcements', 'matches'];
 
       tables.forEach(table => {
-        const channel = supabase
+        const channel = supabase!
           .channel(`${table}-changes`)
           .on(
             'postgres_changes',
@@ -91,7 +91,7 @@ export default function AccueilPage() {
       });
 
       return () => {
-        channels.forEach(channel => supabase.removeChannel(channel));
+        channels.forEach(channel => supabase!.removeChannel(channel));
       };
     }
   }, [team]);

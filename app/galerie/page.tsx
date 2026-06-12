@@ -59,7 +59,7 @@ export default function GaleriePage() {
         .subscribe();
 
       return () => {
-        supabase.removeChannel(channel);
+        supabase!.removeChannel(channel);
       };
     }
   }, [team]);

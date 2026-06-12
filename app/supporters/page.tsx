@@ -68,7 +68,7 @@ export default function SupportersPage() {
         .subscribe();
 
       return () => {
-        supabase.removeChannel(channel);
+        supabase!.removeChannel(channel);
       };
     }
   }, [team]);

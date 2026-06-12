@@ -96,11 +96,11 @@ export default function AdminPage() {
   useEffect(() => {
     if (!team || !supabase) return;
 
-    const channels = [];
+    const channels: any[] = [];
     const tables = ['players', 'matches', 'announcements', 'standings', 'gallery', 'coach', 'player_stats', 'match_lineup'];
 
     tables.forEach(table => {
-      const channel = supabase
+      const channel = supabase!
         .channel(`${table}-changes`)
         .on(
           'postgres_changes',
@@ -119,7 +119,7 @@ export default function AdminPage() {
     });
 
     return () => {
-      channels.forEach(channel => supabase.removeChannel(channel));
+      channels.forEach(channel => supabase!.removeChannel(channel));
     };
   }, [team, loadAll]);
 
