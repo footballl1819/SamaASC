@@ -51,6 +51,20 @@ export function TeamProvider({ children }: { children: ReactNode }) {
     };
 
     initializeAuth();
+
+    // Listen for storage changes (e.g., when user logs in)
+    const handleStorageChange = () => {
+      loadTeam();
+      loadUser();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('focus', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('focus', handleStorageChange);
+    };
   }, []);
 
   const loadTeam = async () => {
