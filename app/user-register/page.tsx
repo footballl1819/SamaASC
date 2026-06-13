@@ -70,12 +70,15 @@ export default function UserRegisterPage() {
         return;
       }
 
+      // Extract username from email (remove @domain.com)
+      const usernameOnly = username.split('@')[0];
+
       // Check if username already exists in this team
       const { data: existingUser } = await supabase
         .from('users')
         .select('id')
         .eq('team_id', team.id)
-        .eq('username', username)
+        .eq('username', usernameOnly)
         .single();
 
       if (existingUser) {
@@ -85,7 +88,7 @@ export default function UserRegisterPage() {
       }
 
       // Create Supabase Auth user
-      const userEmail = `${username}@${teamSlug}.com`;
+      const userEmail = `${usernameOnly}@${teamSlug}.com`;
       
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: userEmail,
@@ -104,7 +107,7 @@ export default function UserRegisterPage() {
           .insert({
             id: authData.user.id,
             team_id: team.id,
-            username,
+            username: usernameOnly,
             password: hashedPassword,
             name,
             role: 'member',

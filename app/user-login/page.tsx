@@ -54,8 +54,11 @@ export default function UserLoginPage() {
         return;
       }
 
+      // Extract username from email (remove @domain.com)
+      const usernameOnly = username.split('@')[0];
+
       // Sign in with Supabase Auth
-      const userEmail = `${username}@${teamSlug}.com`;
+      const userEmail = `${usernameOnly}@${teamSlug}.com`;
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email: userEmail,
         password: password,
