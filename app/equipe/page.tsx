@@ -276,7 +276,6 @@ export default function EquipePage() {
                     className="w-full rounded-xl border px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 appearance-none bg-white font-medium"
                     style={{
                       borderColor: team?.secondary_color || '#e5e7eb',
-                      focusRingColor: team?.accent_color || '#22c55e',
                     }}
                   >
                     <option value="">Selectionner un match</option>
