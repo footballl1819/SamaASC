@@ -32,10 +32,10 @@ export default function GaleriePage() {
 
   useEffect(() => {
     async function load() {
-      if (!team || !supabase) return;
+      if (!team) return;
       
-      const { data } = await supabase.from('gallery').select('*').eq('team_id', team.id).order('created_at', { ascending: false });
-      setItems(data || []);
+      const data = await fetch(`/api/data/gallery?team_id=${team.id}`).then(r => r.json());
+      setItems(data);
       setLoading(false);
     }
     load();

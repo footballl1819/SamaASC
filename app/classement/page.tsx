@@ -31,10 +31,10 @@ export default function ClassementPage() {
 
   useEffect(() => {
     async function load() {
-      if (!team || !supabase) return;
+      if (!team) return;
       
-      const { data } = await supabase.from('standings').select('*').eq('team_id', team.id).order('competition_name').order('position');
-      setStandings(data || []);
+      const data = await fetch(`/api/data/standings?team_id=${team.id}`).then(r => r.json());
+      setStandings(data);
       if (data && data.length > 0) {
         setSelectedCompetition(data[0].competition_name);
       }
@@ -76,7 +76,7 @@ export default function ClassementPage() {
     );
   }
 
-  const competitions = Array.from(new Set(standings.map(s => s.competition_name)));
+  const competitions = ['Coupe Mairie', 'Coupe Zonal', 'Coupe Départementale', 'Coupe Régional', 'Amical'];
   const filtered = standings.filter(s => s.competition_name === selectedCompetition);
   const ourTeam = filtered.find(s => s.team_name === team?.name);
 
@@ -99,24 +99,23 @@ export default function ClassementPage() {
           </div>
         </div>
 
-        {/* Competition Selector - always visible */}
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {competitions.map(comp => (
-            <button
-              key={comp}
-              onClick={() => setSelectedCompetition(comp)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all duration-300 ${
-                selectedCompetition === comp
-                  ? 'text-white shadow-lg'
-                  : 'bg-white text-gray-600 shadow-md hover:shadow-lg'
-              }`}
-              style={{
-                backgroundColor: selectedCompetition === comp ? (team?.secondary_color || '#22c55e') : undefined,
-              }}
-            >
-              {comp}
-            </button>
-          ))}
+        {/* Competition Selector - dropdown */}
+        <div className="relative">
+          <select
+            value={selectedCompetition}
+            onChange={(e) => setSelectedCompetition(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none shadow-md"
+          >
+            <option value="">Sélectionner une compétition</option>
+            {competitions.map(comp => (
+              <option key={comp} value={comp}>{comp}</option>
+            ))}
+          </select>
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
         </div>
 
         {filtered.length === 0 && (

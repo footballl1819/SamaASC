@@ -40,16 +40,16 @@ export default function ResultatsPage() {
 
   useEffect(() => {
     async function load() {
-      if (!team || !supabase) return;
+      if (!team) return;
       
-      const [mRes, pRes, vRes] = await Promise.all([
-        supabase.from('matches').select('*').eq('team_id', team.id).in('status', ['completed', 'live']).order('match_date', { ascending: false }),
-        supabase.from('players').select('*').eq('team_id', team.id).order('name'),
-        supabase.from('match_votes').select('*').eq('team_id', team.id),
+      const [m, p, v] = await Promise.all([
+        fetch(`/api/data/matches?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/players?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/match-votes?team_id=${team.id}`).then(r => r.json()).catch(() => []),
       ]);
-      setMatches(mRes.data || []);
-      setPlayers(pRes.data || []);
-      setVotes(vRes.data || []);
+      setMatches(m);
+      setPlayers(p);
+      setVotes(v);
       setLoading(false);
     }
     load();
