@@ -258,7 +258,7 @@ export default function AdminPage() {
   };
 
   const Input = ({ label, field, type = 'text', placeholder = '' }: { label: string; field: string; type?: string; placeholder?: string }) => (
-    <div>
+    <div className="relative z-10">
       <label className="text-xs font-medium text-gray-500 mb-1 block">{label}</label>
       <input type={type} value={form[field] || ''} onChange={e => setForm(prev => ({ ...prev, [field]: e.target.value }))}
         placeholder={placeholder} className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500" />
@@ -266,7 +266,7 @@ export default function AdminPage() {
   );
 
   const Select = ({ label, field, options }: { label: string; field: string; options: { value: string; label: string }[] }) => (
-    <div>
+    <div className="relative z-10">
       <label className="text-xs font-medium text-gray-500 mb-1 block">{label}</label>
       <div className="relative">
         <select value={form[field] || ''} onChange={e => setForm(prev => ({ ...prev, [field]: e.target.value }))}
@@ -346,23 +346,37 @@ export default function AdminPage() {
         {tab === 'coach' && (
           <div className="rounded-2xl bg-white p-4 shadow-lg space-y-3">
             <h3 className="text-sm font-bold text-gray-700">Informations Coach</h3>
-            <Input label="Nom" field="name" placeholder="Nom du coach" />
-            <FileUpload 
-              value={form.photo_url || null}
-              onChange={(url) => setForm(prev => ({ ...prev, photo_url: url }))}
-              label="Photo"
-            />
-            <Input label="Rôle" field="role" placeholder="Entraineur" />
-            <button onClick={handleCoachSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
-              <Save size={16} />{coach ? 'Mettre à jour' : 'Ajouter'}
-            </button>
-            {coach && (
-              <div className="flex items-center gap-3 mt-3 p-3 rounded-lg bg-gray-50">
+            {!showForm && coach && (
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
                 <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
                   {coach.photo_url ? <img src={coach.photo_url} alt="" className="w-full h-full rounded-full object-cover" /> : <Users size={18} className="text-green-600" />}
                 </div>
                 <div><div className="font-semibold text-sm">{coach.name}</div><div className="text-xs text-gray-400">{coach.role}</div></div>
+                <button onClick={() => { setShowForm(true); setEditing(coach.id); setForm({ name: coach.name, role: coach.role || '', photo_url: coach.photo_url || '' }); }} className="ml-auto p-1.5 text-gray-400 hover:text-blue-500 transition-colors"><Edit2 size={14} /></button>
               </div>
+            )}
+            {!showForm && !coach && (
+              <button onClick={() => { setShowForm(true); setEditing(null); setForm({}); }} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
+                <Plus size={16} /> Ajouter un coach
+              </button>
+            )}
+            {showForm && (
+              <>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold">{editing ? 'Modifier' : 'Ajouter'} un coach</h3>
+                  <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
+                </div>
+                <Input label="Nom" field="name" placeholder="Nom du coach" />
+                <FileUpload 
+                  value={form.photo_url || null}
+                  onChange={(url) => setForm(prev => ({ ...prev, photo_url: url }))}
+                  label="Photo"
+                />
+                <Input label="Rôle" field="role" placeholder="Entraineur" />
+                <button onClick={handleCoachSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
+                  <Save size={16} />{coach ? 'Mettre à jour' : 'Ajouter'}
+                </button>
+              </>
             )}
           </div>
         )}
@@ -393,7 +407,7 @@ export default function AdminPage() {
                   { value: 'MIL', label: 'Milieu' }, { value: 'ATT', label: 'Attaquant' },
                 ]} />
                 <Input label="Numéro" field="jersey_number" type="number" placeholder="10" />
-                <button onClick={handlePlayerSubmit} className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 flex items-center justify-center gap-2">
+                <button onClick={handlePlayerSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                   <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
                 </button>
               </div>
@@ -448,7 +462,7 @@ export default function AdminPage() {
                   <Input label="Score domicile" field="score_home" type="number" />
                   <Input label="Score extérieur" field="score_away" type="number" />
                 </div>
-                <button onClick={handleMatchSubmit} className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 flex items-center justify-center gap-2">
+                <button onClick={handleMatchSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                   <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
                 </button>
               </div>
@@ -474,7 +488,7 @@ export default function AdminPage() {
           <div className="space-y-4">
             <div className="rounded-2xl bg-white p-4 shadow-lg space-y-3">
               <h3 className="text-sm font-bold text-gray-700">Composer le 11 de départ</h3>
-              <div className="relative">
+              <div className="relative z-10">
                 <select value={lineupMatchId} onChange={e => setLineupMatchId(e.target.value)}
                   className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none bg-white font-medium">
                   <option value="">Choisir un match...</option>
@@ -494,7 +508,8 @@ export default function AdminPage() {
                       {['4-3-3', '4-4-2', '3-5-2'].map(f => (
                         <button key={f} onClick={() => setLineupFormation(f)}
                           className={`flex-1 py-2 rounded-lg text-xs font-bold tracking-wider transition-all duration-300 ${
-                            lineupFormation === f ? 'bg-green-600 text-white shadow-lg' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+                            lineupFormation === f ? 'text-white shadow-lg' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                          style={{ backgroundColor: lineupFormation === f ? (team?.secondary_color || '#22c55e') : undefined }}>
                           {f}
                         </button>
                       ))}
@@ -581,7 +596,7 @@ export default function AdminPage() {
                     </div>
                   </div>
 
-                  <button onClick={handleSaveLineup} className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 flex items-center justify-center gap-2">
+                  <button onClick={handleSaveLineup} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                     <Save size={16} /> Sauvegarder la composition
                   </button>
                 </>
@@ -606,7 +621,7 @@ export default function AdminPage() {
                   <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
                 <Input label="Titre" field="title" placeholder="Titre de l'annonce" />
-                <div>
+                <div className="relative z-10">
                   <label className="text-xs font-medium text-gray-500 mb-1 block">Contenu</label>
                   <textarea value={form.content || ''} onChange={e => setForm(prev => ({ ...prev, content: e.target.value }))}
                     placeholder="Détails de l'annonce..." rows={3}
@@ -617,7 +632,7 @@ export default function AdminPage() {
                   { value: 'meeting', label: 'Réunion' }, { value: 'other', label: 'Autre' },
                 ]} />
                 <Input label="Date événement" field="event_date" type="date" />
-                <button onClick={handleAnnouncementSubmit} className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 flex items-center justify-center gap-2">
+                <button onClick={handleAnnouncementSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                   <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
                 </button>
               </div>
@@ -679,7 +694,7 @@ export default function AdminPage() {
                   <Input label="Buts pour" field="goals_for" type="number" />
                 </div>
                 <Input label="Buts contre" field="goals_against" type="number" />
-                <button onClick={handleStandingSubmit} className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 flex items-center justify-center gap-2">
+                <button onClick={handleStandingSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                   <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
                 </button>
               </div>
@@ -729,7 +744,7 @@ export default function AdminPage() {
                   <Input label="Passes D." field="assists" type="number" />
                   <Input label="Matchs J." field="matches_played" type="number" />
                 </div>
-                <button onClick={handleStatSubmit} className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 flex items-center justify-center gap-2">
+                <button onClick={handleStatSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                   <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
                 </button>
               </div>
@@ -786,7 +801,7 @@ export default function AdminPage() {
                 <Select label="Type événement" field="event_type" options={[
                   { value: 'match', label: 'Match' }, { value: 'training', label: 'Entraînement' }, { value: 'other', label: 'Autre' },
                 ]} />
-                <button onClick={handleGallerySubmit} className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold btn-shadow hover:bg-green-700 flex items-center justify-center gap-2">
+                <button onClick={handleGallerySubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                   <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
                 </button>
               </div>

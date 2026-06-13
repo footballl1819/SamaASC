@@ -56,6 +56,8 @@
   }
   .input-shadow {
     @apply shadow-sm hover:shadow-lg focus:shadow-xl transition-shadow duration-200;
+    position: relative;
+    z-index: 10;
   }
   .card-hover {
     @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02];
