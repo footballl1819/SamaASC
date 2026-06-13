@@ -45,31 +45,33 @@ export function TeamProvider({ children }: { children: ReactNode }) {
         const { data: { session } } = await supabase!.auth.getSession();
         
         if (session) {
-          // Load user from database based on auth session
-          const { data: userData, error: userError } = await supabase!
-            .from('users')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-
-          if (userData) {
-            setUser({
-              id: userData.id,
-              team_id: userData.team_id,
-              username: userData.username,
-              name: userData.username,
-              role: userData.role as 'admin' | 'member',
+          // Load user and team data from API route (bypasses RLS)
+          const { data: { session: currentSession } } = await supabase!.auth.getSession();
+          const token = currentSession?.access_token;
+          
+          if (token) {
+            const response = await fetch('/api/auth/user', {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+              },
             });
-
-            // Load team
-            const { data: teamData } = await supabase!
-              .from('teams')
-              .select('*')
-              .eq('id', userData.team_id)
-              .single();
-
-            if (teamData) {
-              setTeam(teamData);
+            
+            if (response.ok) {
+              const data = await response.json();
+              
+              if (data.user) {
+                setUser({
+                  id: data.user.id,
+                  team_id: data.user.team_id,
+                  username: data.user.username,
+                  name: data.user.name,
+                  role: data.user.role as 'admin' | 'member',
+                });
+              }
+              
+              if (data.team) {
+                setTeam(data.team);
+              }
             }
           }
         }
@@ -85,29 +87,31 @@ export function TeamProvider({ children }: { children: ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase!.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        const { data: userData } = await supabase!
-          .from('users')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-
-        if (userData) {
-          setUser({
-            id: userData.id,
-            team_id: userData.team_id,
-            username: userData.username,
-            name: userData.username,
-            role: userData.role as 'admin' | 'member',
+        const token = session.access_token;
+        
+        if (token) {
+          const response = await fetch('/api/auth/user', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
           });
-
-          const { data: teamData } = await supabase!
-            .from('teams')
-            .select('*')
-            .eq('id', userData.team_id)
-            .single();
-
-          if (teamData) {
-            setTeam(teamData);
+          
+          if (response.ok) {
+            const data = await response.json();
+            
+            if (data.user) {
+              setUser({
+                id: data.user.id,
+                team_id: data.user.team_id,
+                username: data.user.username,
+                name: data.user.name,
+                role: data.user.role as 'admin' | 'member',
+              });
+            }
+            
+            if (data.team) {
+              setTeam(data.team);
+            }
           }
         }
       } else if (event === 'SIGNED_OUT') {
