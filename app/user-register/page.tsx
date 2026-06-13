@@ -181,12 +181,12 @@ export default function UserRegisterPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nom d'utilisateur
+                Email
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                 <input
-                  type="text"
+                  type="email"
                   value={username}
                   onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/\s+/g, ''))}
                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
