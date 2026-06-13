@@ -9,13 +9,27 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div 
-      className="min-h-screen transition-colors duration-300"
+      className="min-h-screen transition-colors duration-300 relative"
       style={{ 
-        backgroundColor: team?.primary_color || '#f9fafb',
+        background: team?.secondary_color && team?.accent_color 
+          ? `linear-gradient(135deg, ${team.primary_color} 0%, ${team.secondary_color} 50%, ${team.accent_color} 100%)`
+          : team?.primary_color || '#f9fafb',
       }}
     >
+      {/* Logo background overlay */}
+      {team?.logo_url && (
+        <div 
+          className="absolute inset-0 opacity-5 pointer-events-none"
+          style={{
+            backgroundImage: `url(${team.logo_url})`,
+            backgroundSize: 'contain',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
+      )}
       <Header />
-      <main className="pt-14 pb-20 px-4 max-w-lg mx-auto">
+      <main className="relative pt-14 pb-20 px-4 max-w-lg mx-auto">
         {children}
       </main>
       <BottomNav />

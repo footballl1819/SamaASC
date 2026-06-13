@@ -795,19 +795,24 @@ export default function AdminPage() {
         {/* STANDINGS TAB - with competition filter */}
         {tab === 'standings' && (
           <>
-            {/* Competition filter */}
-            {standingsCompetitions.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-1">
-                {standingsCompetitions.map(c => (
-                  <button key={c} onClick={() => setStandingsComp(c)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300 ${
-                      standingsComp === c ? 'text-white shadow-lg' : 'bg-white text-gray-600 shadow-sm hover:shadow-md'}`}
-                    style={{ backgroundColor: standingsComp === c ? (team?.secondary_color || '#22c55e') : undefined }}>
-                    {c}
-                  </button>
+            {/* Competition filter - dropdown */}
+            <div className="relative">
+              <select
+                value={standingsComp}
+                onChange={(e) => setStandingsComp(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none shadow-md"
+              >
+                <option value="">Sélectionner une compétition</option>
+                {['Coupe Mairie', 'Coupe Zonal', 'Coupe Départementale', 'Coupe Régional', 'Amical'].map(c => (
+                  <option key={c} value={c}>{c}</option>
                 ))}
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </div>
-            )}
+            </div>
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ competition_name: standingsComp || '' }); }}
                 className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
