@@ -9,12 +9,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div 
-      className="min-h-screen transition-colors duration-300 relative"
-      style={{ 
-        background: team?.secondary_color && team?.accent_color 
-          ? `linear-gradient(135deg, ${team.primary_color} 0%, ${team.secondary_color} 50%, ${team.accent_color} 100%)`
-          : team?.primary_color || '#f9fafb',
-      }}
+      className="min-h-screen bg-gray-50 relative"
     >
       {/* Logo background overlay */}
       {team?.logo_url && (

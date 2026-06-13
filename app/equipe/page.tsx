@@ -247,9 +247,12 @@ export default function EquipePage() {
               onClick={() => setView(v.key)}
               className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 ${
                 view === v.key
-                  ? 'bg-white text-green-600 shadow-md'
+                  ? 'text-white shadow-md'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
+              style={{
+                backgroundColor: view === v.key ? (team?.secondary_color || '#16a34a') : undefined,
+              }}
             >
               {v.label}
             </button>
@@ -270,7 +273,11 @@ export default function EquipePage() {
                       setSelectedMatchId(e.target.value);
                       if (m) setSelectedFormation(m.formation || '4-3-3');
                     }}
-                    className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none bg-white font-medium"
+                    className="w-full rounded-xl border px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 appearance-none bg-white font-medium"
+                    style={{
+                      borderColor: team?.secondary_color || '#e5e7eb',
+                      focusRingColor: team?.accent_color || '#22c55e',
+                    }}
                   >
                     <option value="">Selectionner un match</option>
                     {upcomingMatches.map(m => (
@@ -290,9 +297,12 @@ export default function EquipePage() {
                       onClick={() => setSelectedFormation(f)}
                       className={`flex-1 py-2 rounded-lg text-xs font-bold tracking-wider transition-all duration-300 ${
                         selectedFormation === f
-                          ? 'bg-green-600 text-white shadow-lg'
+                          ? 'text-white shadow-lg'
                           : 'bg-white text-gray-600 shadow-sm hover:shadow-md'
                       }`}
+                      style={{
+                        backgroundColor: selectedFormation === f ? (team?.secondary_color || '#16a34a') : undefined,
+                      }}
                     >
                       {f}
                     </button>
@@ -338,11 +348,16 @@ export default function EquipePage() {
                       transform: 'translate(-50%, -50%)',
                     }}
                   >
-                    <div className="w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden border-2 border-white hover:scale-110 transition-transform duration-200 cursor-pointer">
+                    <div className="w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden border-2 border-white hover:scale-110 transition-transform duration-200 cursor-pointer relative">
                       {player.photo_url ? (
                         <img src={player.photo_url} alt={player.name} className="w-full h-full object-cover" />
                       ) : (
-                        <Shirt size={20} className="text-green-600" />
+                        <Shirt size={20} style={{ color: team?.secondary_color || '#16a34a' }} />
+                      )}
+                      {player.jersey_number && (
+                        <div className="absolute bottom-0 right-0 w-5 h-5 rounded-full flex items-center justify-center border-2 border-white" style={{ backgroundColor: team?.accent_color || '#16a34a' }}>
+                          <span className="text-white text-[9px] font-bold">{player.jersey_number}</span>
+                        </div>
                       )}
                     </div>
                     <div className="mt-1 px-2 py-0.5 bg-black/40 backdrop-blur-sm rounded-full">
@@ -391,11 +406,11 @@ export default function EquipePage() {
                   key={player.id}
                   className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-md hover-lift"
                 >
-                  <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center overflow-hidden border-2 border-green-200">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border-2 relative" style={{ backgroundColor: team?.secondary_color ? `${team.secondary_color}20` : '#dcfce7', borderColor: team?.secondary_color || '#bbf7d0' }}>
                     {player.photo_url ? (
                       <img src={player.photo_url} alt={player.name} className="w-full h-full object-cover" />
                     ) : (
-                      <Shirt size={20} className="text-green-600" />
+                      <Shirt size={20} style={{ color: team?.secondary_color || '#16a34a' }} />
                     )}
                   </div>
                   <div className="flex-1">
@@ -404,16 +419,16 @@ export default function EquipePage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1 text-xs">
-                      <Target size={12} className="text-green-500" />
-                      <span className="font-bold text-green-600">{getPlayerGoals(player.id)}</span>
+                      <Target size={12} style={{ color: team?.accent_color || '#22c55e' }} />
+                      <span className="font-bold" style={{ color: team?.accent_color || '#16a34a' }}>{getPlayerGoals(player.id)}</span>
                     </div>
                     <div className="flex items-center gap-1 text-xs">
-                      <Footprints size={12} className="text-blue-500" />
-                      <span className="font-bold text-blue-600">{getPlayerAssists(player.id)}</span>
+                      <Footprints size={12} style={{ color: team?.secondary_color || '#3b82f6' }} />
+                      <span className="font-bold" style={{ color: team?.secondary_color || '#2563eb' }}>{getPlayerAssists(player.id)}</span>
                     </div>
                   </div>
                   {player.jersey_number && (
-                    <div className="w-7 h-7 rounded-full bg-green-600 text-white flex items-center justify-center text-xs font-bold shadow-sm">
+                    <div className="w-7 h-7 rounded-full text-white flex items-center justify-center text-xs font-bold shadow-sm" style={{ backgroundColor: team?.secondary_color || '#16a34a' }}>
                       {player.jersey_number}
                     </div>
                   )}
