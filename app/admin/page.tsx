@@ -22,6 +22,28 @@ const TAB_CONFIG: { key: Tab; label: string; icon: typeof Users }[] = [
   { key: 'gallery', label: 'Galerie', icon: Image },
 ];
 
+// Move Input and Select components outside to prevent re-render on every keystroke
+const Input = ({ label, field, type = 'text', placeholder = '', value, onChange }: { label: string; field: string; type?: string; placeholder?: string; value: string; onChange: (value: string) => void }) => (
+  <div className="relative z-10">
+    <label className="text-xs font-medium text-gray-500 mb-1 block">{label}</label>
+    <input type={type} value={value} onChange={e => onChange(e.target.value)}
+      placeholder={placeholder} className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500" />
+  </div>
+);
+
+const Select = ({ label, field, options, value, onChange }: { label: string; field: string; options: { value: string; label: string }[]; value: string; onChange: (value: string) => void }) => (
+  <div className="relative z-10">
+    <label className="text-xs font-medium text-gray-500 mb-1 block">{label}</label>
+    <div className="relative">
+      <select value={value} onChange={e => onChange(e.target.value)}
+        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none bg-white">
+        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
+      <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+    </div>
+  </div>
+);
+
 export default function AdminPage() {
   const router = useRouter();
   const { team, user, loading: contextLoading } = useTeam();
@@ -47,7 +69,7 @@ export default function AdminPage() {
   const [standingsComp, setStandingsComp] = useState<string>('');
 
   useEffect(() => {
-    // Check authentication
+    // Only check authentication after context is fully loaded
     if (!contextLoading) {
       if (!team) {
         router.push('/login');
@@ -197,7 +219,7 @@ export default function AdminPage() {
     const payload = { name: form.name, photo_url: form.photo_url || null, role: form.role || 'Entraineur', team_id: team.id };
     if (coach) { await supabase.from('coach').update(payload).eq('id', coach.id); }
     else { await supabase.from('coach').insert(payload); }
-    setForm({}); loadAll();
+    setShowForm(false); setEditing(null); setForm({}); loadAll();
   };
 
   const handleStatSubmit = async () => {
@@ -256,27 +278,6 @@ export default function AdminPage() {
     setEditing(String(item.id));
     setShowForm(true);
   };
-
-  const Input = ({ label, field, type = 'text', placeholder = '' }: { label: string; field: string; type?: string; placeholder?: string }) => (
-    <div className="relative z-10">
-      <label className="text-xs font-medium text-gray-500 mb-1 block">{label}</label>
-      <input type={type} value={form[field] || ''} onChange={e => setForm(prev => ({ ...prev, [field]: e.target.value }))}
-        placeholder={placeholder} className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500" />
-    </div>
-  );
-
-  const Select = ({ label, field, options }: { label: string; field: string; options: { value: string; label: string }[] }) => (
-    <div className="relative z-10">
-      <label className="text-xs font-medium text-gray-500 mb-1 block">{label}</label>
-      <div className="relative">
-        <select value={form[field] || ''} onChange={e => setForm(prev => ({ ...prev, [field]: e.target.value }))}
-          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none bg-white">
-          {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </select>
-        <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-      </div>
-    </div>
-  );
 
   if (loading || contextLoading) {
     return (<AppShell><div className="space-y-4 pt-4"><div className="h-12 rounded-xl bg-gray-100 animate-pulse" /><div className="h-64 rounded-2xl bg-gray-100 animate-pulse" /></div></AppShell>);
@@ -366,13 +367,13 @@ export default function AdminPage() {
                   <h3 className="text-sm font-bold">{editing ? 'Modifier' : 'Ajouter'} un coach</h3>
                   <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
-                <Input label="Nom" field="name" placeholder="Nom du coach" />
+                <Input label="Nom" field="name" placeholder="Nom du coach" value={form.name || ''} onChange={(value) => setForm(prev => ({ ...prev, name: value }))} />
                 <FileUpload 
                   value={form.photo_url || null}
                   onChange={(url) => setForm(prev => ({ ...prev, photo_url: url }))}
                   label="Photo"
                 />
-                <Input label="Rôle" field="role" placeholder="Entraineur" />
+                <Input label="Rôle" field="role" placeholder="Entraineur" value={form.role || ''} onChange={(value) => setForm(prev => ({ ...prev, role: value }))} />
                 <button onClick={handleCoachSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                   <Save size={16} />{coach ? 'Mettre à jour' : 'Ajouter'}
                 </button>
@@ -396,7 +397,7 @@ export default function AdminPage() {
                   <h3 className="text-sm font-bold">{editing ? 'Modifier' : 'Ajouter'} un joueur</h3>
                   <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
-                <Input label="Nom" field="name" placeholder="Nom du joueur" />
+                <Input label="Nom" field="name" placeholder="Nom du joueur" value={form.name || ''} onChange={(value) => setForm(prev => ({ ...prev, name: value }))} />
                 <FileUpload 
                   value={form.photo_url || null}
                   onChange={(url) => setForm(prev => ({ ...prev, photo_url: url }))}
@@ -405,8 +406,8 @@ export default function AdminPage() {
                 <Select label="Poste" field="position" options={[
                   { value: 'GK', label: 'Gardien' }, { value: 'DEF', label: 'Défenseur' },
                   { value: 'MIL', label: 'Milieu' }, { value: 'ATT', label: 'Attaquant' },
-                ]} />
-                <Input label="Numéro" field="jersey_number" type="number" placeholder="10" />
+                ]} value={form.position || ''} onChange={(value) => setForm(prev => ({ ...prev, position: value }))} />
+                <Input label="Numéro" field="jersey_number" type="number" placeholder="10" value={form.jersey_number || ''} onChange={(value) => setForm(prev => ({ ...prev, jersey_number: value }))} />
                 <button onClick={handlePlayerSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                   <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
                 </button>
@@ -445,22 +446,22 @@ export default function AdminPage() {
                   <h3 className="text-sm font-bold">{editing ? 'Modifier' : 'Ajouter'} un match</h3>
                   <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
-                <Input label="Adversaire" field="opponent" placeholder="ASC..." />
-                <Input label="Date" field="match_date" type="date" />
-                <Input label="Heure" field="match_time" type="time" />
-                <Input label="Lieu" field="venue" placeholder="Terrain..." />
-                <Input label="Compétition" field="competition" placeholder="Championnat..." />
-                <Select label="Domicile" field="is_home" options={[{ value: 'true', label: 'Oui' }, { value: 'false', label: 'Non' }]} />
+                <Input label="Adversaire" field="opponent" placeholder="ASC..." value={form.opponent || ''} onChange={(value) => setForm(prev => ({ ...prev, opponent: value }))} />
+                <Input label="Date" field="match_date" type="date" value={form.match_date || ''} onChange={(value) => setForm(prev => ({ ...prev, match_date: value }))} />
+                <Input label="Heure" field="match_time" type="time" value={form.match_time || ''} onChange={(value) => setForm(prev => ({ ...prev, match_time: value }))} />
+                <Input label="Lieu" field="venue" placeholder="Terrain..." value={form.venue || ''} onChange={(value) => setForm(prev => ({ ...prev, venue: value }))} />
+                <Input label="Compétition" field="competition" placeholder="Championnat..." value={form.competition || ''} onChange={(value) => setForm(prev => ({ ...prev, competition: value }))} />
+                <Select label="Domicile" field="is_home" options={[{ value: 'true', label: 'Oui' }, { value: 'false', label: 'Non' }]} value={form.is_home || ''} onChange={(value) => setForm(prev => ({ ...prev, is_home: value }))} />
                 <Select label="Statut" field="status" options={[
                   { value: 'upcoming', label: 'À venir' }, { value: 'live', label: 'En direct' },
                   { value: 'completed', label: 'Terminé' }, { value: 'postponed', label: 'Reporté' },
-                ]} />
+                ]} value={form.status || ''} onChange={(value) => setForm(prev => ({ ...prev, status: value }))} />
                 <Select label="Formation" field="formation" options={[
                   { value: '4-3-3', label: '4-3-3' }, { value: '4-4-2', label: '4-4-2' }, { value: '3-5-2', label: '3-5-2' },
-                ]} />
+                ]} value={form.formation || ''} onChange={(value) => setForm(prev => ({ ...prev, formation: value }))} />
                 <div className="grid grid-cols-2 gap-3">
-                  <Input label="Score domicile" field="score_home" type="number" />
-                  <Input label="Score extérieur" field="score_away" type="number" />
+                  <Input label="Score domicile" field="score_home" type="number" value={form.score_home || ''} onChange={(value) => setForm(prev => ({ ...prev, score_home: value }))} />
+                  <Input label="Score extérieur" field="score_away" type="number" value={form.score_away || ''} onChange={(value) => setForm(prev => ({ ...prev, score_away: value }))} />
                 </div>
                 <button onClick={handleMatchSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                   <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
@@ -620,7 +621,7 @@ export default function AdminPage() {
                   <h3 className="text-sm font-bold">{editing ? 'Modifier' : 'Ajouter'} une annonce</h3>
                   <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
-                <Input label="Titre" field="title" placeholder="Titre de l'annonce" />
+                <Input label="Titre" field="title" placeholder="Titre de l'annonce" value={form.title || ''} onChange={(value) => setForm(prev => ({ ...prev, title: value }))} />
                 <div className="relative z-10">
                   <label className="text-xs font-medium text-gray-500 mb-1 block">Contenu</label>
                   <textarea value={form.content || ''} onChange={e => setForm(prev => ({ ...prev, content: e.target.value }))}
@@ -630,8 +631,8 @@ export default function AdminPage() {
                 <Select label="Type" field="type" options={[
                   { value: 'match', label: 'Match' }, { value: 'training', label: 'Entraînement' },
                   { value: 'meeting', label: 'Réunion' }, { value: 'other', label: 'Autre' },
-                ]} />
-                <Input label="Date événement" field="event_date" type="date" />
+                ]} value={form.type || ''} onChange={(value) => setForm(prev => ({ ...prev, type: value }))} />
+                <Input label="Date événement" field="event_date" type="date" value={form.event_date || ''} onChange={(value) => setForm(prev => ({ ...prev, event_date: value }))} />
                 <button onClick={handleAnnouncementSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                   <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
                 </button>
@@ -681,19 +682,19 @@ export default function AdminPage() {
                   <h3 className="text-sm font-bold">{editing ? 'Modifier' : 'Ajouter'} classement</h3>
                   <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
-                <Input label="Compétition" field="competition_name" placeholder="Championnat..." />
-                <Input label="Équipe" field="team_name" placeholder="Nom équipe" />
+                <Input label="Compétition" field="competition_name" placeholder="Championnat..." value={form.competition_name || ''} onChange={(value) => setForm(prev => ({ ...prev, competition_name: value }))} />
+                <Input label="Équipe" field="team_name" placeholder="Nom équipe" value={form.team_name || ''} onChange={(value) => setForm(prev => ({ ...prev, team_name: value }))} />
                 <div className="grid grid-cols-3 gap-3">
-                  <Input label="Points" field="points" type="number" />
-                  <Input label="Joués" field="played" type="number" />
-                  <Input label="Victoires" field="won" type="number" />
+                  <Input label="Points" field="points" type="number" value={form.points || ''} onChange={(value) => setForm(prev => ({ ...prev, points: value }))} />
+                  <Input label="Joués" field="played" type="number" value={form.played || ''} onChange={(value) => setForm(prev => ({ ...prev, played: value }))} />
+                  <Input label="Victoires" field="won" type="number" value={form.won || ''} onChange={(value) => setForm(prev => ({ ...prev, won: value }))} />
                 </div>
                 <div className="grid grid-cols-3 gap-3">
-                  <Input label="Nuls" field="drawn" type="number" />
-                  <Input label="Défaites" field="lost" type="number" />
-                  <Input label="Buts pour" field="goals_for" type="number" />
+                  <Input label="Nuls" field="drawn" type="number" value={form.drawn || ''} onChange={(value) => setForm(prev => ({ ...prev, drawn: value }))} />
+                  <Input label="Défaites" field="lost" type="number" value={form.lost || ''} onChange={(value) => setForm(prev => ({ ...prev, lost: value }))} />
+                  <Input label="Buts pour" field="goals_for" type="number" value={form.goals_for || ''} onChange={(value) => setForm(prev => ({ ...prev, goals_for: value }))} />
                 </div>
-                <Input label="Buts contre" field="goals_against" type="number" />
+                <Input label="Buts contre" field="goals_against" type="number" value={form.goals_against || ''} onChange={(value) => setForm(prev => ({ ...prev, goals_against: value }))} />
                 <button onClick={handleStandingSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                   <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
                 </button>
@@ -737,12 +738,12 @@ export default function AdminPage() {
                   <h3 className="text-sm font-bold">{editing ? 'Modifier' : 'Ajouter'} des statistiques</h3>
                   <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
-                <Select label="Joueur" field="player_id" options={players.map(p => ({ value: p.id, label: `${p.name} (${POSITION_LABELS[p.position]})` }))} />
-                <Select label="Compétition" field="competition_name" options={standingsCompetitions.map(c => ({ value: c, label: c }))} />
+                <Select label="Joueur" field="player_id" options={players.map(p => ({ value: p.id, label: `${p.name} (${POSITION_LABELS[p.position]})` }))} value={form.player_id || ''} onChange={(value) => setForm(prev => ({ ...prev, player_id: value }))} />
+                <Select label="Compétition" field="competition_name" options={standingsCompetitions.map(c => ({ value: c, label: c }))} value={form.competition_name || ''} onChange={(value) => setForm(prev => ({ ...prev, competition_name: value }))} />
                 <div className="grid grid-cols-3 gap-3">
-                  <Input label="Buts" field="goals" type="number" />
-                  <Input label="Passes D." field="assists" type="number" />
-                  <Input label="Matchs J." field="matches_played" type="number" />
+                  <Input label="Buts" field="goals" type="number" value={form.goals || ''} onChange={(value) => setForm(prev => ({ ...prev, goals: value }))} />
+                  <Input label="Passes D." field="assists" type="number" value={form.assists || ''} onChange={(value) => setForm(prev => ({ ...prev, assists: value }))} />
+                  <Input label="Matchs J." field="matches_played" type="number" value={form.matches_played || ''} onChange={(value) => setForm(prev => ({ ...prev, matches_played: value }))} />
                 </div>
                 <button onClick={handleStatSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                   <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
@@ -790,17 +791,17 @@ export default function AdminPage() {
                   <h3 className="text-sm font-bold">{editing ? 'Modifier' : 'Ajouter'} un média</h3>
                   <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
-                <Select label="Type" field="type" options={[{ value: 'image', label: 'Image' }, { value: 'video', label: 'Vidéo' }]} />
+                <Select label="Type" field="type" options={[{ value: 'image', label: 'Image' }, { value: 'video', label: 'Vidéo' }]} value={form.type || ''} onChange={(value) => setForm(prev => ({ ...prev, type: value }))} />
                 <FileUpload 
                   value={form.url || null}
                   onChange={(url) => setForm(prev => ({ ...prev, url }))}
                   label="Fichier"
                   accept="image/*,video/*"
                 />
-                <Input label="Légende" field="caption" placeholder="Description..." />
+                <Input label="Légende" field="caption" placeholder="Description..." value={form.caption || ''} onChange={(value) => setForm(prev => ({ ...prev, caption: value }))} />
                 <Select label="Type événement" field="event_type" options={[
                   { value: 'match', label: 'Match' }, { value: 'training', label: 'Entraînement' }, { value: 'other', label: 'Autre' },
-                ]} />
+                ]} value={form.event_type || ''} onChange={(value) => setForm(prev => ({ ...prev, event_type: value }))} />
                 <button onClick={handleGallerySubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                   <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
                 </button>
