@@ -58,7 +58,7 @@ export default function RegisterPage() {
       if (teamError) throw teamError;
 
       // Create Supabase Auth user for admin
-      const adminEmail = `admin@${slug}.sama-asc.local`;
+      const adminEmail = `admin@${slug}.com`;
       const adminPassword = 'admin123';
       
       const { data: authData, error: authError } = await supabase.auth.signUp({

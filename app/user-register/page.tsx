@@ -85,7 +85,7 @@ export default function UserRegisterPage() {
       }
 
       // Create Supabase Auth user
-      const userEmail = `${username}@${teamSlug}.sama-asc.local`;
+      const userEmail = `${username}@${teamSlug}.com`;
       
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: userEmail,

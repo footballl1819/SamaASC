@@ -55,7 +55,7 @@ export default function UserLoginPage() {
       }
 
       // Sign in with Supabase Auth
-      const userEmail = `${username}@${teamSlug}.sama-asc.local`;
+      const userEmail = `${username}@${teamSlug}.com`;
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email: userEmail,
         password: password,
