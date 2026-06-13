@@ -88,28 +88,33 @@ export default function AdminPage() {
   }, [team, user, contextLoading, router]);
 
   const loadAll = useCallback(async () => {
-    if (!team || !supabase) return;
-    
-    const [p, m, a, s, g, c, ps, l] = await Promise.all([
-      supabase.from('players').select('*').eq('team_id', team.id).order('jersey_number'),
-      supabase.from('matches').select('*').eq('team_id', team.id).order('match_date', { ascending: false }),
-      supabase.from('announcements').select('*').eq('team_id', team.id).order('created_at', { ascending: false }),
-      supabase.from('standings').select('*').eq('team_id', team.id).order('competition_name').order('position'),
-      supabase.from('gallery').select('*').eq('team_id', team.id).order('created_at', { ascending: false }),
-      supabase.from('coach').select('*').eq('team_id', team.id).limit(1),
-      supabase.from('player_stats').select('*').eq('team_id', team.id).order('goals', { ascending: false }),
-      supabase.from('match_lineup').select('*').eq('team_id', team.id),
-    ]);
-    setPlayers(p.data || []);
-    setMatches(m.data || []);
-    setAnnouncements(a.data || []);
-    setStandings(s.data || []);
-    setGallery(g.data || []);
-    setPlayerStats(ps.data || []);
-    setLineups(l.data || []);
-    if (c.data && c.data.length > 0) setCoach(c.data[0]);
-    if (s.data && s.data.length > 0) setStandingsComp(s.data[0].competition_name);
-    setLoading(false);
+    if (!team) return;
+    setLoading(true);
+    try {
+      const [p, m, a, s, g, c, ps, l] = await Promise.all([
+        fetch(`/api/data/players?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/matches?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/announcements?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/standings?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/gallery?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/coach?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/player-stats?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/match-lineup?team_id=${team.id}`).then(r => r.json()),
+      ]);
+      setPlayers(p);
+      setMatches(m);
+      setAnnouncements(a);
+      setStandings(s);
+      setGallery(g);
+      setPlayerStats(ps);
+      setLineups(l);
+      if (c) setCoach(c);
+      if (s && s.length > 0) setStandingsComp(s[0].competition_name);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error loading data:', error);
+      setLoading(false);
+    }
   }, [team]);
 
   useEffect(() => { loadAll(); }, [loadAll]);

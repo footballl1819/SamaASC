@@ -80,22 +80,22 @@ export default function EquipePage() {
 
   useEffect(() => {
     async function load() {
-      if (!team || !supabase) return;
+      if (!team) return;
       
-      const [pRes, cRes, sRes, mRes, lRes] = await Promise.all([
-        supabase.from('players').select('*').eq('team_id', team.id).order('jersey_number'),
-        supabase.from('coach').select('*').eq('team_id', team.id).limit(1),
-        supabase.from('player_stats').select('*, player:players(*)').eq('team_id', team.id).order('goals', { ascending: false }),
-        supabase.from('matches').select('*').eq('team_id', team.id).order('match_date', { ascending: false }),
-        supabase.from('match_lineup').select('*').eq('team_id', team.id),
+      const [p, c, s, m, l] = await Promise.all([
+        fetch(`/api/data/players?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/coach?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/player-stats?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/matches?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/match-lineup?team_id=${team.id}`).then(r => r.json()),
       ]);
-      setPlayers(pRes.data || []);
-      if (cRes.data && cRes.data.length > 0) setCoach(cRes.data[0]);
-      setStats(sRes.data || []);
-      setMatches(mRes.data || []);
-      setLineups(lRes.data || []);
+      setPlayers(p);
+      if (c) setCoach(c);
+      setStats(s);
+      setMatches(m);
+      setLineups(l);
       // Auto-select next upcoming match
-      const upcoming = (mRes.data || []).find((m: Match) => m.status === 'upcoming');
+      const upcoming = m.find((m: Match) => m.status === 'upcoming');
       if (upcoming) {
         setSelectedMatchId(upcoming.id);
         setSelectedFormation(upcoming.formation || '4-3-3');
