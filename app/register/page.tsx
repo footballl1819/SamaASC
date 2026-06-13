@@ -59,12 +59,9 @@ export default function RegisterPage() {
 
       setSuccess(true);
       
-      // Store team info and redirect to user login
+      // Redirect to user login with team slug
       setTimeout(() => {
-        localStorage.setItem('currentTeamId', team.id);
-        localStorage.setItem('currentTeamSlug', team.slug);
-        localStorage.setItem('currentTeamName', team.name);
-        router.push('/user-login');
+        router.push(`/user-login?team=${slug}`);
       }, 1500);
     } catch (err) {
       console.error('Erreur lors de la création de l\'équipe:', err);

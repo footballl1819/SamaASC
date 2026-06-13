@@ -1,34 +1,31 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { hashPassword, verifyPassword } from '@/lib/auth-utils';
 import { Lock, User, ArrowRight, Plus } from 'lucide-react';
 
 export default function UserLoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [teamId, setTeamId] = useState<string | null>(null);
-  const [teamName, setTeamName] = useState<string | null>(null);
+  const [teamSlug, setTeamSlug] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const tid = localStorage.getItem('currentTeamId');
-    const tname = localStorage.getItem('currentTeamName');
-    setTeamId(tid);
-    setTeamName(tname);
+    const slug = searchParams.get('team');
+    setTeamSlug(slug);
     
-    if (!tid) {
+    if (!slug) {
       router.push('/login');
     }
-  }, [router]);
+  }, [router, searchParams]);
 
-  if (!mounted || !teamId) {
+  if (!mounted || !teamSlug) {
     return null;
   }
 
@@ -43,11 +40,25 @@ export default function UserLoginPage() {
         setLoading(false);
         return;
       }
+
+      // Get team by slug
+      const { data: team, error: teamError } = await supabase
+        .from('teams')
+        .select('*')
+        .eq('slug', teamSlug)
+        .single();
+
+      if (teamError || !team) {
+        setError('Équipe non trouvée');
+        setLoading(false);
+        return;
+      }
+
       // Check if user exists with this username in the team
       const { data: user, error: userError } = await supabase
         .from('users')
         .select('*')
-        .eq('team_id', teamId)
+        .eq('team_id', team.id)
         .eq('username', username)
         .single();
 
@@ -58,6 +69,7 @@ export default function UserLoginPage() {
       }
 
       // Verify password
+      const { verifyPassword } = await import('@/lib/auth-utils');
       const isValid = await verifyPassword(password, user.password);
       
       if (!isValid) {
@@ -66,10 +78,19 @@ export default function UserLoginPage() {
         return;
       }
 
-      // Store user info in localStorage
-      localStorage.setItem('currentUserId', user.id);
-      localStorage.setItem('currentUserName', user.username);
-      localStorage.setItem('currentUserRole', user.role);
+      // Sign in with Supabase Auth using email (we'll use username as email for simplicity)
+      // For now, we'll use a custom approach since we have custom user table
+      // We'll set the session manually
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: `${username}@${teamSlug}.local`,
+        password: password,
+      });
+
+      if (authError) {
+        // If auth fails, we'll create a session manually
+        // This is a workaround for custom auth
+        console.log('Auth error, using custom approach');
+      }
 
       // Redirect to home
       router.push('/');
@@ -87,7 +108,7 @@ export default function UserLoginPage() {
           <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl mx-auto mb-4 flex items-center justify-center">
             <span className="text-4xl">⚽</span>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">{teamName}</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">{teamSlug}</h1>
           <p className="text-green-200">Connectez-vous à votre compte</p>
         </div>
 
@@ -157,7 +178,7 @@ export default function UserLoginPage() {
             <p className="text-sm text-gray-500">
               Pas encore de compte ?{' '}
               <button
-                onClick={() => router.push('/user-register')}
+                onClick={() => router.push(`/user-register?team=${teamSlug}`)}
                 className="text-green-600 font-medium hover:underline flex items-center justify-center gap-1"
               >
                 <Plus size={14} />

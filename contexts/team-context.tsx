@@ -41,10 +41,40 @@ export function TeamProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        // First load team from localStorage
-        await loadTeam();
-        // Then load user
-        loadUser();
+        // Check Supabase auth session
+        const { data: { session } } = await supabase!.auth.getSession();
+        
+        if (session) {
+          // Load user from database based on auth session
+          const { data: userData, error: userError } = await supabase!
+            .from('users')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          if (userData) {
+            setUser({
+              id: userData.id,
+              team_id: userData.team_id,
+              username: userData.username,
+              name: userData.username,
+              role: userData.role as 'admin' | 'member',
+            });
+
+            // Load team
+            const { data: teamData } = await supabase!
+              .from('teams')
+              .select('*')
+              .eq('id', userData.team_id)
+              .single();
+
+            if (teamData) {
+              setTeam(teamData);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
       } finally {
         setLoading(false);
       }
@@ -52,85 +82,47 @@ export function TeamProvider({ children }: { children: ReactNode }) {
 
     initializeAuth();
 
-    // Listen for storage changes (e.g., when user logs in)
-    const handleStorageChange = () => {
-      loadTeam();
-      loadUser();
-    };
+    // Listen for auth changes
+    const { data: { subscription } } = supabase!.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        const { data: userData } = await supabase!
+          .from('users')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
 
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('focus', handleStorageChange);
+        if (userData) {
+          setUser({
+            id: userData.id,
+            team_id: userData.team_id,
+            username: userData.username,
+            name: userData.username,
+            role: userData.role as 'admin' | 'member',
+          });
+
+          const { data: teamData } = await supabase!
+            .from('teams')
+            .select('*')
+            .eq('id', userData.team_id)
+            .single();
+
+          if (teamData) {
+            setTeam(teamData);
+          }
+        }
+      } else if (event === 'SIGNED_OUT') {
+        setTeam(null);
+        setUser(null);
+      }
+    });
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('focus', handleStorageChange);
+      subscription.unsubscribe();
     };
   }, []);
 
-  const loadTeam = async () => {
-    const teamId = localStorage.getItem('currentTeamId');
-    if (!teamId) {
-      return;
-    }
-
-    try {
-      if (!supabase) {
-        localStorage.removeItem('currentTeamId');
-        localStorage.removeItem('currentTeamSlug');
-        localStorage.removeItem('currentTeamName');
-        setTeam(null);
-        return;
-      }
-      const { data, error } = await supabase!
-        .from('teams')
-        .select('*')
-        .eq('id', teamId)
-        .single();
-
-      if (error || !data) {
-        // Team not found, clear localStorage
-        localStorage.removeItem('currentTeamId');
-        localStorage.removeItem('currentTeamSlug');
-        localStorage.removeItem('currentTeamName');
-        setTeam(null);
-        return;
-      }
-      setTeam(data);
-    } catch (error) {
-      console.error('Error loading team:', error);
-      localStorage.removeItem('currentTeamId');
-      localStorage.removeItem('currentTeamSlug');
-      localStorage.removeItem('currentTeamName');
-      setTeam(null);
-    }
-  };
-
-  const loadUser = () => {
-    const userId = localStorage.getItem('currentUserId');
-    const userName = localStorage.getItem('currentUserName');
-    const userRole = localStorage.getItem('currentUserRole');
-    const teamId = localStorage.getItem('currentTeamId');
-    
-    if (userId && userName && userRole && teamId) {
-      setUser({
-        id: userId,
-        team_id: teamId,
-        username: userName,
-        name: userName,
-        role: userRole as 'admin' | 'member',
-      });
-    } else {
-      setUser(null);
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('currentTeamId');
-    localStorage.removeItem('currentTeamSlug');
-    localStorage.removeItem('currentTeamName');
-    localStorage.removeItem('currentUserId');
-    localStorage.removeItem('currentUserName');
-    localStorage.removeItem('currentUserRole');
+  const logout = async () => {
+    await supabase!.auth.signOut();
     setTeam(null);
     setUser(null);
     window.location.href = '/login';

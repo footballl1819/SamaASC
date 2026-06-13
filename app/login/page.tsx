@@ -35,13 +35,8 @@ export default function LoginPage() {
         return;
       }
 
-      // Store team info in localStorage
-      localStorage.setItem('currentTeamId', team.id);
-      localStorage.setItem('currentTeamSlug', team.slug);
-      localStorage.setItem('currentTeamName', team.name);
-
-      // Redirect to user login
-      router.push('/user-login');
+      // Redirect to user login with team slug
+      router.push(`/user-login?team=${slug}`);
     } catch (err) {
       setError('Erreur lors de la connexion');
       setLoading(false);

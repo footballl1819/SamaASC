@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { hashPassword } from '@/lib/auth-utils';
 import { User, Mail, Lock, ArrowRight, Check } from 'lucide-react';
 
 export default function UserRegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -15,23 +16,20 @@ export default function UserRegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [teamId, setTeamId] = useState<string | null>(null);
-  const [teamName, setTeamName] = useState<string | null>(null);
+  const [teamSlug, setTeamSlug] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const tid = localStorage.getItem('currentTeamId');
-    const tname = localStorage.getItem('currentTeamName');
-    setTeamId(tid);
-    setTeamName(tname);
+    const slug = searchParams.get('team');
+    setTeamSlug(slug);
     
-    if (!tid) {
+    if (!slug) {
       router.push('/login');
     }
-  }, [router]);
+  }, [router, searchParams]);
 
-  if (!mounted || !teamId) {
+  if (!mounted || !teamSlug) {
     return null;
   }
 
@@ -58,11 +56,25 @@ export default function UserRegisterPage() {
         setLoading(false);
         return;
       }
+
+      // Get team by slug
+      const { data: team, error: teamError } = await supabase
+        .from('teams')
+        .select('*')
+        .eq('slug', teamSlug)
+        .single();
+
+      if (teamError || !team) {
+        setError('Équipe non trouvée');
+        setLoading(false);
+        return;
+      }
+
       // Check if username already exists in this team
       const { data: existingUser } = await supabase
         .from('users')
         .select('id')
-        .eq('team_id', teamId)
+        .eq('team_id', team.id)
         .eq('username', username)
         .single();
 
@@ -79,7 +91,7 @@ export default function UserRegisterPage() {
       const { data: user, error: userError } = await supabase
         .from('users')
         .insert({
-          team_id: teamId,
+          team_id: team.id,
           username,
           password: hashedPassword,
           name,
@@ -92,12 +104,9 @@ export default function UserRegisterPage() {
 
       setSuccess(true);
       
-      // Auto-login after registration
+      // Redirect to login after registration
       setTimeout(() => {
-        localStorage.setItem('currentUserId', user.id);
-        localStorage.setItem('currentUserName', user.username);
-        localStorage.setItem('currentUserRole', user.role);
-        router.push('/');
+        router.push(`/user-login?team=${teamSlug}`);
       }, 1500);
     } catch (err) {
       setError('Erreur lors de la création du compte');
@@ -113,7 +122,7 @@ export default function UserRegisterPage() {
             <Check size={40} className="text-green-600" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Compte créé avec succès !</h2>
-          <p className="text-gray-600">Redirection vers l'accueil...</p>
+          <p className="text-gray-600">Redirection vers la connexion...</p>
         </div>
       </div>
     );
@@ -127,7 +136,7 @@ export default function UserRegisterPage() {
           <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl mx-auto mb-4 flex items-center justify-center">
             <span className="text-4xl">⚽</span>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">{teamName}</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">{teamSlug}</h1>
           <p className="text-green-200">Créez votre compte</p>
         </div>
 
@@ -233,7 +242,7 @@ export default function UserRegisterPage() {
             <p className="text-sm text-gray-500">
               Déjà un compte ?{' '}
               <button
-                onClick={() => router.push('/user-login')}
+                onClick={() => router.push(`/user-login?team=${teamSlug}`)}
                 className="text-green-600 font-medium hover:underline"
               >
                 Se connecter
