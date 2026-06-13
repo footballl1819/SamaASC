@@ -146,112 +146,245 @@ export default function AdminPage() {
   }, [team, loadAll]);
 
   const handleDelete = async (table: string, id: string) => {
-    if (!supabase) return;
-    await supabase.from(table).delete().eq('id', id);
-    loadAll();
+    if (!team) return;
+    
+    try {
+      const tableMap: Record<string, string> = {
+        'players': 'players',
+        'matches': 'matches',
+        'announcements': 'announcements',
+        'standings': 'standings',
+        'player_stats': 'stats',
+        'gallery': 'gallery',
+      };
+      
+      const apiTable = tableMap[table];
+      if (apiTable) {
+        await fetch(`/api/admin/${apiTable}?id=${id}&team_id=${team.id}`, {
+          method: 'DELETE',
+        });
+      }
+      loadAll();
+    } catch (error) {
+      console.error('Error deleting:', error);
+    }
   };
 
   const handlePlayerSubmit = async () => {
-    if (!team || !supabase) return;
+    if (!team) return;
     
-    const payload = {
-      name: form.name, photo_url: form.photo_url || null,
-      position: form.position || 'DEF', jersey_number: form.jersey_number ? parseInt(form.jersey_number) : null,
-      is_starter: form.is_starter === 'true',
-      team_id: team.id,
-    };
-    if (editing) { await supabase.from('players').update(payload).eq('id', editing); }
-    else { await supabase.from('players').insert(payload); }
-    setShowForm(false); setEditing(null); setForm({}); loadAll();
+    try {
+      const payload = {
+        name: form.name, photo_url: form.photo_url || null,
+        position: form.position || 'DEF', jersey_number: form.jersey_number ? parseInt(form.jersey_number) : null,
+        is_starter: form.is_starter === 'true',
+        team_id: team.id,
+      };
+      if (editing) {
+        await fetch('/api/admin/players', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...payload, id: editing }),
+        });
+      } else {
+        await fetch('/api/admin/players', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      }
+      setShowForm(false); setEditing(null); setForm({}); loadAll();
+    } catch (error) {
+      console.error('Error saving player:', error);
+    }
   };
 
   const handleMatchSubmit = async () => {
-    if (!team || !supabase) return;
+    if (!team) return;
     
-    const payload = {
-      opponent: form.opponent, match_date: form.match_date, match_time: form.match_time || null,
-      venue: form.venue || null, competition: form.competition || null, is_home: form.is_home !== 'false',
-      status: form.status || 'upcoming', score_home: form.score_home ? parseInt(form.score_home) : null,
-      score_away: form.score_away ? parseInt(form.score_away) : null, formation: form.formation || '4-3-3',
-      team_id: team.id,
-    };
-    if (editing) { await supabase.from('matches').update(payload).eq('id', editing); }
-    else { await supabase.from('matches').insert(payload); }
-    setShowForm(false); setEditing(null); setForm({}); loadAll();
+    try {
+      const payload = {
+        opponent: form.opponent, match_date: form.match_date, match_time: form.match_time || null,
+        venue: form.venue || null, competition: form.competition || null, is_home: form.is_home !== 'false',
+        status: form.status || 'upcoming', score_home: form.score_home ? parseInt(form.score_home) : null,
+        score_away: form.score_away ? parseInt(form.score_away) : null, formation: form.formation || '4-3-3',
+        team_id: team.id,
+      };
+      if (editing) {
+        await fetch('/api/admin/matches', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...payload, id: editing }),
+        });
+      } else {
+        await fetch('/api/admin/matches', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      }
+      setShowForm(false); setEditing(null); setForm({}); loadAll();
+    } catch (error) {
+      console.error('Error saving match:', error);
+    }
   };
 
   const handleAnnouncementSubmit = async () => {
-    if (!team || !supabase) return;
+    if (!team) return;
     
-    const payload = { title: form.title, content: form.content, type: form.type || 'other', event_date: form.event_date || null, team_id: team.id };
-    if (editing) { await supabase.from('announcements').update(payload).eq('id', editing); }
-    else { await supabase.from('announcements').insert(payload); }
-    setShowForm(false); setEditing(null); setForm({}); loadAll();
+    try {
+      const payload = { title: form.title, content: form.content, type: form.type || 'other', event_date: form.event_date || null, team_id: team.id };
+      if (editing) {
+        await fetch('/api/admin/announcements', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...payload, id: editing }),
+        });
+      } else {
+        await fetch('/api/admin/announcements', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      }
+      setShowForm(false); setEditing(null); setForm({}); loadAll();
+    } catch (error) {
+      console.error('Error saving announcement:', error);
+    }
   };
 
   const handleStandingSubmit = async () => {
-    if (!team || !supabase) return;
+    if (!team) return;
     
-    const payload = {
-      competition_name: form.competition_name, position: parseInt(form.position) || 0,
-      team_name: form.team_name, points: parseInt(form.points) || 0, played: parseInt(form.played) || 0,
-      won: parseInt(form.won) || 0, drawn: parseInt(form.drawn) || 0, lost: parseInt(form.lost) || 0,
-      goals_for: parseInt(form.goals_for) || 0, goals_against: parseInt(form.goals_against) || 0,
-      team_id: team.id,
-    };
-    if (editing) { await supabase.from('standings').update(payload).eq('id', editing); }
-    else { await supabase.from('standings').insert(payload); }
-    setShowForm(false); setEditing(null); setForm({}); loadAll();
+    try {
+      const payload = {
+        competition_name: form.competition_name, position: parseInt(form.position) || 0,
+        team_name: form.team_name, points: parseInt(form.points) || 0, played: parseInt(form.played) || 0,
+        won: parseInt(form.won) || 0, drawn: parseInt(form.drawn) || 0, lost: parseInt(form.lost) || 0,
+        goals_for: parseInt(form.goals_for) || 0, goals_against: parseInt(form.goals_against) || 0,
+        team_id: team.id,
+      };
+      if (editing) {
+        await fetch('/api/admin/standings', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...payload, id: editing }),
+        });
+      } else {
+        await fetch('/api/admin/standings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      }
+      setShowForm(false); setEditing(null); setForm({}); loadAll();
+    } catch (error) {
+      console.error('Error saving standing:', error);
+    }
   };
 
   const handleGallerySubmit = async () => {
-    if (!team || !supabase) return;
+    if (!team) return;
     
-    const payload = { type: form.type || 'image', url: form.url, caption: form.caption || null, event_type: form.event_type || 'other', team_id: team.id };
-    if (editing) { await supabase.from('gallery').update(payload).eq('id', editing); }
-    else { await supabase.from('gallery').insert(payload); }
-    setShowForm(false); setEditing(null); setForm({}); loadAll();
+    try {
+      const payload = { type: form.type || 'image', url: form.url, caption: form.caption || null, event_type: form.event_type || 'other', team_id: team.id };
+      if (editing) {
+        await fetch('/api/admin/gallery', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...payload, id: editing }),
+        });
+      } else {
+        await fetch('/api/admin/gallery', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      }
+      setShowForm(false); setEditing(null); setForm({}); loadAll();
+    } catch (error) {
+      console.error('Error saving gallery:', error);
+    }
   };
 
   const handleCoachSubmit = async () => {
-    if (!team || !supabase) return;
+    if (!team) return;
     
-    const payload = { name: form.name, photo_url: form.photo_url || null, role: form.role || 'Entraineur', team_id: team.id };
-    if (coach) { await supabase.from('coach').update(payload).eq('id', coach.id); }
-    else { await supabase.from('coach').insert(payload); }
-    setShowForm(false); setEditing(null); setForm({}); loadAll();
+    try {
+      const payload = { name: form.name, photo_url: form.photo_url || null, role: form.role || 'Entraineur', team_id: team.id };
+      if (coach) {
+        await fetch('/api/admin/coach', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...payload, id: coach.id }),
+        });
+      } else {
+        await fetch('/api/admin/coach', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      }
+      setShowForm(false); setEditing(null); setForm({}); loadAll();
+    } catch (error) {
+      console.error('Error saving coach:', error);
+    }
   };
 
   const handleStatSubmit = async () => {
-    if (!team || !supabase) return;
+    if (!team) return;
     
-    const payload = {
-      player_id: form.player_id, competition_name: form.competition_name,
-      goals: parseInt(form.goals) || 0, assists: parseInt(form.assists) || 0,
-      matches_played: parseInt(form.matches_played) || 0,
-      team_id: team.id,
-    };
-    if (editing) { await supabase.from('player_stats').update(payload).eq('id', editing); }
-    else { await supabase.from('player_stats').insert(payload); }
-    setShowForm(false); setEditing(null); setForm({}); loadAll();
+    try {
+      const payload = {
+        player_id: form.player_id, competition_name: form.competition_name,
+        goals: parseInt(form.goals) || 0, assists: parseInt(form.assists) || 0,
+        matches_played: parseInt(form.matches_played) || 0,
+        team_id: team.id,
+      };
+      if (editing) {
+        await fetch('/api/admin/stats', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...payload, id: editing }),
+        });
+      } else {
+        await fetch('/api/admin/stats', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      }
+      setShowForm(false); setEditing(null); setForm({}); loadAll();
+    } catch (error) {
+      console.error('Error saving stat:', error);
+    }
   };
 
   const handleSaveLineup = async () => {
-    if (!lineupMatchId || !team || !supabase) return;
-    // Save formation to match
-    await supabase.from('matches').update({ formation: lineupFormation }).eq('id', lineupMatchId);
-    // Delete existing lineup
-    await supabase.from('match_lineup').delete().eq('match_id', lineupMatchId);
-    // Insert new starters
-    const inserts = lineupStarters.map((pid, idx) => ({
-      match_id: lineupMatchId, player_id: pid, position_slot: idx + 1, is_substitute: false, team_id: team.id,
-    }));
-    // Insert substitutes
-    lineupSubs.forEach((pid, idx) => {
-      inserts.push({ match_id: lineupMatchId, player_id: pid, position_slot: idx + 12, is_substitute: true, team_id: team.id });
-    });
-    if (inserts.length > 0) await supabase.from('match_lineup').insert(inserts);
-    loadAll();
+    if (!lineupMatchId || !team) return;
+    
+    try {
+      // Save formation to match
+      if (supabase) {
+        await supabase.from('matches').update({ formation: lineupFormation }).eq('id', lineupMatchId);
+      }
+      // Save lineup via API
+      const lineup = {
+        match_id: lineupMatchId,
+        players: [
+          ...lineupStarters.map((pid, idx) => ({ player_id: pid, position_slot: idx + 1, is_substitute: false })),
+          ...lineupSubs.map((pid, idx) => ({ player_id: pid, position_slot: idx + 12, is_substitute: true }))
+        ]
+      };
+      await fetch('/api/admin/lineup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lineup, team_id: team.id }),
+      });
+      loadAll();
+    } catch (error) {
+      console.error('Error saving lineup:', error);
+    }
   };
 
   // Load lineup when match selected
