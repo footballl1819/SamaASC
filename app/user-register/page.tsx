@@ -84,36 +84,49 @@ export default function UserRegisterPage() {
         return;
       }
 
-      // Hash password before storing
-      const hashedPassword = await hashPassword(password);
-
-      // Create user
-      const { data: user, error: userError } = await supabase
-        .from('users')
-        .insert({
-          team_id: team.id,
-          username,
-          password: hashedPassword,
-          name,
-          role: 'member',
-        })
-        .select()
-        .single();
-
-      if (userError) throw userError;
-
-      setSuccess(true);
+      // Create Supabase Auth user
+      const userEmail = `${username}@${teamSlug}.sama-asc.local`;
       
-      // Store user info in sessionStorage and redirect to login
-      setTimeout(() => {
-        sessionStorage.setItem('currentUserId', user.id);
-        sessionStorage.setItem('currentUserName', user.username);
-        sessionStorage.setItem('currentUserRole', user.role);
-        sessionStorage.setItem('currentTeamId', team.id);
-        sessionStorage.setItem('currentTeamSlug', team.slug);
-        sessionStorage.setItem('currentTeamName', team.name);
-        router.push('/');
-      }, 1500);
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: userEmail,
+        password: password,
+      });
+
+      if (authError) throw authError;
+
+      // Create custom user record linked to Supabase Auth
+      if (authData.user) {
+        const { hashPassword } = await import('@/lib/auth-utils');
+        const hashedPassword = await hashPassword(password);
+
+        const { data: user, error: userError } = await supabase
+          .from('users')
+          .insert({
+            id: authData.user.id,
+            team_id: team.id,
+            username,
+            password: hashedPassword,
+            name,
+            role: 'member',
+          })
+          .select()
+          .single();
+
+        if (userError) throw userError;
+
+        setSuccess(true);
+        
+        // Sign in the user
+        await supabase.auth.signInWithPassword({
+          email: userEmail,
+          password: password,
+        });
+        
+        // Redirect to home
+        setTimeout(() => {
+          router.push('/');
+        }, 1500);
+      }
     } catch (err) {
       setError('Erreur lors de la création du compte');
       setLoading(false);

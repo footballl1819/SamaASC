@@ -42,7 +42,7 @@ export default function RegisterPage() {
         return;
       }
 
-      // Create team (admin user will be created automatically by trigger)
+      // Create team
       const { data: team, error: teamError } = await supabase
         .from('teams')
         .insert({
@@ -57,13 +57,36 @@ export default function RegisterPage() {
 
       if (teamError) throw teamError;
 
+      // Create Supabase Auth user for admin
+      const adminEmail = `admin@${slug}.sama-asc.local`;
+      const adminPassword = 'admin123';
+      
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: adminEmail,
+        password: adminPassword,
+      });
+
+      if (authError) throw authError;
+
+      // Create custom user record linked to Supabase Auth
+      if (authData.user) {
+        const { hashPassword } = await import('@/lib/auth-utils');
+        const hashedPassword = await hashPassword(adminPassword);
+
+        await supabase.from('users').insert({
+          id: authData.user.id,
+          team_id: team.id,
+          username: 'admin',
+          password: hashedPassword,
+          name: 'Admin',
+          role: 'admin',
+        });
+      }
+
       setSuccess(true);
       
-      // Store team info in sessionStorage and redirect to user login
+      // Redirect to user login with team slug
       setTimeout(() => {
-        sessionStorage.setItem('currentTeamId', team.id);
-        sessionStorage.setItem('currentTeamSlug', team.slug);
-        sessionStorage.setItem('currentTeamName', team.name);
         router.push(`/user-login?team=${slug}`);
       }, 1500);
     } catch (err) {

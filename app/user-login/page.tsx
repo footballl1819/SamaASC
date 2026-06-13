@@ -54,37 +54,18 @@ export default function UserLoginPage() {
         return;
       }
 
-      // Check if user exists with this username in the team
-      const { data: user, error: userError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('team_id', team.id)
-        .eq('username', username)
-        .single();
+      // Sign in with Supabase Auth
+      const userEmail = `${username}@${teamSlug}.sama-asc.local`;
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: userEmail,
+        password: password,
+      });
 
-      if (userError || !user) {
+      if (authError) {
         setError('Identifiants incorrects');
         setLoading(false);
         return;
       }
-
-      // Verify password
-      const { verifyPassword } = await import('@/lib/auth-utils');
-      const isValid = await verifyPassword(password, user.password);
-      
-      if (!isValid) {
-        setError('Identifiants incorrects');
-        setLoading(false);
-        return;
-      }
-
-      // Store user and team info in sessionStorage
-      sessionStorage.setItem('currentUserId', user.id);
-      sessionStorage.setItem('currentUserName', user.username);
-      sessionStorage.setItem('currentUserRole', user.role);
-      sessionStorage.setItem('currentTeamId', team.id);
-      sessionStorage.setItem('currentTeamSlug', team.slug);
-      sessionStorage.setItem('currentTeamName', team.name);
 
       // Redirect to home
       router.push('/');

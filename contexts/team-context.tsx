@@ -41,29 +41,31 @@ export function TeamProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        // Load user and team from sessionStorage
-        const userId = sessionStorage.getItem('currentUserId');
-        const userName = sessionStorage.getItem('currentUserName');
-        const userRole = sessionStorage.getItem('currentUserRole');
-        const teamId = sessionStorage.getItem('currentTeamId');
-        const teamSlug = sessionStorage.getItem('currentTeamSlug');
-        const teamName = sessionStorage.getItem('currentTeamName');
+        // Check Supabase auth session
+        const { data: { session } } = await supabase!.auth.getSession();
+        
+        if (session) {
+          // Load user from database based on auth session
+          const { data: userData, error: userError } = await supabase!
+            .from('users')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
 
-        if (userId && userName && userRole && teamId) {
-          setUser({
-            id: userId,
-            team_id: teamId,
-            username: userName,
-            name: userName,
-            role: userRole as 'admin' | 'member',
-          });
+          if (userData) {
+            setUser({
+              id: userData.id,
+              team_id: userData.team_id,
+              username: userData.username,
+              name: userData.username,
+              role: userData.role as 'admin' | 'member',
+            });
 
-          // Load team from Supabase
-          if (supabase) {
-            const { data: teamData } = await supabase
+            // Load team
+            const { data: teamData } = await supabase!
               .from('teams')
               .select('*')
-              .eq('id', teamId)
+              .eq('id', userData.team_id)
               .single();
 
             if (teamData) {
@@ -79,17 +81,48 @@ export function TeamProvider({ children }: { children: ReactNode }) {
     };
 
     initializeAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase!.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        const { data: userData } = await supabase!
+          .from('users')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (userData) {
+          setUser({
+            id: userData.id,
+            team_id: userData.team_id,
+            username: userData.username,
+            name: userData.username,
+            role: userData.role as 'admin' | 'member',
+          });
+
+          const { data: teamData } = await supabase!
+            .from('teams')
+            .select('*')
+            .eq('id', userData.team_id)
+            .single();
+
+          if (teamData) {
+            setTeam(teamData);
+          }
+        }
+      } else if (event === 'SIGNED_OUT') {
+        setTeam(null);
+        setUser(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const logout = async () => {
-    // Clear sessionStorage
-    sessionStorage.removeItem('currentUserId');
-    sessionStorage.removeItem('currentUserName');
-    sessionStorage.removeItem('currentUserRole');
-    sessionStorage.removeItem('currentTeamId');
-    sessionStorage.removeItem('currentTeamSlug');
-    sessionStorage.removeItem('currentTeamName');
-    
+    await supabase!.auth.signOut();
     setTeam(null);
     setUser(null);
     window.location.href = '/login';
