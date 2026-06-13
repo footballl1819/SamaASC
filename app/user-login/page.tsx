@@ -78,19 +78,13 @@ export default function UserLoginPage() {
         return;
       }
 
-      // Sign in with Supabase Auth using email (we'll use username as email for simplicity)
-      // For now, we'll use a custom approach since we have custom user table
-      // We'll set the session manually
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: `${username}@${teamSlug}.local`,
-        password: password,
-      });
-
-      if (authError) {
-        // If auth fails, we'll create a session manually
-        // This is a workaround for custom auth
-        console.log('Auth error, using custom approach');
-      }
+      // Store user and team info in sessionStorage
+      sessionStorage.setItem('currentUserId', user.id);
+      sessionStorage.setItem('currentUserName', user.username);
+      sessionStorage.setItem('currentUserRole', user.role);
+      sessionStorage.setItem('currentTeamId', team.id);
+      sessionStorage.setItem('currentTeamSlug', team.slug);
+      sessionStorage.setItem('currentTeamName', team.name);
 
       // Redirect to home
       router.push('/');

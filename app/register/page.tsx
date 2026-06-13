@@ -59,8 +59,11 @@ export default function RegisterPage() {
 
       setSuccess(true);
       
-      // Redirect to user login with team slug
+      // Store team info in sessionStorage and redirect to user login
       setTimeout(() => {
+        sessionStorage.setItem('currentTeamId', team.id);
+        sessionStorage.setItem('currentTeamSlug', team.slug);
+        sessionStorage.setItem('currentTeamName', team.name);
         router.push(`/user-login?team=${slug}`);
       }, 1500);
     } catch (err) {

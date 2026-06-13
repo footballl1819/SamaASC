@@ -104,9 +104,15 @@ export default function UserRegisterPage() {
 
       setSuccess(true);
       
-      // Redirect to login after registration
+      // Store user info in sessionStorage and redirect to login
       setTimeout(() => {
-        router.push(`/user-login?team=${teamSlug}`);
+        sessionStorage.setItem('currentUserId', user.id);
+        sessionStorage.setItem('currentUserName', user.username);
+        sessionStorage.setItem('currentUserRole', user.role);
+        sessionStorage.setItem('currentTeamId', team.id);
+        sessionStorage.setItem('currentTeamSlug', team.slug);
+        sessionStorage.setItem('currentTeamName', team.name);
+        router.push('/');
       }, 1500);
     } catch (err) {
       setError('Erreur lors de la création du compte');
