@@ -17,7 +17,7 @@ const TAB_CONFIG: { key: Tab; label: string; icon: typeof Users }[] = [
   { key: 'matches', label: 'Matchs', icon: Calendar },
   { key: 'lineup', label: '11 Départ', icon: Shirt },
   { key: 'announcements', label: 'Annonces', icon: Megaphone },
-  { key: 'standings', label: 'Classement', icon: Trophy },
+  { key: 'standings', label: 'Compétition', icon: Trophy },
   { key: 'stats', label: 'Stats', icon: Target },
   { key: 'gallery', label: 'Galerie', icon: Image },
 ];
@@ -277,6 +277,7 @@ export default function AdminPage() {
         team_name: form.team_name, points: parseInt(form.points) || 0, played: parseInt(form.played) || 0,
         won: parseInt(form.won) || 0, drawn: parseInt(form.drawn) || 0, lost: parseInt(form.lost) || 0,
         goals_for: parseInt(form.goals_for) || 0, goals_against: parseInt(form.goals_against) || 0,
+        position: parseInt(form.position) || 1,
         team_id: team.id,
       };
       if (editing) {
@@ -858,6 +859,7 @@ export default function AdminPage() {
                 </div>
                 <Input label="Compétition" field="competition_name" placeholder="Championnat..." value={form.competition_name || ''} onChange={(value) => setForm(prev => ({ ...prev, competition_name: value }))} />
                 <Input label="Équipe" field="team_name" placeholder="Nom équipe" value={form.team_name || ''} onChange={(value) => setForm(prev => ({ ...prev, team_name: value }))} />
+                <Input label="Position" field="position" type="number" value={form.position || ''} onChange={(value) => setForm(prev => ({ ...prev, position: value }))} />
                 <div className="grid grid-cols-3 gap-3">
                   <Input label="Points" field="points" type="number" value={form.points || ''} onChange={(value) => setForm(prev => ({ ...prev, points: value }))} />
                   <Input label="Joués" field="played" type="number" value={form.played || ''} onChange={(value) => setForm(prev => ({ ...prev, played: value }))} />
@@ -874,26 +876,43 @@ export default function AdminPage() {
                 </button>
               </div>
             )}
-            <div className="space-y-2">
-              {filteredStandings
-                .sort((a, b) => {
-                  if (b.points !== a.points) return b.points - a.points;
-                  const gdA = a.goals_for - a.goals_against;
-                  const gdB = b.goals_for - b.goals_against;
-                  return gdB - gdA;
-                })
-                .map((s, idx) => (
-                <div key={s.id} className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-md">
-                  <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center text-xs font-bold text-green-600">{idx + 1}</div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-sm text-gray-900 truncate">{s.team_name}</div>
-                    <div className="text-xs text-gray-400">{s.competition_name} - {s.points} pts (GD: {s.goals_for - s.goals_against})</div>
-                  </div>
-                  <button onClick={() => startEdit(s, ['competition_name','team_name','points','played','won','drawn','lost','goals_for','goals_against'])} className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"><Edit2 size={14} /></button>
-                  <button onClick={() => handleDelete('standings', s.id)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
+            {/* Table header */}
+            {!showForm && filteredStandings.length > 0 && (
+              <div className="rounded-xl bg-white shadow-md overflow-hidden">
+                <div className="grid grid-cols-7 gap-2 px-3 py-2 bg-gray-50 border-b border-gray-100">
+                  <div className="text-xs font-bold text-gray-600">#</div>
+                  <div className="text-xs font-bold text-gray-600 col-span-2">Équipe</div>
+                  <div className="text-xs font-bold text-gray-600 text-center">Pts</div>
+                  <div className="text-xs font-bold text-gray-600 text-center">BP</div>
+                  <div className="text-xs font-bold text-gray-600 text-center">BC</div>
+                  <div className="text-xs font-bold text-gray-600 text-center">Diff</div>
                 </div>
-              ))}
-            </div>
+                {filteredStandings
+                  .sort((a, b) => {
+                    if (b.points !== a.points) return b.points - a.points;
+                    const gdA = a.goals_for - a.goals_against;
+                    const gdB = b.goals_for - b.goals_against;
+                    return gdB - gdA;
+                  })
+                  .map((s, idx) => (
+                  <div key={s.id} className="grid grid-cols-7 gap-2 px-3 py-2 border-b border-gray-50 hover:bg-gray-50 transition-colors items-center">
+                    <div className="text-xs font-bold text-gray-600">{s.position || idx + 1}</div>
+                    <div className="text-xs font-semibold text-gray-900 truncate col-span-2">{s.team_name}</div>
+                    <div className="text-xs text-gray-600 text-center">{s.points}</div>
+                    <div className="text-xs text-gray-600 text-center">{s.goals_for}</div>
+                    <div className="text-xs text-gray-600 text-center">{s.goals_against}</div>
+                    <div className="text-xs font-bold text-gray-600 text-center">{s.goals_for - s.goals_against}</div>
+                    <div className="col-span-7 flex gap-1 mt-1">
+                      <button onClick={() => startEdit(s, ['competition_name','team_name','position','points','played','won','drawn','lost','goals_for','goals_against'])} className="p-1 text-gray-400 hover:text-blue-500 transition-colors"><Edit2 size={12} /></button>
+                      <button onClick={() => handleDelete('standings', s.id)} className="p-1 text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={12} /></button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {!showForm && filteredStandings.length === 0 && (
+              <div className="text-center py-8 text-gray-400 text-sm">Aucune équipe dans cette compétition</div>
+            )}
           </>
         )}
 
