@@ -67,6 +67,7 @@ export default function AdminPage() {
   const [lineupStarters, setLineupStarters] = useState<string[]>([]);
   const [lineupSubs, setLineupSubs] = useState<string[]>([]);
   const [standingsComp, setStandingsComp] = useState<string>('');
+  const [statsComp, setStatsComp] = useState<string>('');
 
   useEffect(() => {
     // Only check authentication after context is fully loaded
@@ -833,7 +834,7 @@ export default function AdminPage() {
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none shadow-md"
               >
                 <option value="">Sélectionner une compétition</option>
-                {['Coupe Mairie', 'Coupe Zonal', 'Coupe Départementale', 'Coupe Régional', 'Amical'].map(c => (
+                {['Coupe Maire', 'Coupe Zonal', 'Coupe Départementale', 'Coupe Régional', 'Amical'].map(c => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
@@ -899,8 +900,26 @@ export default function AdminPage() {
         {/* STATS TAB */}
         {tab === 'stats' && (
           <>
+            {/* Competition filter - dropdown */}
+            <div className="relative">
+              <select
+                value={statsComp}
+                onChange={(e) => setStatsComp(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none shadow-md"
+              >
+                <option value="">Sélectionner une compétition</option>
+                {['Coupe Maire', 'Coupe Zonal', 'Coupe Départementale', 'Coupe Régional', 'Amical'].map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+            </div>
             {!showForm && (
-              <button onClick={() => { setShowForm(true); setEditing(null); setForm({ goals: '0', assists: '0', matches_played: '0' }); }}
+              <button onClick={() => { setShowForm(true); setEditing(null); setForm({ goals: '0', assists: '0', matches_played: '0', competition_name: statsComp }); }}
                 className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                 <Plus size={16} /> Ajouter des stats
               </button>
@@ -912,7 +931,7 @@ export default function AdminPage() {
                   <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
                 <Select label="Joueur" field="player_id" options={players.map(p => ({ value: p.id, label: `${p.name} (${POSITION_LABELS[p.position]})` }))} value={form.player_id || ''} onChange={(value) => setForm(prev => ({ ...prev, player_id: value }))} />
-                <Select label="Compétition" field="competition_name" options={standingsCompetitions.map(c => ({ value: c, label: c }))} value={form.competition_name || ''} onChange={(value) => setForm(prev => ({ ...prev, competition_name: value }))} />
+                <Select label="Compétition" field="competition_name" options={['Coupe Maire', 'Coupe Zonal', 'Coupe Départementale', 'Coupe Régional', 'Amical'].map(c => ({ value: c, label: c }))} value={form.competition_name || statsComp || ''} onChange={(value) => setForm(prev => ({ ...prev, competition_name: value }))} />
                 <div className="grid grid-cols-3 gap-3">
                   <Input label="Buts" field="goals" type="number" value={form.goals || ''} onChange={(value) => setForm(prev => ({ ...prev, goals: value }))} />
                   <Input label="Passes D." field="assists" type="number" value={form.assists || ''} onChange={(value) => setForm(prev => ({ ...prev, assists: value }))} />
@@ -924,7 +943,7 @@ export default function AdminPage() {
               </div>
             )}
             <div className="space-y-2">
-              {playerStats.map(s => {
+              {playerStats.filter(s => !statsComp || s.competition_name === statsComp).map(s => {
                 const player = players.find(p => p.id === s.player_id);
                 return (
                   <div key={s.id} className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-md">

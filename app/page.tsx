@@ -61,7 +61,10 @@ export default function AccueilPage() {
         fetch(`/api/data/matches?team_id=${team.id}`).then(r => r.json()),
       ]);
       setAnnouncements(ann);
-      setUpcomingMatches(m.filter((match: Match) => match.status === 'upcoming'));
+      const upcoming = m.filter((match: Match) => match.status === 'upcoming');
+      // Sort by date and show only the closest one
+      const sorted = upcoming.sort((a: Match, b: Match) => new Date(a.match_date).getTime() - new Date(b.match_date).getTime());
+      setUpcomingMatches(sorted.slice(0, 1));
       setLoading(false);
     }
     load();
