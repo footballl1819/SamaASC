@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { Match, Player, MatchVote } from '@/lib/types';
 import AppShell from '@/components/app-shell';
 import { useTeam } from '@/contexts/team-context';
-import { Trophy, Calendar, MapPin, ThumbsUp, Check, ScrollText, SoccerBall } from 'lucide-react';
+import { Trophy, Calendar, MapPin, ThumbsUp, Check, ScrollText } from 'lucide-react';
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr + 'T00:00:00');
@@ -155,8 +155,8 @@ export default function ResultatsPage() {
               className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none shadow-md"
             >
               <option value="">Toutes les compétitions</option>
-              {competitions.map(c => (
-                <option key={c} value={c}>{c}</option>
+              {competitions.filter(c => c !== null).map(c => (
+                <option key={c!} value={c as string}>{c}</option>
               ))}
             </select>
             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
@@ -229,7 +229,7 @@ export default function ResultatsPage() {
               {match.scorers && (
                 <div className="mx-4 mb-3 p-3 rounded-xl bg-blue-50 border border-blue-200">
                   <div className="flex items-center gap-2 mb-2">
-                    <SoccerBall size={14} className="text-blue-600" />
+                    <span className="text-blue-600">⚽</span>
                     <span className="text-[10px] text-blue-600 font-medium uppercase">Buteurs</span>
                   </div>
                   <div className="text-sm text-blue-800">{match.scorers}</div>
