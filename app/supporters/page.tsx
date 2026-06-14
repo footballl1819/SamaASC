@@ -75,20 +75,33 @@ export default function SupportersPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !message.trim() || !team || !supabase) return;
+    if (!user || !message.trim() || !team) return;
     setSubmitting(true);
-    const { data } = await supabase
-      .from('supporters')
-      .insert({ 
-        name: user.name || user.username, 
-        message: (selectedSticker ? selectedSticker + ' ' : '') + message.trim(), 
-        team_id: team.id 
-      })
-      .select();
-    if (data && data.length > 0) {
-      setSupporters(prev => [data[0], ...prev]);
+    
+    try {
+      const response = await fetch('/api/admin/supporters', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          name: user.name || user.username, 
+          message: (selectedSticker ? selectedSticker + ' ' : '') + message.trim(), 
+          team_id: team.id 
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to submit message');
+      }
+
+      const data = await response.json();
+      setSupporters(prev => [data, ...prev]);
       setMessage('');
       setSelectedSticker(null);
+    } catch (error) {
+      console.error('Error submitting message:', error);
+      alert('Erreur lors de l\'envoi du message');
+    } finally {
       setSubmitting(false);
     }
   };

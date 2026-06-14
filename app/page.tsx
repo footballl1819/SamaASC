@@ -54,14 +54,14 @@ export default function AccueilPage() {
 
   useEffect(() => {
     async function load() {
-      if (!team || !supabase) return;
+      if (!team) return;
       
-      const [annRes, matchRes] = await Promise.all([
-        supabase.from('announcements').select('*').eq('team_id', team.id).order('event_date', { ascending: true }),
-        supabase.from('matches').select('*').eq('team_id', team.id).eq('status', 'upcoming').order('match_date', { ascending: true }),
+      const [ann, m] = await Promise.all([
+        fetch(`/api/data/announcements?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/matches?team_id=${team.id}`).then(r => r.json()),
       ]);
-      setAnnouncements(annRes.data || []);
-      setUpcomingMatches(matchRes.data || []);
+      setAnnouncements(ann);
+      setUpcomingMatches(m.filter((match: Match) => match.status === 'upcoming'));
       setLoading(false);
     }
     load();

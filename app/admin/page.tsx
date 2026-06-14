@@ -263,7 +263,7 @@ export default function AdminPage() {
     
     try {
       const payload = {
-        competition_name: form.competition_name, position: parseInt(form.position) || 0,
+        competition_name: form.competition_name,
         team_name: form.team_name, points: parseInt(form.points) || 0, played: parseInt(form.played) || 0,
         won: parseInt(form.won) || 0, drawn: parseInt(form.drawn) || 0, lost: parseInt(form.lost) || 0,
         goals_for: parseInt(form.goals_for) || 0, goals_against: parseInt(form.goals_against) || 0,

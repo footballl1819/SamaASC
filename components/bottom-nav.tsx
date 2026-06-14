@@ -11,26 +11,33 @@ const NAV_ITEMS = [
   { icon: Image, label: 'Galerie', path: '/galerie' },
   { icon: ScrollText, label: 'Résultats', path: '/resultats' },
   { icon: Heart, label: 'Supporters', path: '/supporters' },
-  { icon: Settings, label: 'Admin', path: '/admin' },
-  { icon: Settings, label: 'Paramètres', path: '/parametres' },
+  { icon: Settings, label: 'Admin', path: '/admin', adminOnly: true },
+  { icon: Settings, label: 'Paramètres', path: '/parametres', adminOnly: true },
 ];
 
 export default function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
-  const { team } = useTeam();
+  const { team, user } = useTeam();
+
+  const filteredNavItems = NAV_ITEMS.filter(item => {
+    if (item.adminOnly) {
+      return user?.role === 'admin';
+    }
+    return true;
+  });
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-t border-gray-200/50 pb-safe">
-      <div className="flex items-center justify-around px-1 py-1.5 max-w-lg mx-auto">
-        {NAV_ITEMS.map((item) => {
+    <nav className="fixed left-0 top-0 bottom-0 z-50 w-16 bg-white/90 backdrop-blur-xl border-r border-gray-200/50 pt-safe">
+      <div className="flex flex-col items-center py-4 gap-2 h-full">
+        {filteredNavItems.map((item) => {
           const isActive = pathname === item.path;
           const Icon = item.icon;
           return (
             <button
               key={item.path}
               onClick={() => router.push(item.path)}
-              className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all duration-300 min-w-[48px] icon-hover ${
+              className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all duration-300 min-w-[48px] icon-hover ${
                 isActive
                   ? 'scale-105'
                   : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
@@ -53,7 +60,7 @@ export default function BottomNav() {
                   />
                 )}
               </div>
-              <span className={`text-[10px] leading-tight font-medium transition-all duration-300 ${
+              <span className={`text-[9px] leading-tight font-medium transition-all duration-300 ${
                 isActive ? '' : 'text-gray-400'
               }`}>
                 {item.label}

@@ -72,15 +72,10 @@ export default function ParametresPage() {
     setSuccess(false);
 
     try {
-      if (!supabase) {
-        alert('Erreur de connexion');
-        setSaving(false);
-        return;
-      }
       let logoUrl = team.logo_url;
 
       // Upload logo if changed
-      if (logoFile) {
+      if (logoFile && supabase) {
         const fileExt = logoFile.name.split('.').pop();
         const fileName = `${team.id}-${Date.now()}.${fileExt}`;
         const filePath = `team-logos/${fileName}`;
@@ -98,10 +93,12 @@ export default function ParametresPage() {
         logoUrl = publicUrl;
       }
 
-      // Update team
-      const { error } = await supabase
-        .from('teams')
-        .update({
+      // Update team via API route
+      const response = await fetch('/api/admin/team', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: team.id,
           name,
           slug,
           description,
@@ -109,11 +106,13 @@ export default function ParametresPage() {
           secondary_color: buttonColor,
           accent_color: buttonColor,
           logo_url: logoUrl,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', team.id);
+        }),
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to update team');
+      }
 
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
