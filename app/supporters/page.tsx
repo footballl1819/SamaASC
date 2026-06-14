@@ -75,7 +75,8 @@ export default function SupportersPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !message.trim() || !team) return;
+    if (!user || !team) return;
+    if (!selectedSticker && !message.trim()) return;
     setSubmitting(true);
     
     try {

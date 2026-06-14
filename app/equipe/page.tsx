@@ -158,7 +158,7 @@ export default function EquipePage() {
     : players.filter(p => p.is_starter);
   const substitutes = matchSubstitutes.length > 0
     ? matchSubstitutes.map(l => players.find(p => p.id === l.player_id)).filter(Boolean) as Player[]
-    : players.filter(p => !p.is_starter);
+    : players.filter(p => !starters.includes(p));
 
   const formationPositions = FORMATIONS[selectedFormation] || FORMATIONS['4-3-3'];
   const competitions = Array.from(new Set(stats.map(s => s.competition_name)));

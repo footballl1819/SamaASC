@@ -76,7 +76,7 @@ export default function ClassementPage() {
     );
   }
 
-  const competitions = ['Coupe Mairie', 'Coupe Zonal', 'Coupe Départementale', 'Coupe Régional', 'Amical'];
+  const competitions = ['Coupe Maire', 'Coupe Zonal', 'Coupe Départementale', 'Coupe Régional', 'Amical'];
   const filtered = standings.filter(s => s.competition_name === selectedCompetition);
   const ourTeam = filtered.find(s => s.team_name === team?.name);
 

@@ -28,8 +28,8 @@ export default function BottomNav() {
   });
 
   return (
-    <nav className="fixed left-0 top-0 bottom-0 z-50 w-16 bg-white/90 backdrop-blur-xl border-r border-gray-200/50 pt-safe">
-      <div className="flex flex-col items-center py-4 gap-2 h-full">
+    <nav className="fixed left-0 top-0 bottom-0 z-50 w-14 bg-white/95 backdrop-blur-xl border-r border-gray-200/50 shadow-lg">
+      <div className="flex flex-col items-center py-4 gap-3 h-full">
         {filteredNavItems.map((item) => {
           const isActive = pathname === item.path;
           const Icon = item.icon;
@@ -37,7 +37,7 @@ export default function BottomNav() {
             <button
               key={item.path}
               onClick={() => router.push(item.path)}
-              className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all duration-300 min-w-[48px] icon-hover ${
+              className={`flex flex-col items-center gap-0.5 px-2 py-2 rounded-xl transition-all duration-300 min-w-[44px] icon-hover ${
                 isActive
                   ? 'scale-105'
                   : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
@@ -49,18 +49,18 @@ export default function BottomNav() {
             >
               <div className={`relative ${isActive ? 'drop-shadow-sm' : ''}`}>
                 <Icon
-                  size={20}
+                  size={18}
                   strokeWidth={isActive ? 2.5 : 1.8}
                   className="transition-all duration-300"
                 />
                 {isActive && (
                   <div 
-                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
+                    className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
                     style={{ backgroundColor: team?.secondary_color || '#16a34a' }}
                   />
                 )}
               </div>
-              <span className={`text-[9px] leading-tight font-medium transition-all duration-300 ${
+              <span className={`text-[8px] leading-tight font-medium transition-all duration-300 ${
                 isActive ? '' : 'text-gray-400'
               }`}>
                 {item.label}

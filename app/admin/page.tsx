@@ -212,7 +212,7 @@ export default function AdminPage() {
         opponent: form.opponent, match_date: form.match_date, match_time: form.match_time || null,
         venue: form.venue || null, competition: form.competition || null, is_home: form.is_home !== 'false',
         status: form.status || 'upcoming', score_home: form.score_home ? parseInt(form.score_home) : null,
-        score_away: form.score_away ? parseInt(form.score_away) : null, formation: form.formation || '4-3-3',
+        score_away: form.score_away ? parseInt(form.score_away) : null, scorers: form.scorers || null,
         team_id: team.id,
       };
       if (editing) {
@@ -588,15 +588,19 @@ export default function AdminPage() {
                 <Input label="Date" field="match_date" type="date" value={form.match_date || ''} onChange={(value) => setForm(prev => ({ ...prev, match_date: value }))} />
                 <Input label="Heure" field="match_time" type="time" value={form.match_time || ''} onChange={(value) => setForm(prev => ({ ...prev, match_time: value }))} />
                 <Input label="Lieu" field="venue" placeholder="Terrain..." value={form.venue || ''} onChange={(value) => setForm(prev => ({ ...prev, venue: value }))} />
-                <Input label="Compétition" field="competition" placeholder="Championnat..." value={form.competition || ''} onChange={(value) => setForm(prev => ({ ...prev, competition: value }))} />
+                <Select label="Compétition" field="competition" options={[
+                  { value: 'Coupe Maire', label: 'Coupe Maire' },
+                  { value: 'Coupe Zonal', label: 'Coupe Zonal' },
+                  { value: 'Coupe Départementale', label: 'Coupe Départementale' },
+                  { value: 'Coupe Régional', label: 'Coupe Régional' },
+                  { value: 'Amical', label: 'Amical' },
+                ]} value={form.competition || ''} onChange={(value) => setForm(prev => ({ ...prev, competition: value }))} />
                 <Select label="Domicile" field="is_home" options={[{ value: 'true', label: 'Oui' }, { value: 'false', label: 'Non' }]} value={form.is_home || ''} onChange={(value) => setForm(prev => ({ ...prev, is_home: value }))} />
                 <Select label="Statut" field="status" options={[
                   { value: 'upcoming', label: 'À venir' }, { value: 'live', label: 'En direct' },
                   { value: 'completed', label: 'Terminé' }, { value: 'postponed', label: 'Reporté' },
                 ]} value={form.status || ''} onChange={(value) => setForm(prev => ({ ...prev, status: value }))} />
-                <Select label="Formation" field="formation" options={[
-                  { value: '4-3-3', label: '4-3-3' }, { value: '4-4-2', label: '4-4-2' }, { value: '3-5-2', label: '3-5-2' },
-                ]} value={form.formation || ''} onChange={(value) => setForm(prev => ({ ...prev, formation: value }))} />
+                <Input label="Buteur(s)" field="scorers" placeholder="Noms des buteurs séparés par virgule" value={form.scorers || ''} onChange={(value) => setForm(prev => ({ ...prev, scorers: value }))} />
                 <div className="grid grid-cols-2 gap-3">
                   <Input label="Score domicile" field="score_home" type="number" value={form.score_home || ''} onChange={(value) => setForm(prev => ({ ...prev, score_home: value }))} />
                   <Input label="Score extérieur" field="score_away" type="number" value={form.score_away || ''} onChange={(value) => setForm(prev => ({ ...prev, score_away: value }))} />

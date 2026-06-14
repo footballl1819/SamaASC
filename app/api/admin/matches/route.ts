@@ -13,7 +13,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { opponent, match_date, match_time, venue, competition, is_home, status, score_home, score_away, formation, team_id } = body;
+    const { opponent, match_date, match_time, venue, competition, is_home, status, score_home, score_away, scorers, team_id } = body;
 
     if (!opponent || !team_id) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -31,7 +31,8 @@ export async function POST(request: NextRequest) {
         status: status || 'upcoming',
         score_home: score_home ? parseInt(score_home) : null,
         score_away: score_away ? parseInt(score_away) : null,
-        formation: formation || '4-3-3',
+        formation: '4-3-3',
+        scorers: scorers || null,
         team_id 
       })
       .select()
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, opponent, match_date, match_time, venue, competition, is_home, status, score_home, score_away, formation, team_id } = body;
+    const { id, opponent, match_date, match_time, venue, competition, is_home, status, score_home, score_away, scorers, team_id } = body;
 
     if (!id || !team_id) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -68,7 +69,8 @@ export async function PUT(request: NextRequest) {
         status,
         score_home: score_home ? parseInt(score_home) : null,
         score_away: score_away ? parseInt(score_away) : null,
-        formation
+        formation: '4-3-3',
+        scorers: scorers || null
       })
       .eq('id', id)
       .eq('team_id', team_id)
