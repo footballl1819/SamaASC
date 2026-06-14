@@ -24,7 +24,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         />
       )}
       <Header />
-      <main className="relative pt-14 pb-4 px-4 ml-14 max-w-lg">
+      <main className="relative pt-14 pb-4 px-4 max-w-lg mx-auto">
         {children}
       </main>
       <BottomNav />

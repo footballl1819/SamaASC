@@ -28,7 +28,7 @@ export default function BottomNav() {
   });
 
   return (
-    <nav className="fixed left-0 top-0 bottom-0 z-50 w-14 bg-white/95 backdrop-blur-xl border-r border-gray-200/50 shadow-lg">
+    <nav className="hidden">
       <div className="flex flex-col items-center py-4 gap-3 h-full">
         {filteredNavItems.map((item) => {
           const isActive = pathname === item.path;

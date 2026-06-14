@@ -216,21 +216,30 @@ export default function AdminPage() {
         team_id: team.id,
       };
       if (editing) {
-        await fetch('/api/admin/matches', {
+        const response = await fetch('/api/admin/matches', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...payload, id: editing }),
         });
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to update match');
+        }
       } else {
-        await fetch('/api/admin/matches', {
+        const response = await fetch('/api/admin/matches', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to create match');
+        }
       }
       setShowForm(false); setEditing(null); setForm({}); loadAll();
     } catch (error) {
       console.error('Error saving match:', error);
+      alert('Erreur lors de la sauvegarde du match: ' + (error as Error).message);
     }
   };
 
@@ -270,21 +279,30 @@ export default function AdminPage() {
         team_id: team.id,
       };
       if (editing) {
-        await fetch('/api/admin/standings', {
+        const response = await fetch('/api/admin/standings', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...payload, id: editing }),
         });
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to update standing');
+        }
       } else {
-        await fetch('/api/admin/standings', {
+        const response = await fetch('/api/admin/standings', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to create standing');
+        }
       }
       setShowForm(false); setEditing(null); setForm({}); loadAll();
     } catch (error) {
       console.error('Error saving standing:', error);
+      alert('Erreur lors de la sauvegarde du classement: ' + (error as Error).message);
     }
   };
 
@@ -347,21 +365,30 @@ export default function AdminPage() {
         team_id: team.id,
       };
       if (editing) {
-        await fetch('/api/admin/stats', {
+        const response = await fetch('/api/admin/stats', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...payload, id: editing }),
         });
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to update stat');
+        }
       } else {
-        await fetch('/api/admin/stats', {
+        const response = await fetch('/api/admin/stats', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to create stat');
+        }
       }
       setShowForm(false); setEditing(null); setForm({}); loadAll();
     } catch (error) {
       console.error('Error saving stat:', error);
+      alert('Erreur lors de la sauvegarde des stats: ' + (error as Error).message);
     }
   };
 
@@ -635,8 +662,8 @@ export default function AdminPage() {
                 <select value={lineupMatchId} onChange={e => setLineupMatchId(e.target.value)}
                   className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none bg-white font-medium">
                   <option value="">Choisir un match...</option>
-                  {matches.map(m => (
-                    <option key={m.id} value={m.id}>vs {m.opponent} - {m.match_date} ({m.status})</option>
+                  {matches.filter(m => m.status === 'upcoming').map(m => (
+                    <option key={m.id} value={m.id}>vs {m.opponent} - {m.match_date}</option>
                   ))}
                 </select>
                 <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
