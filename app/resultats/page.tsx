@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { Match, Player, MatchVote } from '@/lib/types';
 import AppShell from '@/components/app-shell';
 import { useTeam } from '@/contexts/team-context';
-import { Trophy, Calendar, MapPin, ThumbsUp, Check, ScrollText } from 'lucide-react';
+import { Trophy, Calendar, MapPin, ThumbsUp, Check, ScrollText, SoccerBall } from 'lucide-react';
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr + 'T00:00:00');
@@ -23,6 +23,7 @@ export default function ResultatsPage() {
   const [voterName, setVoterName] = useState('');
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
   const [votedFor, setVotedFor] = useState<string | null>(null);
+  const [selectedCompetition, setSelectedCompetition] = useState<string>('');
 
   useEffect(() => {
     // Check authentication
@@ -111,6 +112,9 @@ export default function ResultatsPage() {
     return players.find(p => p.id === topId) || null;
   };
 
+  const competitions = Array.from(new Set(matches.map(m => m.competition).filter(Boolean)));
+  const filteredMatches = matches.filter(m => m.status === 'completed' && (!selectedCompetition || m.competition === selectedCompetition));
+
   if (loading || contextLoading) {
     return (
       <AppShell>
@@ -142,7 +146,28 @@ export default function ResultatsPage() {
           </div>
         </div>
 
-        {matches.map((match) => {
+        {/* Competition Filter */}
+        {competitions.length > 0 && (
+          <div className="relative">
+            <select
+              value={selectedCompetition}
+              onChange={(e) => setSelectedCompetition(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none shadow-md"
+            >
+              <option value="">Toutes les compétitions</option>
+              {competitions.map(c => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        )}
+
+        {filteredMatches.map((match) => {
           const motm = getManOfMatch(match.id);
           const isExpanded = selectedMatch === match.id;
 
@@ -155,12 +180,8 @@ export default function ResultatsPage() {
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-xs font-medium text-gray-400">{match.competition}</span>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                    match.status === 'live'
-                      ? 'bg-red-100 text-red-600 animate-pulse'
-                      : 'bg-green-100 text-green-600'
-                  }`}>
-                    {match.status === 'live' ? 'En direct' : 'Terminé'}
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-green-100 text-green-600">
+                    Terminé
                   </span>
                 </div>
 
@@ -204,8 +225,19 @@ export default function ResultatsPage() {
                 </div>
               </button>
 
+              {/* Scorers Section */}
+              {match.scorers && (
+                <div className="mx-4 mb-3 p-3 rounded-xl bg-blue-50 border border-blue-200">
+                  <div className="flex items-center gap-2 mb-2">
+                    <SoccerBall size={14} className="text-blue-600" />
+                    <span className="text-[10px] text-blue-600 font-medium uppercase">Buteurs</span>
+                  </div>
+                  <div className="text-sm text-blue-800">{match.scorers}</div>
+                </div>
+              )}
+
               {/* Man of the Match */}
-              {motm && match.status === 'completed' && (
+              {motm && (
                 <div className="mx-4 mb-3 p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-3">
                   <Trophy size={18} className="text-amber-500 flex-shrink-0" />
                   <div>
@@ -216,7 +248,7 @@ export default function ResultatsPage() {
               )}
 
               {/* Vote Section */}
-              {isExpanded && match.status === 'completed' && (
+              {isExpanded && (
                 <div className="px-4 pb-4 border-t border-gray-100 pt-3">
                   <h4 className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
                     <ThumbsUp size={14} className="text-green-600" />
@@ -266,7 +298,7 @@ export default function ResultatsPage() {
           );
         })}
 
-        {matches.length === 0 && (
+        {filteredMatches.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 text-gray-400">
             <Trophy size={48} className="mb-3 opacity-50" />
             <p className="text-sm">Aucun résultat disponible</p>

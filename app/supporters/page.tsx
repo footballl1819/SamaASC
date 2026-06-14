@@ -204,7 +204,7 @@ export default function SupportersPage() {
           />
           <button
             type="submit"
-            disabled={!message.trim() || submitting}
+            disabled={(!message.trim() && !selectedSticker) || submitting}
             className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             style={{ backgroundColor: team?.secondary_color || '#22c55e' }}
           >
