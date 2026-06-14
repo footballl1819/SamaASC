@@ -214,6 +214,7 @@ export default function AdminPage() {
         venue: form.venue || null, competition: form.competition || null, is_home: form.is_home !== 'false',
         status: form.status || 'upcoming', score_home: form.score_home ? parseInt(form.score_home) : null,
         score_away: form.score_away ? parseInt(form.score_away) : null,
+        scorers: form.scorers || null,
         team_id: team.id,
       };
       if (editing) {
@@ -633,6 +634,7 @@ export default function AdminPage() {
                   <Input label="Score domicile" field="score_home" type="number" value={form.score_home || ''} onChange={(value) => setForm(prev => ({ ...prev, score_home: value }))} />
                   <Input label="Score extérieur" field="score_away" type="number" value={form.score_away || ''} onChange={(value) => setForm(prev => ({ ...prev, score_away: value }))} />
                 </div>
+                <Input label="Buteurs" field="scorers" placeholder="Noms des buteurs (séparés par virgule)" value={form.scorers || ''} onChange={(value) => setForm(prev => ({ ...prev, scorers: value }))} />
                 <button onClick={handleMatchSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                   <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
                 </button>
