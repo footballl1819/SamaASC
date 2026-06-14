@@ -212,7 +212,7 @@ export default function AdminPage() {
         opponent: form.opponent, match_date: form.match_date, match_time: form.match_time || null,
         venue: form.venue || null, competition: form.competition || null, is_home: form.is_home !== 'false',
         status: form.status || 'upcoming', score_home: form.score_home ? parseInt(form.score_home) : null,
-        score_away: form.score_away ? parseInt(form.score_away) : null, scorers: form.scorers || null,
+        score_away: form.score_away ? parseInt(form.score_away) : null,
         team_id: team.id,
       };
       if (editing) {
@@ -627,7 +627,6 @@ export default function AdminPage() {
                   { value: 'upcoming', label: 'À venir' }, { value: 'live', label: 'En direct' },
                   { value: 'completed', label: 'Terminé' }, { value: 'postponed', label: 'Reporté' },
                 ]} value={form.status || ''} onChange={(value) => setForm(prev => ({ ...prev, status: value }))} />
-                <Input label="Buteur(s)" field="scorers" placeholder="Noms des buteurs séparés par virgule" value={form.scorers || ''} onChange={(value) => setForm(prev => ({ ...prev, scorers: value }))} />
                 <div className="grid grid-cols-2 gap-3">
                   <Input label="Score domicile" field="score_home" type="number" value={form.score_home || ''} onChange={(value) => setForm(prev => ({ ...prev, score_home: value }))} />
                   <Input label="Score extérieur" field="score_away" type="number" value={form.score_away || ''} onChange={(value) => setForm(prev => ({ ...prev, score_away: value }))} />
