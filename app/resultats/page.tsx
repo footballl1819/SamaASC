@@ -222,17 +222,6 @@ export default function ResultatsPage() {
                 </div>
               </button>
 
-              {/* Scorers Section */}
-              {match.scorers && (
-                <div className="mx-4 mb-3 p-3 rounded-xl bg-blue-50 border border-blue-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-blue-600">⚽</span>
-                    <span className="text-[10px] text-blue-600 font-medium uppercase">Buteurs</span>
-                  </div>
-                  <div className="text-sm text-blue-800">{match.scorers}</div>
-                </div>
-              )}
-
               {/* Man of the Match */}
               {motm && (
                 <div className="mx-4 mb-3 p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-3">

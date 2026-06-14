@@ -27,7 +27,6 @@ export interface Match {
   score_away: number | null;
   poster_url: string | null;
   formation: string;
-  scorers: string | null;
 }
 
 export interface MatchLineup {
