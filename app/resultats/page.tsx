@@ -112,7 +112,6 @@ export default function ResultatsPage() {
     return players.find(p => p.id === topId) || null;
   };
 
-  const competitions = Array.from(new Set(matches.map(m => m.competition).filter(Boolean)));
   const filteredMatches = matches.filter(m => m.status === 'completed' && (!selectedCompetition || m.competition === selectedCompetition));
 
   if (loading || contextLoading) {
@@ -147,25 +146,23 @@ export default function ResultatsPage() {
         </div>
 
         {/* Competition Filter */}
-        {competitions.length > 0 && (
-          <div className="relative">
-            <select
-              value={selectedCompetition}
-              onChange={(e) => setSelectedCompetition(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none shadow-md"
-            >
-              <option value="">Toutes les compétitions</option>
-              {competitions.filter(c => c !== null).map(c => (
-                <option key={c!} value={c as string}>{c}</option>
-              ))}
-            </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
+        <div className="relative">
+          <select
+            value={selectedCompetition}
+            onChange={(e) => setSelectedCompetition(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none shadow-md"
+          >
+            <option value="">Toutes les compétitions</option>
+            {['Coupe Maire', 'Coupe Zonal', 'Coupe Départementale', 'Coupe Régional', 'Amical'].map(c => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </div>
-        )}
+        </div>
 
         {filteredMatches.map((match) => {
           const motm = getManOfMatch(match.id);
