@@ -11,6 +11,7 @@ interface Team {
   primary_color: string;
   secondary_color: string;
   accent_color: string;
+  nav_color: string;
   description: string | null;
 }
 

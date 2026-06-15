@@ -20,6 +20,7 @@ export default function ParametresPage() {
   const [glowColor, setGlowColor] = useState('#22c55e');
   const [iconColor, setIconColor] = useState('#15803d');
   const [buttonColor, setButtonColor] = useState('#16a34a');
+  const [navColor, setNavColor] = useState('#1f2937');
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
@@ -50,6 +51,7 @@ export default function ParametresPage() {
       setGlowColor(team.primary_color || '#22c55e');
       setIconColor(team.accent_color || '#15803d');
       setButtonColor(team.secondary_color || '#16a34a');
+      setNavColor(team.nav_color || '#1f2937');
       setLogoPreview(team.logo_url);
       setLoading(false);
     }
@@ -107,6 +109,7 @@ export default function ParametresPage() {
           primary_color: glowColor,
           secondary_color: buttonColor,
           accent_color: iconColor,
+          nav_color: navColor,
           logo_url: logoUrl,
         }),
       });
@@ -336,6 +339,25 @@ export default function ParametresPage() {
                 />
               </div>
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Couleur des barres de navigation
+              </label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  value={navColor}
+                  onChange={(e) => setNavColor(e.target.value)}
+                  className="w-12 h-12 rounded-lg border-2 border-gray-200 cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={navColor}
+                  onChange={(e) => setNavColor(e.target.value)}
+                  className="flex-1 rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Color Preview */}
@@ -353,6 +375,10 @@ export default function ParametresPage() {
               <div
                 className="w-16 h-16 rounded-lg shadow-md"
                 style={{ backgroundColor: buttonColor }}
+              />
+              <div
+                className="w-16 h-16 rounded-lg shadow-md"
+                style={{ backgroundColor: navColor }}
               />
             </div>
           </div>

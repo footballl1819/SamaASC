@@ -22,7 +22,7 @@ export default function Header() {
   const { logout, team } = useTeam();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-xl border-b border-gray-800">
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b border-gray-800" style={{ backgroundColor: team?.nav_color ? `${team.nav_color}95` : 'rgba(31, 41, 55, 0.95)' }}>
       <div className="flex items-center justify-between px-4 py-3 max-w-lg mx-auto">
         {/* Centered logo and name */}
         <div className="flex items-center gap-2.5">
