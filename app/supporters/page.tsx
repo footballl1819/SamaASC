@@ -111,19 +111,12 @@ export default function SupportersPage() {
 
       const data = await response.json();
       console.log('Success response:', data);
-      // Reload data from database as fallback
-      if (supabase) {
-        console.log('Reloading supporters from database...');
-        const { data: supportersData, error: reloadError } = await supabase.from('supporters').select('*').eq('team_id', team.id).order('created_at', { ascending: false });
-        console.log('Reloaded supporters:', supportersData);
-        if (reloadError) {
-          console.error('Error reloading supporters:', reloadError);
-        } else {
-          setSupporters(supportersData || []);
-        }
-      } else {
-        console.error('Supabase client is null');
-      }
+      // Reload data from database as fallback using API endpoint
+      console.log('Reloading supporters from database via API...');
+      const supportersResponse = await fetch(`/api/data/supporters?team_id=${team.id}`);
+      const supportersData = await supportersResponse.json();
+      console.log('Reloaded supporters:', supportersData);
+      setSupporters(supportersData || []);
       setMessage('');
       setSelectedSticker(null);
     } catch (error) {
