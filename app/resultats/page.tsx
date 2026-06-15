@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { Match, Player, MatchVote } from '@/lib/types';
+import { Match, Player, MatchVote, Competition } from '@/lib/types';
 import AppShell from '@/components/app-shell';
 import { useTeam } from '@/contexts/team-context';
 import { Trophy, Calendar, MapPin, ThumbsUp, Check, ScrollText, X } from 'lucide-react';
@@ -19,6 +19,7 @@ export default function ResultatsPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [votes, setVotes] = useState<MatchVote[]>([]);
+  const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [loading, setLoading] = useState(true);
   const [voterName, setVoterName] = useState('');
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
@@ -46,14 +47,16 @@ export default function ResultatsPage() {
     async function load() {
       if (!team) return;
       
-      const [m, p, v] = await Promise.all([
+      const [m, p, v, c] = await Promise.all([
         fetch(`/api/data/matches?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/players?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/match-votes?team_id=${team.id}`).then(r => r.json()).catch(() => []),
+        fetch(`/api/data/competitions?team_id=${team.id}`).then(r => r.json()).catch(() => []),
       ]);
       setMatches(m);
       setPlayers(p);
       setVotes(v);
+      setCompetitions(c || []);
       setLoading(false);
     }
     load();
@@ -185,8 +188,8 @@ export default function ResultatsPage() {
             } as React.CSSProperties}
           >
             <option value="">Toutes les compétitions</option>
-            {Array.from(new Set(matches.map(m => m.competition))).filter((c): c is string => Boolean(c)).sort().map(c => (
-              <option key={c} value={c}>{c}</option>
+            {competitions.map(c => (
+              <option key={c.id} value={c.name}>{c.name}</option>
             ))}
           </select>
           <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
@@ -195,6 +198,19 @@ export default function ResultatsPage() {
             </svg>
           </div>
         </div>
+
+        {/* Vote Error Announcement */}
+        {voteError && (
+          <div className="rounded-xl bg-red-50 border border-red-200 p-4 flex items-start gap-3">
+            <X size={20} className="text-red-500 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-red-800">{voteError}</p>
+            </div>
+            <button onClick={() => setVoteError('')} className="text-red-400 hover:text-red-600">
+              <X size={18} />
+            </button>
+          </div>
+        )}
 
         {filteredMatches.map((match) => {
           const motm = getManOfMatch(match.id);
@@ -207,6 +223,10 @@ export default function ResultatsPage() {
               {/* Match Header */}
               <button
                 onClick={() => {
+                  if (userHasVoted) {
+                    setVoteError('Vous avez déjà voté pour ce match');
+                    return;
+                  }
                   setSelectedMatch(match.id);
                   setShowVoteModal(true);
                   setSelectedPlayer('');
