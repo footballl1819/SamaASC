@@ -89,7 +89,7 @@ export default function ResultatsPage() {
   }, [team]);
 
   const handleVote = async (matchId: string, playerId: string) => {
-    if (!voterName.trim() || !team || !supabase) return;
+    if (!voterName.trim() || !team) return;
     
     // Check if user has already voted for this match
     const existingVote = votes.find(v => v.match_id === matchId && v.voter_name === voterName.trim());
@@ -99,16 +99,29 @@ export default function ResultatsPage() {
     }
     
     setVoteError('');
-    const { data, error } = await supabase
-      .from('match_votes')
-      .insert({ match_id: matchId, player_id: playerId, voter_name: voterName.trim(), team_id: team.id })
-      .select();
-    if (data && data.length > 0) {
-      setVotes(prev => [...prev, data[0]]);
+    try {
+      const response = await fetch('/api/match-votes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          match_id: matchId, 
+          player_id: playerId, 
+          voter_name: voterName.trim(), 
+          team_id: team.id 
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        setVoteError(data.error || 'Erreur lors du vote');
+        return;
+      }
+      
+      setVotes(prev => [...prev, data]);
       setVotedFor(playerId);
-    }
-    if (error) {
-      setVoteError('Erreur lors du vote: ' + error.message);
+    } catch (error) {
+      setVoteError('Erreur lors du vote: ' + (error as Error).message);
     }
   };
 
