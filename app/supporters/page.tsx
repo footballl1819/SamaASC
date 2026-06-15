@@ -78,15 +78,15 @@ export default function SupportersPage() {
     if (!user || !team) return;
     if (!selectedSticker && !message.trim()) return;
     setSubmitting(true);
-    
+
     try {
       const response = await fetch('/api/admin/supporters', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          name: user.name || user.username, 
-          message: (selectedSticker ? selectedSticker + ' ' : '') + message.trim(), 
-          team_id: team.id 
+        body: JSON.stringify({
+          name: user.name || user.username,
+          message: (selectedSticker ? selectedSticker + ' ' : '') + message.trim(),
+          team_id: team.id
         }),
       });
 
@@ -95,8 +95,7 @@ export default function SupportersPage() {
         throw new Error(error.error || 'Failed to submit message');
       }
 
-      const data = await response.json();
-      setSupporters(prev => [data, ...prev]);
+      // Don't update local state - let realtime subscription handle it
       setMessage('');
       setSelectedSticker(null);
     } catch (error) {
