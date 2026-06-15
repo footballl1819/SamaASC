@@ -15,6 +15,21 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Check if match exists and is completed
+    const { data: match } = await supabase
+      .from('matches')
+      .select('status')
+      .eq('id', match_id)
+      .single();
+
+    if (!match) {
+      return NextResponse.json({ error: 'Match non trouvé' }, { status: 404 });
+    }
+
+    if (match.status !== 'completed') {
+      return NextResponse.json({ error: 'Le vote n\'est disponible que pour les matchs terminés' }, { status: 400 });
+    }
+
     // Check if user has already voted for this match
     const { data: existingVote } = await supabase
       .from('match_votes')
@@ -22,7 +37,7 @@ export async function POST(request: NextRequest) {
       .eq('match_id', match_id)
       .eq('voter_name', voter_name.trim())
       .eq('team_id', team_id)
-      .single();
+      .maybeSingle();
 
     if (existingVote) {
       return NextResponse.json({ error: 'Vous avez déjà voté pour ce match' }, { status: 400 });

@@ -156,7 +156,7 @@ export default function SupportersPage() {
             <span className="text-sm font-bold">Ambiance du Quartier</span>
           </div>
           <p className="text-sm text-white/80 leading-relaxed">
-            Sama ASC représente tout le quartier! Exprimez votre soutien et garantissez l&apos;ambiance!
+            {team?.name || 'L\'équipe'} représente tout le quartier! Exprimez votre soutien et garantissez l&apos;ambiance!
           </p>
           <div className="flex items-center gap-2 mt-3">
             <Heart size={16} className="animate-pulse" />

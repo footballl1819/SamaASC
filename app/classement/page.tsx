@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { Standing } from '@/lib/types';
+import { Standing, Competition } from '@/lib/types';
 import AppShell from '@/components/app-shell';
 import { useTeam } from '@/contexts/team-context';
 import { Trophy } from 'lucide-react';
@@ -12,6 +12,7 @@ export default function ClassementPage() {
   const router = useRouter();
   const { team, user, loading: contextLoading } = useTeam();
   const [standings, setStandings] = useState<Standing[]>([]);
+  const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCompetition, setSelectedCompetition] = useState<string>('');
 
@@ -32,11 +33,15 @@ export default function ClassementPage() {
   useEffect(() => {
     async function load() {
       if (!team) return;
-      
-      const data = await fetch(`/api/data/standings?team_id=${team.id}`).then(r => r.json());
-      setStandings(data);
-      if (data && data.length > 0) {
-        setSelectedCompetition(data[0].competition_name);
+
+      const [s, c] = await Promise.all([
+        fetch(`/api/data/standings?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/competitions?team_id=${team.id}`).then(r => r.json()),
+      ]);
+      setStandings(s);
+      setCompetitions(c || []);
+      if (s && s.length > 0) {
+        setSelectedCompetition(s[0].competition_name);
       }
       setLoading(false);
     }
@@ -76,7 +81,6 @@ export default function ClassementPage() {
     );
   }
 
-  const competitions = ['Coupe Maire', 'Coupe Zonal', 'Coupe Départementale', 'Coupe Régional', 'Amical'];
   const filtered = standings.filter(s => s.competition_name === selectedCompetition);
   const ourTeam = filtered.find(s => s.team_name === team?.name);
 
@@ -113,7 +117,7 @@ export default function ClassementPage() {
           >
             <option value="">Sélectionner une compétition</option>
             {competitions.map(comp => (
-              <option key={comp} value={comp}>{comp}</option>
+              <option key={comp.id} value={comp.name}>{comp.name}</option>
             ))}
           </select>
           <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">

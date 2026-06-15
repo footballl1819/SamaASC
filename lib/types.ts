@@ -95,6 +95,14 @@ export interface PlayerStat {
   player?: Player;
 }
 
+export interface Competition {
+  id: string;
+  name: string;
+  team_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export type PositionLabel = {
   [key: string]: string;
 };

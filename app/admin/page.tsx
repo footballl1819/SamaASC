@@ -3,13 +3,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { Player, Match, Announcement, Standing, GalleryItem, Coach, PlayerStat, MatchLineup, POSITION_LABELS } from '@/lib/types';
+import { Player, Match, Announcement, Standing, GalleryItem, Coach, PlayerStat, MatchLineup, Competition, POSITION_LABELS } from '@/lib/types';
 import AppShell from '@/components/app-shell';
 import FileUpload from '@/components/file-upload';
 import { useTeam } from '@/contexts/team-context';
 import { Users, Calendar, Megaphone, Trophy, Image, Settings, Plus, Trash2, Edit2, Save, X, ChevronDown, Target, Shirt, Check } from 'lucide-react';
 
-type Tab = 'players' | 'matches' | 'lineup' | 'announcements' | 'standings' | 'gallery' | 'coach' | 'stats';
+type Tab = 'players' | 'matches' | 'lineup' | 'announcements' | 'standings' | 'gallery' | 'coach' | 'stats' | 'competitions';
 
 const TAB_CONFIG: { key: Tab; label: string; icon: typeof Users }[] = [
   { key: 'coach', label: 'Coach', icon: Settings },
@@ -20,6 +20,7 @@ const TAB_CONFIG: { key: Tab; label: string; icon: typeof Users }[] = [
   { key: 'standings', label: 'Compétition', icon: Trophy },
   { key: 'stats', label: 'Stats', icon: Target },
   { key: 'gallery', label: 'Galerie', icon: Image },
+  { key: 'competitions', label: 'Gestion Compétitions', icon: Trophy },
 ];
 
 // Move Input and Select components outside to prevent re-render on every keystroke
@@ -56,6 +57,7 @@ export default function AdminPage() {
   const [playerStats, setPlayerStats] = useState<PlayerStat[]>([]);
   const [lineups, setLineups] = useState<MatchLineup[]>([]);
   const [coach, setCoach] = useState<Coach | null>(null);
+  const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -100,7 +102,7 @@ export default function AdminPage() {
     if (!team) return;
     setLoading(true);
     try {
-      const [p, m, a, s, g, c, ps, l] = await Promise.all([
+      const [p, m, a, s, g, c, ps, l, comp] = await Promise.all([
         fetch(`/api/data/players?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/matches?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/announcements?team_id=${team.id}`).then(r => r.json()),
@@ -109,6 +111,7 @@ export default function AdminPage() {
         fetch(`/api/data/coach?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/player-stats?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/match-lineup?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/competitions?team_id=${team.id}`).then(r => r.json()),
       ]);
       setPlayers(p);
       setMatches(m);
@@ -117,6 +120,7 @@ export default function AdminPage() {
       setGallery(g);
       setPlayerStats(ps);
       setLineups(l);
+      setCompetitions(comp || []);
       if (c) setCoach(c);
       if (s && s.length > 0) setStandingsComp(s[0].competition_name);
       setLoading(false);
@@ -133,7 +137,7 @@ export default function AdminPage() {
     if (!team || !supabase) return;
 
     const channels: any[] = [];
-    const tables = ['players', 'matches', 'announcements', 'standings', 'gallery', 'coach', 'player_stats', 'match_lineup'];
+    const tables = ['players', 'matches', 'announcements', 'standings', 'gallery', 'coach', 'player_stats', 'match_lineup', 'competitions'];
 
     tables.forEach(table => {
       const channel = supabase!
@@ -161,7 +165,7 @@ export default function AdminPage() {
 
   const handleDelete = async (table: string, id: string) => {
     if (!team) return;
-    
+
     try {
       const tableMap: Record<string, string> = {
         'players': 'players',
@@ -170,8 +174,9 @@ export default function AdminPage() {
         'standings': 'standings',
         'player_stats': 'stats',
         'gallery': 'gallery',
+        'competitions': 'competitions',
       };
-      
+
       const apiTable = tableMap[table];
       if (apiTable) {
         await fetch(`/api/admin/${apiTable}?id=${id}&team_id=${team.id}`, {
@@ -367,7 +372,7 @@ export default function AdminPage() {
 
   const handleStatSubmit = async () => {
     if (!team) return;
-    
+
     try {
       const payload = {
         player_id: form.player_id, competition_name: form.competition_name,
@@ -400,6 +405,42 @@ export default function AdminPage() {
     } catch (error) {
       console.error('Error saving stat:', error);
       alert('Erreur lors de la sauvegarde des stats: ' + (error as Error).message);
+    }
+  };
+
+  const handleCompetitionSubmit = async () => {
+    if (!team) return;
+
+    try {
+      const payload = {
+        name: form.name,
+        team_id: team.id,
+      };
+      if (editing) {
+        const response = await fetch('/api/admin/competitions', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...payload, id: editing }),
+        });
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to update competition');
+        }
+      } else {
+        const response = await fetch('/api/admin/competitions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to create competition');
+        }
+      }
+      setShowForm(false); setEditing(null); setForm({}); loadAll();
+    } catch (error) {
+      console.error('Error saving competition:', error);
+      alert('Erreur lors de la sauvegarde de la compétition: ' + (error as Error).message);
     }
   };
 
@@ -648,13 +689,7 @@ export default function AdminPage() {
                 <Input label="Date" field="match_date" type="date" value={form.match_date || ''} onChange={(value) => setForm(prev => ({ ...prev, match_date: value }))} />
                 <Input label="Heure" field="match_time" type="time" value={form.match_time || ''} onChange={(value) => setForm(prev => ({ ...prev, match_time: value }))} />
                 <Input label="Lieu" field="venue" placeholder="Terrain..." value={form.venue || ''} onChange={(value) => setForm(prev => ({ ...prev, venue: value }))} />
-                <Select label="Compétition" field="competition" options={[
-                  { value: 'Coupe Maire', label: 'Coupe Maire' },
-                  { value: 'Coupe Zonal', label: 'Coupe Zonal' },
-                  { value: 'Coupe Départementale', label: 'Coupe Départementale' },
-                  { value: 'Coupe Régional', label: 'Coupe Régional' },
-                  { value: 'Amical', label: 'Amical' },
-                ]} value={form.competition || ''} onChange={(value) => setForm(prev => ({ ...prev, competition: value }))} />
+                <Select label="Compétition" field="competition" options={competitions.map(c => ({ value: c.name, label: c.name }))} value={form.competition || ''} onChange={(value) => setForm(prev => ({ ...prev, competition: value }))} />
                 <Select label="Domicile" field="is_home" options={[{ value: 'true', label: 'Oui' }, { value: 'false', label: 'Non' }]} value={form.is_home || ''} onChange={(value) => setForm(prev => ({ ...prev, is_home: value }))} />
                 <Select label="Statut" field="status" options={[
                   { value: 'upcoming', label: 'À venir' }, { value: 'live', label: 'En direct' },
@@ -893,8 +928,8 @@ export default function AdminPage() {
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none shadow-md"
               >
                 <option value="">Sélectionner une compétition</option>
-                {['Coupe Maire', 'Coupe Zonal', 'Coupe Départementale', 'Coupe Régional', 'Amical'].map(c => (
-                  <option key={c} value={c}>{c}</option>
+                {competitions.map(c => (
+                  <option key={c.id} value={c.name}>{c.name}</option>
                 ))}
               </select>
               <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
@@ -985,8 +1020,8 @@ export default function AdminPage() {
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none shadow-md"
               >
                 <option value="">Sélectionner une compétition</option>
-                {['Coupe Maire', 'Coupe Zonal', 'Coupe Départementale', 'Coupe Régional', 'Amical'].map(c => (
-                  <option key={c} value={c}>{c}</option>
+                {competitions.map(c => (
+                  <option key={c.id} value={c.name}>{c.name}</option>
                 ))}
               </select>
               <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
@@ -1008,7 +1043,7 @@ export default function AdminPage() {
                   <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
                 <Select label="Joueur" field="player_id" options={players.map(p => ({ value: p.id, label: `${p.name} (${POSITION_LABELS[p.position]})` }))} value={form.player_id || ''} onChange={(value) => setForm(prev => ({ ...prev, player_id: value }))} />
-                <Select label="Compétition" field="competition_name" options={['Coupe Maire', 'Coupe Zonal', 'Coupe Départementale', 'Coupe Régional', 'Amical'].map(c => ({ value: c, label: c }))} value={form.competition_name || statsComp || ''} onChange={(value) => setForm(prev => ({ ...prev, competition_name: value }))} />
+                <Select label="Compétition" field="competition_name" options={competitions.map(c => ({ value: c.name, label: c.name }))} value={form.competition_name || statsComp || ''} onChange={(value) => setForm(prev => ({ ...prev, competition_name: value }))} />
                 <div className="grid grid-cols-3 gap-3">
                   <Input label="Buts" field="goals" type="number" value={form.goals || ''} onChange={(value) => setForm(prev => ({ ...prev, goals: value }))} />
                   <Input label="Passes D." field="assists" type="number" value={form.assists || ''} onChange={(value) => setForm(prev => ({ ...prev, assists: value }))} />
@@ -1061,7 +1096,7 @@ export default function AdminPage() {
                   <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
                 <Select label="Type" field="type" options={[{ value: 'image', label: 'Image' }, { value: 'video', label: 'Vidéo' }]} value={form.type || ''} onChange={(value) => setForm(prev => ({ ...prev, type: value }))} />
-                <FileUpload 
+                <FileUpload
                   value={form.url || null}
                   onChange={(url) => setForm(prev => ({ ...prev, url }))}
                   label="Fichier"
@@ -1086,6 +1121,41 @@ export default function AdminPage() {
                     <button onClick={() => startEdit(g, ['type','url','caption','event_type'])} className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center shadow"><Edit2 size={10} className="text-blue-500" /></button>
                     <button onClick={() => handleDelete('gallery', g.id)} className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center shadow"><Trash2 size={10} className="text-red-500" /></button>
                   </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* COMPETITIONS TAB */}
+        {tab === 'competitions' && (
+          <>
+            {!showForm && (
+              <button onClick={() => { setShowForm(true); setEditing(null); setForm({}); }}
+                className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
+                <Plus size={16} /> Ajouter une compétition
+              </button>
+            )}
+            {showForm && tab === 'competitions' && (
+              <div className="rounded-2xl bg-white p-4 shadow-lg space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold">{editing ? 'Modifier' : 'Ajouter'} une compétition</h3>
+                  <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
+                </div>
+                <Input label="Nom de la compétition" field="name" placeholder="Ex: Coupe Maire" value={form.name || ''} onChange={(value) => setForm(prev => ({ ...prev, name: value }))} />
+                <button onClick={handleCompetitionSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
+                  <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
+                </button>
+              </div>
+            )}
+            <div className="space-y-2">
+              {competitions.map(c => (
+                <div key={c.id} className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-md">
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-sm text-gray-900 truncate">{c.name}</div>
+                  </div>
+                  <button onClick={() => startEdit(c, ['name'])} className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"><Edit2 size={14} /></button>
+                  <button onClick={() => handleDelete('competitions', c.id)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
                 </div>
               ))}
             </div>
