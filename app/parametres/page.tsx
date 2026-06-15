@@ -109,6 +109,7 @@ export default function ParametresPage() {
           primary_color: glowColor,
           secondary_color: buttonColor,
           accent_color: iconColor,
+          nav_color: navColor,
           logo_url: logoUrl,
         }),
       });
