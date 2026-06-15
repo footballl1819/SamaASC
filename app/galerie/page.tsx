@@ -126,6 +126,9 @@ export default function GaleriePage() {
               key={item.id}
               onClick={() => setSelectedItem(item)}
               className="relative aspect-square rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group"
+              style={{
+                boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
+              }}
             >
               <img
                 src={item.url}

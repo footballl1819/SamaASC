@@ -220,7 +220,7 @@ export default function SupportersPage() {
               key={s.id}
               className="rounded-xl bg-white p-4 shadow-md hover-lift"
               style={{
-                boxShadow: team?.primary_color ? `0 4px 20px -4px ${team.primary_color}40` : undefined
+                boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
               }}
             >
               <div className="flex items-start gap-3">

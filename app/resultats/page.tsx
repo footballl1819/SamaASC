@@ -201,7 +201,9 @@ export default function ResultatsPage() {
           const userHasVoted = votes.some(v => v.match_id === match.id && v.voter_name === user?.name || v.voter_name === user?.username);
 
           return (
-            <div key={match.id} className="rounded-2xl bg-white shadow-lg overflow-hidden hover-lift">
+            <div key={match.id} className="rounded-2xl bg-white shadow-lg overflow-hidden hover-lift" style={{
+              boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
+            }}>
               {/* Match Header */}
               <button
                 onClick={() => {

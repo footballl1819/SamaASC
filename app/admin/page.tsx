@@ -672,7 +672,9 @@ export default function AdminPage() {
             )}
             <div className="space-y-2">
               {matches.map(m => (
-                <div key={m.id} className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-md">
+                <div key={m.id} className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-md" style={{
+                  boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
+                }}>
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold text-sm text-gray-900">vs {m.opponent}</div>
                     <div className="text-xs text-gray-400">{m.match_date} {m.match_time || ''} - {m.status === 'completed' ? `${m.score_home}-${m.score_away}` : m.status} - {m.formation}</div>

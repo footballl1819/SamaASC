@@ -127,7 +127,9 @@ export default function ClassementPage() {
 
         {/* Our Position Card */}
         {ourTeam && (
-          <div className="rounded-2xl bg-gradient-to-br from-green-600 via-green-700 to-emerald-800 p-5 text-white shadow-xl">
+          <div className="rounded-2xl bg-gradient-to-br from-green-600 via-green-700 to-emerald-800 p-5 text-white shadow-xl" style={{
+            boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
+          }}>
             <div className="flex items-center gap-2 mb-3">
               <Trophy size={18} />
               <span className="text-sm font-medium text-green-200">{selectedCompetition}</span>

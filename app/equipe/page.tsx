@@ -404,6 +404,9 @@ export default function EquipePage() {
                 <div
                   key={player.id}
                   className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-md hover-lift"
+                  style={{
+                    boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
+                  }}
                 >
                   <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border-2 relative" style={{ backgroundColor: team?.secondary_color ? `${team.secondary_color}20` : '#dcfce7', borderColor: team?.secondary_color || '#bbf7d0' }}>
                     {player.photo_url ? (

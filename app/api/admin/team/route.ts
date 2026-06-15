@@ -19,19 +19,26 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Missing team id' }, { status: 400 });
     }
 
+    // Build update object dynamically to handle missing nav_color column
+    const updateData: any = {
+      name,
+      slug,
+      description,
+      primary_color,
+      secondary_color,
+      accent_color,
+      logo_url,
+      updated_at: new Date().toISOString(),
+    };
+
+    // Only include nav_color if it's provided
+    if (nav_color !== undefined) {
+      updateData.nav_color = nav_color;
+    }
+
     const { data, error } = await supabase
       .from('teams')
-      .update({
-        name,
-        slug,
-        description,
-        primary_color,
-        secondary_color,
-        accent_color,
-        nav_color,
-        logo_url,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updateData)
       .eq('id', id)
       .select()
       .single();

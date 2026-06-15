@@ -206,7 +206,7 @@ export default function AccueilPage() {
                   key={ann.id}
                   className={`rounded-xl border p-4 hover-lift ${config.bg}`}
                   style={{
-                    boxShadow: team?.primary_color ? `0 4px 20px -4px ${team.primary_color}40` : undefined
+                    boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
                   }}
                 >
                   <div className="flex items-start gap-3">
