@@ -36,7 +36,7 @@ export default function SupportersPage() {
   useEffect(() => {
     async function load() {
       if (!team || !supabase) return;
-      
+
       const { data } = await supabase.from('supporters').select('*').eq('team_id', team.id).order('created_at', { ascending: false });
       setSupporters(data || []);
       setLoading(false);
@@ -74,6 +74,8 @@ export default function SupportersPage() {
         )
         .subscribe();
 
+      console.log('Realtime subscription created');
+
       return () => {
         supabase!.removeChannel(channel);
       };
@@ -109,8 +111,9 @@ export default function SupportersPage() {
 
       const data = await response.json();
       console.log('Success response:', data);
-      // Add to local state for immediate feedback
-      setSupporters(prev => [data, ...prev]);
+      // Reload data from database as fallback
+      const { data: supportersData } = await supabase.from('supporters').select('*').eq('team_id', team.id).order('created_at', { ascending: false });
+      setSupporters(supportersData || []);
       setMessage('');
       setSelectedSticker(null);
     } catch (error) {
