@@ -79,6 +79,8 @@ export default function SupportersPage() {
     if (!selectedSticker && !message.trim()) return;
     setSubmitting(true);
 
+    console.log('Submitting supporter message:', { user: user.name || user.username, message: (selectedSticker ? selectedSticker + ' ' : '') + message.trim(), team_id: team.id });
+
     try {
       const response = await fetch('/api/admin/supporters', {
         method: 'POST',
@@ -90,12 +92,18 @@ export default function SupportersPage() {
         }),
       });
 
+      console.log('Response status:', response.status);
+
       if (!response.ok) {
         const error = await response.json();
+        console.error('Error response:', error);
         throw new Error(error.error || 'Failed to submit message');
       }
 
-      // Don't update local state - let realtime subscription handle it
+      const data = await response.json();
+      console.log('Success response:', data);
+      // Add to local state for immediate feedback
+      setSupporters(prev => [data, ...prev]);
       setMessage('');
       setSelectedSticker(null);
     } catch (error) {
