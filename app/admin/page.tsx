@@ -753,8 +753,8 @@ export default function AdminPage() {
                                 });
                                 // Update starters list
                                 setLineupStarters(prev => {
-                                  const allSelected = Object.values({ ...lineupPositions, [idx + 1]: newPlayerId || null }).filter(Boolean);
-                                  return [...new Set(allSelected)];
+                                  const allSelected = Object.values({ ...lineupPositions, [idx + 1]: newPlayerId || null }).filter((v): v is string => v !== null);
+                                  return allSelected.filter((v, i, a) => a.indexOf(v) === i);
                                 });
                               }}
                               className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-xs input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none bg-white"
