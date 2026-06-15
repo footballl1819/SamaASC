@@ -178,10 +178,14 @@ export default function ResultatsPage() {
           <select
             value={selectedCompetition}
             onChange={(e) => setSelectedCompetition(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none shadow-md"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 appearance-none shadow-md"
+            style={{
+              '--tw-ring-color': team?.primary_color ?? '#22c55e',
+              borderColor: team?.primary_color ?? '#e5e7eb',
+            } as React.CSSProperties}
           >
             <option value="">Toutes les compétitions</option>
-            {['Coupe Maire', 'Coupe Zonal', 'Coupe Départementale', 'Coupe Régional', 'Amical'].map(c => (
+            {Array.from(new Set(matches.filter(m => m.status === 'completed').map(m => m.competition))).filter(Boolean).sort().map(c => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>

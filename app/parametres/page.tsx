@@ -17,8 +17,9 @@ export default function ParametresPage() {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
-  const [backgroundColor, setBackgroundColor] = useState('#22c55e');
-  const [buttonColor, setButtonColor] = useState('#15803d');
+  const [glowColor, setGlowColor] = useState('#22c55e');
+  const [iconColor, setIconColor] = useState('#15803d');
+  const [buttonColor, setButtonColor] = useState('#16a34a');
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
@@ -46,8 +47,9 @@ export default function ParametresPage() {
       setName(team.name);
       setSlug(team.slug);
       setDescription(team.description || '');
-      setBackgroundColor(team.primary_color || '#22c55e');
-      setButtonColor(team.secondary_color || '#15803d');
+      setGlowColor(team.primary_color || '#22c55e');
+      setIconColor(team.accent_color || '#15803d');
+      setButtonColor(team.secondary_color || '#16a34a');
       setLogoPreview(team.logo_url);
       setLoading(false);
     }
@@ -102,9 +104,9 @@ export default function ParametresPage() {
           name,
           slug,
           description,
-          primary_color: backgroundColor,
+          primary_color: glowColor,
           secondary_color: buttonColor,
-          accent_color: buttonColor,
+          accent_color: iconColor,
           logo_url: logoUrl,
         }),
       });
@@ -279,26 +281,45 @@ export default function ParametresPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Couleur de fond
+                Couleur de lueur (cartes, champs, tableaux)
               </label>
               <div className="flex items-center gap-3">
                 <input
                   type="color"
-                  value={backgroundColor}
-                  onChange={(e) => setBackgroundColor(e.target.value)}
+                  value={glowColor}
+                  onChange={(e) => setGlowColor(e.target.value)}
                   className="w-12 h-12 rounded-lg border-2 border-gray-200 cursor-pointer"
                 />
                 <input
                   type="text"
-                  value={backgroundColor}
-                  onChange={(e) => setBackgroundColor(e.target.value)}
+                  value={glowColor}
+                  onChange={(e) => setGlowColor(e.target.value)}
                   className="flex-1 rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
                 />
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Couleur des boutons et champs
+                Couleur des icônes (fenêtres)
+              </label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  value={iconColor}
+                  onChange={(e) => setIconColor(e.target.value)}
+                  className="w-12 h-12 rounded-lg border-2 border-gray-200 cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={iconColor}
+                  onChange={(e) => setIconColor(e.target.value)}
+                  className="flex-1 rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Couleur des boutons
               </label>
               <div className="flex items-center gap-3">
                 <input
@@ -323,7 +344,11 @@ export default function ParametresPage() {
             <div className="flex gap-2">
               <div
                 className="w-16 h-16 rounded-lg shadow-md"
-                style={{ backgroundColor: backgroundColor }}
+                style={{ backgroundColor: glowColor }}
+              />
+              <div
+                className="w-16 h-16 rounded-lg shadow-md"
+                style={{ backgroundColor: iconColor }}
               />
               <div
                 className="w-16 h-16 rounded-lg shadow-md"

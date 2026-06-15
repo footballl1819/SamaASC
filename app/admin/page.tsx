@@ -757,7 +757,11 @@ export default function AdminPage() {
                                   return allSelected.filter((v, i, a) => a.indexOf(v) === i);
                                 });
                               }}
-                              className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-xs input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none bg-white"
+                              className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-xs input-shadow focus:outline-none focus:ring-2 appearance-none bg-white"
+                              style={{
+                                '--tw-ring-color': team?.primary_color || '#22c55e',
+                                borderColor: team?.primary_color || '#e5e7eb',
+                              } as React.CSSProperties}
                             >
                               <option value="">Choisir un joueur...</option>
                               {players.filter(p => !lineupSubs.includes(p.id)).map(p => (

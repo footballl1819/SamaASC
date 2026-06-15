@@ -42,15 +42,15 @@ export default function Header() {
   });
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-xl border-b border-gray-800">
       <div className="flex items-center justify-between px-4 py-3 max-w-lg mx-auto">
         {/* Menu button */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          className="p-2 rounded-lg hover:bg-gray-800 transition-colors"
           title="Menu"
         >
-          {menuOpen ? <X size={20} className="text-gray-600" /> : <Menu size={20} className="text-gray-600" />}
+          {menuOpen ? <X size={20} className="text-white" /> : <Menu size={20} className="text-white" />}
         </button>
 
         {/* Centered logo and name */}
@@ -69,23 +69,23 @@ export default function Header() {
               <span className="text-white font-bold text-xs">{team?.name?.substring(0, 2).toUpperCase() || 'SA'}</span>
             )}
           </div>
-          <h1 className="text-lg font-bold text-gray-900 tracking-tight">{team?.name || title}</h1>
+          <h1 className="text-lg font-bold text-white tracking-tight">{team?.name || title}</h1>
         </div>
 
         {/* Logout button */}
         <button
           onClick={logout}
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          className="p-2 rounded-lg hover:bg-gray-800 transition-colors"
           title="Déconnexion"
         >
-          <LogOut size={18} className="text-gray-600" />
+          <LogOut size={18} className="text-white" />
         </button>
       </div>
 
       {/* Navigation menu overlay */}
       {menuOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" onClick={() => setMenuOpen(false)}>
-          <div className="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-xl p-4" onClick={(e) => e.stopPropagation()}>
+          <div className="absolute left-0 top-0 bottom-0 w-64 bg-gray-900 shadow-xl p-4" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-2.5 mb-6">
               <div 
                 className="w-10 h-10 rounded-lg flex items-center justify-center shadow-md overflow-hidden"
@@ -102,8 +102,8 @@ export default function Header() {
                 )}
               </div>
               <div>
-                <h2 className="font-bold text-gray-900">{team?.name || 'SamaASC'}</h2>
-                <p className="text-xs text-gray-500">Menu</p>
+                <h2 className="font-bold text-white">{team?.name || 'SamaASC'}</h2>
+                <p className="text-xs text-gray-400">Menu</p>
               </div>
             </div>
             <nav className="space-y-1">
@@ -120,10 +120,10 @@ export default function Header() {
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
                       isActive
                         ? 'scale-105'
-                        : 'text-gray-700 hover:bg-gray-100'
+                        : 'text-gray-300 hover:bg-gray-800'
                     }`}
                     style={{
-                      backgroundColor: isActive ? (team?.secondary_color ? `${team.secondary_color}20` : 'rgba(34, 197, 94, 0.1)') : undefined,
+                      backgroundColor: isActive ? (team?.secondary_color ? `${team.secondary_color}30` : 'rgba(34, 197, 94, 0.2)') : undefined,
                       color: isActive ? (team?.secondary_color || '#16a34a') : undefined,
                     }}
                   >
