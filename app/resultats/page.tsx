@@ -26,6 +26,7 @@ export default function ResultatsPage() {
   const [selectedCompetition, setSelectedCompetition] = useState<string>('');
   const [showVoteModal, setShowVoteModal] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<string>('');
+  const [voteError, setVoteError] = useState<string>('');
 
   useEffect(() => {
     // Check authentication
@@ -89,13 +90,25 @@ export default function ResultatsPage() {
 
   const handleVote = async (matchId: string, playerId: string) => {
     if (!voterName.trim() || !team || !supabase) return;
-    const { data } = await supabase
+    
+    // Check if user has already voted for this match
+    const existingVote = votes.find(v => v.match_id === matchId && v.voter_name === voterName.trim());
+    if (existingVote) {
+      setVoteError('Vous avez déjà voté pour ce match');
+      return;
+    }
+    
+    setVoteError('');
+    const { data, error } = await supabase
       .from('match_votes')
       .insert({ match_id: matchId, player_id: playerId, voter_name: voterName.trim(), team_id: team.id })
       .select();
     if (data && data.length > 0) {
       setVotes(prev => [...prev, data[0]]);
       setVotedFor(playerId);
+    }
+    if (error) {
+      setVoteError('Erreur lors du vote: ' + error.message);
     }
   };
 
@@ -288,14 +301,23 @@ export default function ResultatsPage() {
                   type="text"
                   placeholder="Votre nom"
                   value={voterName}
-                  onChange={(e) => setVoterName(e.target.value)}
+                  onChange={(e) => {
+                    setVoterName(e.target.value);
+                    setVoteError('');
+                  }}
                   className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
                 />
+                {voteError && (
+                  <div className="text-red-600 text-sm font-medium">{voteError}</div>
+                )}
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-2 block">Sélectionnez un joueur</label>
                   <select
                     value={selectedPlayer}
-                    onChange={(e) => setSelectedPlayer(e.target.value)}
+                    onChange={(e) => {
+                      setSelectedPlayer(e.target.value);
+                      setVoteError('');
+                    }}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none shadow-md"
                   >
                     <option value="">Choisir un joueur...</option>
@@ -308,7 +330,9 @@ export default function ResultatsPage() {
                   onClick={() => {
                     if (selectedPlayer && voterName.trim()) {
                       handleVote(selectedMatch, selectedPlayer);
-                      setShowVoteModal(false);
+                      if (!voteError) {
+                        setShowVoteModal(false);
+                      }
                     }
                   }}
                   disabled={!selectedPlayer || !voterName.trim()}

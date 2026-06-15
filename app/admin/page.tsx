@@ -419,7 +419,7 @@ export default function AdminPage() {
           ...positions.map((pos, idx) => {
             const playerId = lineupPositions[idx + 1];
             if (!playerId) return null;
-            return { player_id: playerId, position_slot: idx + 1, is_substitute: false };
+            return { player_id: playerId, position_slot: idx, is_substitute: false };
           }).filter(Boolean),
           ...lineupSubs.map((pid, idx) => ({ player_id: pid, position_slot: idx + 12, is_substitute: true }))
         ]
