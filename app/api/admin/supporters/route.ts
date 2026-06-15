@@ -15,7 +15,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, message, team_id } = body;
 
+    console.log('Creating supporter:', { name, message, team_id });
+
     if (!name || !message || !team_id) {
+      console.error('Missing required fields');
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -30,6 +33,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    console.log('Supporter created successfully:', data);
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error in supporters API:', error);
