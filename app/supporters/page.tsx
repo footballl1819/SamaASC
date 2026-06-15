@@ -56,8 +56,15 @@ export default function SupportersPage() {
             filter: `team_id=eq.${team.id}`,
           },
           (payload) => {
+            console.log('Realtime event:', payload.eventType, payload);
             if (payload.eventType === 'INSERT') {
-              setSupporters(prev => [payload.new as Supporter, ...prev]);
+              setSupporters(prev => {
+                // Avoid duplicates
+                if (prev.some(s => s.id === payload.new.id)) {
+                  return prev;
+                }
+                return [payload.new as Supporter, ...prev];
+              });
             } else if (payload.eventType === 'UPDATE') {
               setSupporters(prev => prev.map(s => s.id === payload.new.id ? payload.new as Supporter : s));
             } else if (payload.eventType === 'DELETE') {
