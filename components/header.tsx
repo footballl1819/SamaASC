@@ -123,8 +123,8 @@ export default function Header() {
                         : 'text-gray-300 hover:bg-gray-800'
                     }`}
                     style={{
-                      backgroundColor: isActive ? (team?.secondary_color ? `${team.secondary_color}30` : 'rgba(34, 197, 94, 0.2)') : undefined,
-                      color: isActive ? (team?.secondary_color || '#16a34a') : undefined,
+                      backgroundColor: isActive ? (team?.accent_color ? `${team.accent_color}30` : 'rgba(34, 197, 94, 0.2)') : undefined,
+                      color: isActive ? (team?.accent_color || '#16a34a') : undefined,
                     }}
                   >
                     <Icon size={20} strokeWidth={isActive ? 2.5 : 1.8} />
