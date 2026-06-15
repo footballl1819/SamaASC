@@ -66,8 +66,16 @@ export default function AdminPage() {
   const [lineupFormation, setLineupFormation] = useState<string>('4-3-3');
   const [lineupStarters, setLineupStarters] = useState<string[]>([]);
   const [lineupSubs, setLineupSubs] = useState<string[]>([]);
+  const [lineupPositions, setLineupPositions] = useState<Record<number, string>>({});
   const [standingsComp, setStandingsComp] = useState<string>('');
   const [statsComp, setStatsComp] = useState<string>('');
+
+  // Formation positions mapping
+  const FORMATION_POSITIONS: Record<string, string[]> = {
+    '4-3-3': ['GK', 'LB', 'CB', 'CB', 'RB', 'CDM', 'CM', 'CM', 'LW', 'ST', 'RW'],
+    '4-4-2': ['GK', 'LB', 'CB', 'CB', 'RB', 'LM', 'CM', 'CM', 'RM', 'ST', 'ST'],
+    '3-5-2': ['GK', 'CB', 'CB', 'CB', 'LWB', 'CDM', 'CM', 'CM', 'RWB', 'ST', 'ST'],
+  };
 
   useEffect(() => {
     // Only check authentication after context is fully loaded
@@ -403,11 +411,16 @@ export default function AdminPage() {
       if (supabase) {
         await supabase.from('matches').update({ formation: lineupFormation }).eq('id', lineupMatchId);
       }
-      // Save lineup via API
+      // Save lineup via API with position assignments
+      const positions = FORMATION_POSITIONS[lineupFormation] || [];
       const lineup = {
         match_id: lineupMatchId,
         players: [
-          ...lineupStarters.map((pid, idx) => ({ player_id: pid, position_slot: idx + 1, is_substitute: false })),
+          ...positions.map((pos, idx) => {
+            const playerId = lineupPositions[idx + 1];
+            if (!playerId) return null;
+            return { player_id: playerId, position_slot: idx + 1, is_substitute: false };
+          }).filter(Boolean),
           ...lineupSubs.map((pid, idx) => ({ player_id: pid, position_slot: idx + 12, is_substitute: true }))
         ]
       };
@@ -459,9 +472,26 @@ export default function AdminPage() {
     if (lineupStarters.includes(pid)) {
       setLineupStarters(prev => prev.filter(id => id !== pid));
       setLineupSubs(prev => [...prev, pid]);
+      // Remove from positions
+      setLineupPositions(prev => {
+        const newPositions = { ...prev };
+        Object.keys(newPositions).forEach(key => {
+          if (newPositions[parseInt(key)] === pid) {
+            delete newPositions[parseInt(key)];
+          }
+        });
+        return newPositions;
+      });
     } else if (lineupStarters.length < 11) {
       setLineupStarters(prev => [...prev, pid]);
       setLineupSubs(prev => prev.filter(id => id !== pid));
+      // Auto-assign to first available position
+      const positions = FORMATION_POSITIONS[lineupFormation] || [];
+      const usedPositions = Object.keys(lineupPositions).map(Number);
+      const availablePosition = positions.findIndex((_, idx) => !usedPositions.includes(idx + 1));
+      if (availablePosition !== -1) {
+        setLineupPositions(prev => ({ ...prev, [availablePosition + 1]: pid }));
+      }
     }
   };
 
@@ -482,7 +512,7 @@ export default function AdminPage() {
           <div 
             className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover"
             style={{ 
-              background: team?.secondary_color ? `linear-gradient(135deg, ${team.secondary_color}, ${team.accent_color})` : 'linear-gradient(135deg, #22c55e, #15803d)'
+              background: team?.accent_color ? team.accent_color : '#15803d'
             }}
           >
             <Settings size={24} className="text-white" />
@@ -689,48 +719,68 @@ export default function AdminPage() {
                     </div>
                   </div>
 
-                  {/* Starters */}
+                  {/* Starters - Position-based selection */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-green-700">Titulaires ({lineupStarters.length}/11)</span>
-                      {lineupStarters.length !== 11 && <span className="text-[10px] text-amber-500 font-medium">Il faut 11 joueurs</span>}
+                      <span className="text-xs font-bold text-green-700">Titulaires ({Object.keys(lineupPositions).length}/11)</span>
+                      {Object.keys(lineupPositions).length !== 11 && <span className="text-[10px] text-amber-500 font-medium">Il faut 11 joueurs</span>}
                     </div>
-                    <div className="space-y-1.5">
-                      {lineupStarters.map((pid, idx) => {
-                        const p = players.find(pl => pl.id === pid);
-                        if (!p) return null;
+                    <div className="space-y-2">
+                      {(FORMATION_POSITIONS[lineupFormation] || []).map((position, idx) => {
+                        const selectedPlayerId = lineupPositions[idx + 1];
+                        const selectedPlayer = players.find(p => p.id === selectedPlayerId);
                         return (
-                          <div key={pid} className="flex items-center gap-2 rounded-lg bg-green-50 p-2 border border-green-200">
-                            <span className="text-xs font-bold text-green-600 w-5 text-center">{idx + 1}</span>
-                            <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center overflow-hidden border border-green-200">
-                              {p.photo_url ? <img src={p.photo_url} alt="" className="w-full h-full object-cover" /> : <span className="text-[9px] font-bold text-green-600">{p.jersey_number}</span>}
-                            </div>
-                            <div className="flex-1 min-w-0"><div className="text-xs font-semibold text-gray-800 truncate">{p.name}</div><div className="text-[10px] text-gray-400">{POSITION_LABELS[p.position]}</div></div>
-                            <button onClick={() => toggleStarter(pid)} className="text-red-400 hover:text-red-600 transition-colors"><X size={14} /></button>
+                          <div key={idx} className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-green-600 w-8 text-center">{position}</span>
+                            <select
+                              value={selectedPlayerId || ''}
+                              onChange={(e) => {
+                                const newPlayerId = e.target.value;
+                                setLineupPositions(prev => {
+                                  const newPositions = { ...prev };
+                                  if (newPlayerId) {
+                                    newPositions[idx + 1] = newPlayerId;
+                                    // Remove from other positions if selected elsewhere
+                                    Object.keys(newPositions).forEach(key => {
+                                      if (parseInt(key) !== idx + 1 && newPositions[parseInt(key)] === newPlayerId) {
+                                        delete newPositions[parseInt(key)];
+                                      }
+                                    });
+                                  } else {
+                                    delete newPositions[idx + 1];
+                                  }
+                                  return newPositions;
+                                });
+                                // Update starters list
+                                setLineupStarters(prev => {
+                                  const allSelected = Object.values({ ...lineupPositions, [idx + 1]: newPlayerId || null }).filter(Boolean);
+                                  return [...new Set(allSelected)];
+                                });
+                              }}
+                              className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-xs input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none bg-white"
+                            >
+                              <option value="">Choisir un joueur...</option>
+                              {players.filter(p => !lineupSubs.includes(p.id)).map(p => (
+                                <option key={p.id} value={p.id}>{p.name} ({POSITION_LABELS[p.position]})</option>
+                              ))}
+                            </select>
+                            {selectedPlayer && (
+                              <button onClick={() => {
+                                setLineupPositions(prev => {
+                                  const newPositions = { ...prev };
+                                  delete newPositions[idx + 1];
+                                  return newPositions;
+                                });
+                                setLineupStarters(prev => prev.filter(id => id !== selectedPlayerId));
+                              }} className="text-red-400 hover:text-red-600 transition-colors">
+                                <X size={14} />
+                              </button>
+                            )}
                           </div>
                         );
                       })}
                     </div>
                   </div>
-
-                  {/* Available players to add as starters */}
-                  {lineupStarters.length < 11 && (
-                    <div>
-                      <span className="text-xs font-bold text-gray-500 mb-1 block">Ajouter titulaire</span>
-                      <div className="space-y-1 max-h-40 overflow-y-auto">
-                        {players.filter(p => !lineupStarters.includes(p.id)).map(p => (
-                          <button key={p.id} onClick={() => toggleStarter(p.id)}
-                            className="w-full flex items-center gap-2 rounded-lg p-2 text-left hover:bg-green-50 transition-colors">
-                            <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200">
-                              {p.photo_url ? <img src={p.photo_url} alt="" className="w-full h-full object-cover" /> : <span className="text-[9px] font-bold text-gray-500">{p.jersey_number}</span>}
-                            </div>
-                            <div className="flex-1"><div className="text-xs font-medium text-gray-700">{p.name}</div><div className="text-[10px] text-gray-400">{POSITION_LABELS[p.position]}</div></div>
-                            <Plus size={14} className="text-green-500" />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
                   {/* Substitutes */}
                   <div>
@@ -756,7 +806,7 @@ export default function AdminPage() {
                   <div>
                     <span className="text-xs font-bold text-gray-400 mb-1 block">Ajouter remplaçant</span>
                     <div className="space-y-1 max-h-32 overflow-y-auto">
-                      {players.filter(p => !lineupStarters.includes(p.id) && !lineupSubs.includes(p.id)).map(p => (
+                      {players.filter(p => !Object.values(lineupPositions).includes(p.id) && !lineupSubs.includes(p.id)).map(p => (
                         <button key={p.id} onClick={() => toggleSub(p.id)}
                           className="w-full flex items-center gap-2 rounded-lg p-2 text-left hover:bg-gray-50 transition-colors">
                           <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200">

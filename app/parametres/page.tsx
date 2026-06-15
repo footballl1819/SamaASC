@@ -146,7 +146,7 @@ export default function ParametresPage() {
           <div 
             className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover"
             style={{ 
-              background: team?.secondary_color ? `linear-gradient(135deg, ${team.secondary_color}, ${team.accent_color})` : 'linear-gradient(135deg, #22c55e, #15803d)'
+              background: team?.accent_color ? team.accent_color : '#15803d'
             }}
           >
             <Palette size={24} className="text-white" />

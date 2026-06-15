@@ -121,7 +121,7 @@ export default function AccueilPage() {
           <div 
             className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover"
             style={{ 
-              background: team?.secondary_color ? `linear-gradient(135deg, ${team.secondary_color}, ${team.accent_color})` : 'linear-gradient(135deg, #22c55e, #15803d)'
+              background: team?.accent_color ? team.accent_color : '#15803d'
             }}
           >
             <Home size={24} className="text-white" />
@@ -134,7 +134,12 @@ export default function AccueilPage() {
 
         {/* Hero / Next Match Banner */}
         {nextMatch && (
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-600 via-green-700 to-emerald-800 p-5 text-white shadow-xl">
+          <div 
+            className="relative overflow-hidden rounded-2xl p-5 text-white shadow-xl"
+            style={{ 
+              background: team?.secondary_color ? `linear-gradient(135deg, ${team.secondary_color}, ${team.secondary_color}dd)` : 'linear-gradient(135deg, #22c55e, #15803d)'
+            }}
+          >
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
             <div className="relative">
@@ -200,6 +205,9 @@ export default function AccueilPage() {
                 <div
                   key={ann.id}
                   className={`rounded-xl border p-4 hover-lift ${config.bg}`}
+                  style={{
+                    boxShadow: team?.accent_color ? `0 4px 20px -4px ${team.accent_color}40` : undefined
+                  }}
                 >
                   <div className="flex items-start gap-3">
                     <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-white/60 shadow-sm`}>
