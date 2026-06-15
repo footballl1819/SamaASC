@@ -1,3 +1,12 @@
+export interface User {
+  id: string;
+  team_id: string;
+  username: string;
+  name: string;
+  role: 'admin' | 'member';
+  created_at: string;
+}
+
 export interface Coach {
   id: string;
   name: string;

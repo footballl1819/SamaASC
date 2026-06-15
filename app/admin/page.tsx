@@ -3,13 +3,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { Player, Match, Announcement, Standing, GalleryItem, Coach, PlayerStat, MatchLineup, Competition, POSITION_LABELS } from '@/lib/types';
+import { Player, Match, Announcement, Standing, GalleryItem, Coach, PlayerStat, MatchLineup, Competition, User, POSITION_LABELS } from '@/lib/types';
 import AppShell from '@/components/app-shell';
 import FileUpload from '@/components/file-upload';
 import { useTeam } from '@/contexts/team-context';
 import { Users, Calendar, Megaphone, Trophy, Image, Settings, Plus, Trash2, Edit2, Save, X, ChevronDown, Target, Shirt, Check } from 'lucide-react';
 
-type Tab = 'players' | 'matches' | 'lineup' | 'announcements' | 'standings' | 'gallery' | 'coach' | 'stats' | 'competitions';
+type Tab = 'players' | 'matches' | 'lineup' | 'announcements' | 'standings' | 'gallery' | 'coach' | 'stats' | 'competitions' | 'users';
 
 const TAB_CONFIG: { key: Tab; label: string; icon: typeof Users }[] = [
   { key: 'coach', label: 'Coach', icon: Settings },
@@ -21,6 +21,7 @@ const TAB_CONFIG: { key: Tab; label: string; icon: typeof Users }[] = [
   { key: 'stats', label: 'Stats', icon: Target },
   { key: 'gallery', label: 'Galerie', icon: Image },
   { key: 'competitions', label: 'Gestion Compétitions', icon: Trophy },
+  { key: 'users', label: 'Gestion Utilisateurs', icon: Users },
 ];
 
 // Move Input and Select components outside to prevent re-render on every keystroke
@@ -58,6 +59,7 @@ export default function AdminPage() {
   const [lineups, setLineups] = useState<MatchLineup[]>([]);
   const [coach, setCoach] = useState<Coach | null>(null);
   const [competitions, setCompetitions] = useState<Competition[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -102,7 +104,7 @@ export default function AdminPage() {
     if (!team) return;
     setLoading(true);
     try {
-      const [p, m, a, s, g, c, ps, l, comp] = await Promise.all([
+      const [p, m, a, s, g, c, ps, l, comp, u] = await Promise.all([
         fetch(`/api/data/players?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/matches?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/announcements?team_id=${team.id}`).then(r => r.json()),
@@ -112,6 +114,7 @@ export default function AdminPage() {
         fetch(`/api/data/player-stats?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/match-lineup?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/competitions?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/users?team_id=${team.id}`).then(r => r.json()).catch(() => []),
       ]);
       setPlayers(p);
       setMatches(m);
@@ -121,6 +124,7 @@ export default function AdminPage() {
       setPlayerStats(ps);
       setLineups(l);
       setCompetitions(comp || []);
+      setUsers(u || []);
       if (c) setCoach(c);
       if (s && s.length > 0) setStandingsComp(s[0].competition_name);
       setLoading(false);
@@ -137,7 +141,7 @@ export default function AdminPage() {
     if (!team || !supabase) return;
 
     const channels: any[] = [];
-    const tables = ['players', 'matches', 'announcements', 'standings', 'gallery', 'coach', 'player_stats', 'match_lineup', 'competitions'];
+    const tables = ['players', 'matches', 'announcements', 'standings', 'gallery', 'coach', 'player_stats', 'match_lineup', 'competitions', 'users'];
 
     tables.forEach(table => {
       const channel = supabase!
@@ -175,6 +179,7 @@ export default function AdminPage() {
         'player_stats': 'stats',
         'gallery': 'gallery',
         'competitions': 'competitions',
+        'users': 'users',
       };
 
       const apiTable = tableMap[table];
@@ -441,6 +446,38 @@ export default function AdminPage() {
     } catch (error) {
       console.error('Error saving competition:', error);
       alert('Erreur lors de la sauvegarde de la compétition: ' + (error as Error).message);
+    }
+  };
+
+  const handleUserSubmit = async () => {
+    if (!team || !form.username || !form.name || !form.password) return;
+
+    try {
+      const email = `${form.username}@${team.slug}.com`;
+      const payload = {
+        email,
+        password: form.password,
+        username: form.username,
+        name: form.name,
+        team_id: team.id,
+        role: 'member',
+      };
+
+      const response = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create user');
+      }
+
+      setShowForm(false); setEditing(null); setForm({}); loadAll();
+    } catch (error) {
+      console.error('Error saving user:', error);
+      alert('Erreur lors de la création de l\'utilisateur: ' + (error as Error).message);
     }
   };
 
@@ -1156,6 +1193,46 @@ export default function AdminPage() {
                   </div>
                   <button onClick={() => startEdit(c, ['name'])} className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"><Edit2 size={14} /></button>
                   <button onClick={() => handleDelete('competitions', c.id)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* USERS TAB */}
+        {tab === 'users' && (
+          <>
+            {!showForm && (
+              <button onClick={() => { setShowForm(true); setEditing(null); setForm({}); }}
+                className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
+                <Plus size={16} /> Ajouter un utilisateur
+              </button>
+            )}
+            {showForm && tab === 'users' && (
+              <div className="rounded-2xl bg-white p-4 shadow-lg space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold">{editing ? 'Modifier' : 'Ajouter'} un utilisateur</h3>
+                  <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
+                </div>
+                <Input label="Nom d'utilisateur" field="username" placeholder="Ex: joueur1" value={form.username || ''} onChange={(value) => setForm(prev => ({ ...prev, username: value }))} />
+                <Input label="Nom complet" field="name" placeholder="Ex: Jean Dupont" value={form.name || ''} onChange={(value) => setForm(prev => ({ ...prev, name: value }))} />
+                <Input label="Mot de passe" field="password" type="password" placeholder="Mot de passe" value={form.password || ''} onChange={(value) => setForm(prev => ({ ...prev, password: value }))} />
+                <button onClick={handleUserSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
+                  <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
+                </button>
+              </div>
+            )}
+            <div className="space-y-2">
+              {users.map(u => (
+                <div key={u.id} className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-md">
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-sm text-gray-900 truncate">{u.name}</div>
+                    <div className="text-xs text-gray-500">{u.username}@{team?.slug}.com</div>
+                    <div className="text-xs text-gray-400">{u.role === 'admin' ? 'Admin' : 'Membre'}</div>
+                  </div>
+                  {u.role !== 'admin' && (
+                    <button onClick={() => handleDelete('users', u.id)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
+                  )}
                 </div>
               ))}
             </div>
