@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { Match, Player, MatchVote } from '@/lib/types';
 import AppShell from '@/components/app-shell';
 import { useTeam } from '@/contexts/team-context';
-import { Trophy, Calendar, MapPin, ThumbsUp, Check, ScrollText } from 'lucide-react';
+import { Trophy, Calendar, MapPin, ThumbsUp, Check, ScrollText, X } from 'lucide-react';
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr + 'T00:00:00');
@@ -24,6 +24,8 @@ export default function ResultatsPage() {
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
   const [votedFor, setVotedFor] = useState<string | null>(null);
   const [selectedCompetition, setSelectedCompetition] = useState<string>('');
+  const [showVoteModal, setShowVoteModal] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState<string>('');
 
   useEffect(() => {
     // Check authentication
@@ -166,13 +168,17 @@ export default function ResultatsPage() {
 
         {filteredMatches.map((match) => {
           const motm = getManOfMatch(match.id);
-          const isExpanded = selectedMatch === match.id;
+          const userHasVoted = votes.some(v => v.match_id === match.id && v.voter_name === user?.name || v.voter_name === user?.username);
 
           return (
             <div key={match.id} className="rounded-2xl bg-white shadow-lg overflow-hidden hover-lift">
               {/* Match Header */}
               <button
-                onClick={() => setSelectedMatch(isExpanded ? null : match.id)}
+                onClick={() => {
+                  setSelectedMatch(match.id);
+                  setShowVoteModal(true);
+                  setSelectedPlayer('');
+                }}
                 className="w-full p-4 text-left"
               >
                 <div className="flex items-center gap-2 mb-2">
@@ -235,59 +241,24 @@ export default function ResultatsPage() {
 
               {/* Man of the Match */}
               {motm && (
-                <div className="mx-4 mb-3 p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-3">
-                  <Trophy size={18} className="text-amber-500 flex-shrink-0" />
-                  <div>
-                    <div className="text-[10px] text-amber-600 font-medium uppercase">Homme du match</div>
-                    <div className="text-sm font-bold text-amber-800">{motm.name}</div>
-                  </div>
-                </div>
-              )}
-
-              {/* Vote Section */}
-              {isExpanded && (
-                <div className="px-4 pb-4 border-t border-gray-100 pt-3">
-                  <h4 className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-                    <ThumbsUp size={14} className="text-green-600" />
-                    Votez pour l&apos;homme du match
-                  </h4>
-                  <input
-                    type="text"
-                    placeholder="Votre nom"
-                    value={voterName}
-                    onChange={(e) => setVoterName(e.target.value)}
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm mb-3 input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
-                  />
-                  <div className="grid grid-cols-2 gap-2">
-                    {players.slice(0, 8).map(player => {
-                      const voteCount = getVotesForPlayer(match.id, player.id);
-                      const hasVoted = votedFor === player.id;
-                      return (
-                        <button
-                          key={player.id}
-                          onClick={() => handleVote(match.id, player.id)}
-                          disabled={!voterName.trim() || hasVoted}
-                          className={`flex items-center gap-2 rounded-lg p-2 text-left text-xs transition-all duration-200 ${
-                            hasVoted
-                              ? 'bg-green-50 border border-green-300 text-green-700'
-                              : 'bg-gray-50 border border-gray-100 hover:bg-green-50 hover:border-green-200 disabled:opacity-50'
-                          }`}
-                        >
-                          <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center overflow-hidden flex-shrink-0">
-                            {player.photo_url ? (
-                              <img src={player.photo_url} alt={player.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <span className="text-[10px] font-bold text-green-600">{player.jersey_number || ''}</span>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="font-medium truncate">{player.name}</div>
-                            <div className="text-gray-400">{voteCount} vote{voteCount !== 1 ? 's' : ''}</div>
-                          </div>
-                          {hasVoted && <Check size={14} className="text-green-600" />}
-                        </button>
-                      );
-                    })}
+                <div className="mx-4 mb-3 p-4 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
+                      {motm.photo_url ? (
+                        <img src={motm.photo_url} alt={motm.name} className="w-full h-full object-cover rounded-full" />
+                      ) : (
+                        <span className="text-3xl font-bold text-white">{motm.jersey_number || '?'}</span>
+                      )}
+                    </div>
+                    <div className="text-center">
+                      <div className="flex items-center justify-center gap-2 mb-1">
+                        <Trophy size={16} className="text-amber-500" />
+                        <span className="text-[10px] text-amber-600 font-bold uppercase">Homme du match</span>
+                      </div>
+                      <div className="text-lg font-bold text-gray-900">{motm.name}</div>
+                      <div className="text-sm text-gray-600">#{motm.jersey_number || '?'}</div>
+                      <div className="text-sm font-bold text-amber-700 mt-2">Bonne continuation {motm.name}!</div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -299,6 +270,56 @@ export default function ResultatsPage() {
           <div className="flex flex-col items-center justify-center py-16 text-gray-400">
             <Trophy size={48} className="mb-3 opacity-50" />
             <p className="text-sm">Aucun résultat disponible</p>
+          </div>
+        )}
+
+        {/* Voting Modal */}
+        {showVoteModal && selectedMatch && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+              <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 className="text-lg font-bold text-gray-900">Votez pour l'homme du match</h3>
+                <button onClick={() => setShowVoteModal(false)} className="text-gray-400 hover:text-gray-600">
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-4 space-y-4">
+                <input
+                  type="text"
+                  placeholder="Votre nom"
+                  value={voterName}
+                  onChange={(e) => setVoterName(e.target.value)}
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
+                />
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">Sélectionnez un joueur</label>
+                  <select
+                    value={selectedPlayer}
+                    onChange={(e) => setSelectedPlayer(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none shadow-md"
+                  >
+                    <option value="">Choisir un joueur...</option>
+                    {players.map(player => (
+                      <option key={player.id} value={player.id}>{player.name} #{player.jersey_number || '?'}</option>
+                    ))}
+                  </select>
+                </div>
+                <button
+                  onClick={() => {
+                    if (selectedPlayer && voterName.trim()) {
+                      handleVote(selectedMatch, selectedPlayer);
+                      setShowVoteModal(false);
+                    }
+                  }}
+                  disabled={!selectedPlayer || !voterName.trim()}
+                  className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  style={{ backgroundColor: team?.secondary_color || '#22c55e' }}
+                >
+                  <ThumbsUp size={16} />
+                  Voter
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
