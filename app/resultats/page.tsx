@@ -185,7 +185,7 @@ export default function ResultatsPage() {
             } as React.CSSProperties}
           >
             <option value="">Toutes les compétitions</option>
-            {Array.from(new Set(matches.filter(m => m.status === 'completed').map(m => m.competition))).filter((c): c is string => Boolean(c)).sort().map(c => (
+            {Array.from(new Set(matches.map(m => m.competition))).filter((c): c is string => Boolean(c)).sort().map(c => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>

@@ -85,7 +85,11 @@ export default function Header() {
       {/* Navigation menu overlay */}
       {menuOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" onClick={() => setMenuOpen(false)}>
-          <div className="absolute left-0 top-0 bottom-0 w-64 bg-gray-900 shadow-xl p-4" onClick={(e) => e.stopPropagation()}>
+          <div 
+            className="absolute left-0 top-0 bottom-0 w-64 shadow-xl p-4" 
+            onClick={(e) => e.stopPropagation()}
+            style={{ backgroundColor: team?.accent_color ? `${team.accent_color}95` : '#1f2937' }}
+          >
             <div className="flex items-center gap-2.5 mb-6">
               <div 
                 className="w-10 h-10 rounded-lg flex items-center justify-center shadow-md overflow-hidden"
