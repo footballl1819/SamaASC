@@ -104,7 +104,12 @@ export default function ClassementPage() {
           <select
             value={selectedCompetition}
             onChange={(e) => setSelectedCompetition(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 appearance-none shadow-md"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 appearance-none shadow-md"
+            style={{
+              '--tw-ring-color': team?.primary_color ?? '#22c55e',
+              borderColor: team?.primary_color ?? '#e5e7eb',
+              boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
+            } as React.CSSProperties}
           >
             <option value="">Sélectionner une compétition</option>
             {competitions.map(comp => (
@@ -177,7 +182,9 @@ export default function ClassementPage() {
 
         {/* Full Standings Table */}
         {filtered.length > 0 && (
-          <div className="rounded-2xl bg-white shadow-lg overflow-hidden">
+          <div className="rounded-2xl bg-white shadow-lg overflow-hidden" style={{
+            boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
+          }}>
             <div className="grid grid-cols-[32px_1fr_32px_32px_32px_32px_32px_40px] gap-1 px-3 py-2.5 bg-gray-50 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
               <div>#</div>
               <div>Équipe</div>

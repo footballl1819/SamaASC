@@ -165,7 +165,9 @@ export default function SupportersPage() {
         </div>
 
         {/* Post Form */}
-        <form onSubmit={handleSubmit} className="rounded-2xl bg-white p-4 shadow-lg space-y-3">
+        <form onSubmit={handleSubmit} className="rounded-2xl bg-white p-4 shadow-lg space-y-3" style={{
+          boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
+        }}>
           <div className="flex items-center gap-2 mb-1">
             <MessageCircle size={16} className="text-green-600" />
             <span className="text-sm font-bold text-gray-700">Votre message</span>
