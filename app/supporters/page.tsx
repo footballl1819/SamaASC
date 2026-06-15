@@ -112,8 +112,10 @@ export default function SupportersPage() {
       const data = await response.json();
       console.log('Success response:', data);
       // Reload data from database as fallback
-      const { data: supportersData } = await supabase.from('supporters').select('*').eq('team_id', team.id).order('created_at', { ascending: false });
-      setSupporters(supportersData || []);
+      if (supabase) {
+        const { data: supportersData } = await supabase.from('supporters').select('*').eq('team_id', team.id).order('created_at', { ascending: false });
+        setSupporters(supportersData || []);
+      }
       setMessage('');
       setSelectedSticker(null);
     } catch (error) {
