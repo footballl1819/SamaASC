@@ -633,8 +633,16 @@ export default function AdminPage() {
               </div>
             )}
             {!showForm && !coach && (
-              <button onClick={() => { setShowForm(true); setEditing(null); setForm({}); }} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
-                <Plus size={16} /> Ajouter un coach
+              <button onClick={() => { setShowForm(true); setEditing(null); setForm({}); }} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                borderColor: '#0ea5e9',
+                boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+              }}>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                <div className="relative z-10 flex items-center justify-center gap-2">
+                  <Plus size={16} /> Ajouter un coach
+                </div>
               </button>
             )}
             {showForm && (
@@ -650,8 +658,16 @@ export default function AdminPage() {
                   label="Photo"
                 />
                 <Input label="Rôle" field="role" placeholder="Entraineur" value={form.role || ''} onChange={(value) => setForm(prev => ({ ...prev, role: value }))} />
-                <button onClick={handleCoachSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
-                  <Save size={16} />{coach ? 'Mettre à jour' : 'Ajouter'}
+                <button onClick={handleCoachSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  borderColor: '#0ea5e9',
+                  boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+                }}>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                  <div className="relative z-10 flex items-center justify-center gap-2">
+                    <Save size={16} />{coach ? 'Mettre à jour' : 'Ajouter'}
+                  </div>
                 </button>
               </>
             )}
@@ -663,8 +679,16 @@ export default function AdminPage() {
           <>
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ position: 'DEF' }); }}
-                className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
-                <Plus size={16} /> Ajouter un joueur
+                className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  borderColor: '#0ea5e9',
+                  boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+                }}>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                <div className="relative z-10 flex items-center justify-center gap-2">
+                  <Plus size={16} /> Ajouter un joueur
+                </div>
               </button>
             )}
             {showForm && tab === 'players' && (
@@ -684,8 +708,16 @@ export default function AdminPage() {
                   { value: 'MIL', label: 'Milieu' }, { value: 'ATT', label: 'Attaquant' },
                 ]} value={form.position || ''} onChange={(value) => setForm(prev => ({ ...prev, position: value }))} />
                 <Input label="Numéro" field="jersey_number" type="number" placeholder="10" value={form.jersey_number || ''} onChange={(value) => setForm(prev => ({ ...prev, jersey_number: value }))} />
-                <button onClick={handlePlayerSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
-                  <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
+                <button onClick={handlePlayerSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  borderColor: '#0ea5e9',
+                  boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+                }}>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                  <div className="relative z-10 flex items-center justify-center gap-2">
+                    <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
+                  </div>
                 </button>
               </div>
             )}
@@ -712,8 +744,16 @@ export default function AdminPage() {
           <>
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ is_home: 'true', status: 'upcoming', formation: '4-3-3' }); }}
-                className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
-                <Plus size={16} /> Ajouter un match
+                className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  borderColor: '#0ea5e9',
+                  boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+                }}>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                <div className="relative z-10 flex items-center justify-center gap-2">
+                  <Plus size={16} /> Ajouter un match
+                </div>
               </button>
             )}
             {showForm && tab === 'matches' && (
@@ -737,8 +777,16 @@ export default function AdminPage() {
                   <Input label="Score extérieur" field="score_away" type="number" value={form.score_away || ''} onChange={(value) => setForm(prev => ({ ...prev, score_away: value }))} />
                 </div>
                 <Input label="Buteurs" field="scorers" placeholder="Noms des buteurs (séparés par virgule)" value={form.scorers || ''} onChange={(value) => setForm(prev => ({ ...prev, scorers: value }))} />
-                <button onClick={handleMatchSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
-                  <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
+                <button onClick={handleMatchSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  borderColor: '#0ea5e9',
+                  boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+                }}>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                  <div className="relative z-10 flex items-center justify-center gap-2">
+                    <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
+                  </div>
                 </button>
               </div>
             )}
@@ -897,8 +945,16 @@ export default function AdminPage() {
                     </div>
                   </div>
 
-                  <button onClick={handleSaveLineup} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
-                    <Save size={16} /> Sauvegarder la composition
+                  <button onClick={handleSaveLineup} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                    background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                    borderColor: '#0ea5e9',
+                    boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+                  }}>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                    <div className="relative z-10 flex items-center justify-center gap-2">
+                      <Save size={16} /> Sauvegarder la composition
+                    </div>
                   </button>
                 </>
               )}
@@ -911,8 +967,16 @@ export default function AdminPage() {
           <>
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ type: 'other' }); }}
-                className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
-                <Plus size={16} /> Ajouter une annonce
+                className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  borderColor: '#0ea5e9',
+                  boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+                }}>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                <div className="relative z-10 flex items-center justify-center gap-2">
+                  <Plus size={16} /> Ajouter une annonce
+                </div>
               </button>
             )}
             {showForm && tab === 'announcements' && (
@@ -933,8 +997,16 @@ export default function AdminPage() {
                   { value: 'meeting', label: 'Réunion' }, { value: 'other', label: 'Autre' },
                 ]} value={form.type || ''} onChange={(value) => setForm(prev => ({ ...prev, type: value }))} />
                 <Input label="Date événement" field="event_date" type="date" value={form.event_date || ''} onChange={(value) => setForm(prev => ({ ...prev, event_date: value }))} />
-                <button onClick={handleAnnouncementSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
-                  <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
+                <button onClick={handleAnnouncementSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  borderColor: '#0ea5e9',
+                  boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+                }}>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                  <div className="relative z-10 flex items-center justify-center gap-2">
+                    <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
+                  </div>
                 </button>
               </div>
             )}
@@ -977,8 +1049,16 @@ export default function AdminPage() {
             </div>
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ competition_name: standingsComp || '' }); }}
-                className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
-                <Plus size={16} /> Ajouter au classement
+                className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  borderColor: '#0ea5e9',
+                  boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+                }}>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                <div className="relative z-10 flex items-center justify-center gap-2">
+                  <Plus size={16} /> Ajouter au classement
+                </div>
               </button>
             )}
             {showForm && tab === 'standings' && (
@@ -1001,8 +1081,16 @@ export default function AdminPage() {
                   <Input label="Buts pour" field="goals_for" type="number" value={form.goals_for || ''} onChange={(value) => setForm(prev => ({ ...prev, goals_for: value }))} />
                 </div>
                 <Input label="Buts contre" field="goals_against" type="number" value={form.goals_against || ''} onChange={(value) => setForm(prev => ({ ...prev, goals_against: value }))} />
-                <button onClick={handleStandingSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
-                  <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
+                <button onClick={handleStandingSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  borderColor: '#0ea5e9',
+                  boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+                }}>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                  <div className="relative z-10 flex items-center justify-center gap-2">
+                    <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
+                  </div>
                 </button>
               </div>
             )}
