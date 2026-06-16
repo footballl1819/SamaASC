@@ -1,5 +1,7 @@
 'use client';
 
+// UI refinements: gradients and color settings updated
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
