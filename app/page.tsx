@@ -240,16 +240,16 @@ export default function AccueilPage() {
                   key={ann.id}
                   className="relative overflow-hidden rounded-xl border p-4 hover-lift"
                   style={{
-                    background: 'linear-gradient(135deg, #020617, #071A3D)',
-                    borderColor: `${config.color.replace('text-', '')}30`,
-                    boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
+                    background: 'linear-gradient(135deg, #0a0f1e 0%, #071A3D 50%, #0a0f1e 100%)',
+                    borderColor: `${config.color.replace('text-', '')}40`,
+                    boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}80` : undefined
                   }}
                 >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#22D3EE]/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
-                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#8B5CF6]/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-[#22D3EE]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#8B5CF6]/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
                   <div className="relative">
                     <div className="flex items-start gap-3">
-                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-white/10 backdrop-blur-sm border border-white/20`}>
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-white/20 backdrop-blur-sm border border-white/30`}>
                         <Icon size={18} className={config.color} />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -258,15 +258,15 @@ export default function AccueilPage() {
                             {config.label}
                           </span>
                           {ann.event_date && (
-                            <span className="text-xs text-white/50">
+                            <span className="text-xs text-white/60">
                               {daysUntil(ann.event_date)}
                             </span>
                           )}
                         </div>
                         <h3 className="font-semibold text-white text-sm mb-1">{ann.title}</h3>
-                        <p className="text-xs text-white/70 leading-relaxed">{ann.content}</p>
+                        <p className="text-xs text-white/80 leading-relaxed">{ann.content}</p>
                       </div>
-                      <ChevronRight size={16} className="text-white/50 flex-shrink-0 mt-2" />
+                      <ChevronRight size={16} className="text-white/60 flex-shrink-0 mt-2" />
                     </div>
                   </div>
                 </div>
@@ -278,36 +278,51 @@ export default function AccueilPage() {
         {/* New Stats Cards */}
         <div className="grid grid-cols-3 gap-3">
           <div 
-            className="rounded-xl bg-gradient-to-br from-[#020617] to-[#071A3D] p-4 text-center shadow-2xl border border-[#22D3EE]/20"
+            className="rounded-xl p-4 text-center shadow-2xl border border-[#22D3EE]/30 relative overflow-hidden"
             style={{
-              boxShadow: '0 4px 30px -4px rgba(34, 211, 238, 0.3)'
+              background: 'linear-gradient(135deg, #0a0f1e 0%, #071A3D 50%, #0a0f1e 100%)',
+              boxShadow: '0 4px 30px -4px rgba(34, 211, 238, 0.5)'
             }}
           >
-            <Users size={24} className="text-[#22D3EE] mx-auto mb-2" />
-            <div className="text-2xl font-bold text-white">{players.length}</div>
-            <div className="text-xs text-white/70 mt-0.5">Joueurs</div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#22D3EE]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#22D3EE]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+            <div className="relative">
+              <Users size={24} className="text-[#22D3EE] mx-auto mb-2" />
+              <div className="text-2xl font-bold text-white">{players.length}</div>
+              <div className="text-xs text-white/80 mt-0.5">Joueurs</div>
+            </div>
           </div>
           <div 
-            className="rounded-xl bg-gradient-to-br from-[#020617] to-[#071A3D] p-4 text-center shadow-2xl border border-[#3B82F6]/20 cursor-pointer hover:shadow-[#3B82F6]/30 transition-all"
+            className="rounded-xl p-4 text-center shadow-2xl border border-[#3B82F6]/30 cursor-pointer hover:shadow-[#3B82F6]/50 transition-all relative overflow-hidden"
             style={{
-              boxShadow: '0 4px 30px -4px rgba(59, 130, 246, 0.3)'
+              background: 'linear-gradient(135deg, #0a0f1e 0%, #071A3D 50%, #0a0f1e 100%)',
+              boxShadow: '0 4px 30px -4px rgba(59, 130, 246, 0.5)'
             }}
             onClick={() => router.push('/resultats')}
           >
-            <Trophy size={24} className="text-[#3B82F6] mx-auto mb-2" />
-            <div className="text-2xl font-bold text-white">{completedMatches}</div>
-            <div className="text-xs text-white/70 mt-0.5">Matchs</div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#3B82F6]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#3B82F6]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+            <div className="relative">
+              <Trophy size={24} className="text-[#3B82F6] mx-auto mb-2" />
+              <div className="text-2xl font-bold text-white">{completedMatches}</div>
+              <div className="text-xs text-white/80 mt-0.5">Matchs</div>
+            </div>
           </div>
           <div 
-            className="rounded-xl bg-gradient-to-br from-[#020617] to-[#071A3D] p-4 text-center shadow-2xl border border-[#8B5CF6]/20 cursor-pointer hover:shadow-[#8B5CF6]/30 transition-all"
+            className="rounded-xl p-4 text-center shadow-2xl border border-[#8B5CF6]/30 cursor-pointer hover:shadow-[#8B5CF6]/50 transition-all relative overflow-hidden"
             style={{
-              boxShadow: '0 4px 30px -4px rgba(139, 92, 246, 0.3)'
+              background: 'linear-gradient(135deg, #0a0f1e 0%, #071A3D 50%, #0a0f1e 100%)',
+              boxShadow: '0 4px 30px -4px rgba(139, 92, 246, 0.5)'
             }}
             onClick={() => router.push('/galerie')}
           >
-            <Image size={24} className="text-[#8B5CF6] mx-auto mb-2" />
-            <div className="text-2xl font-bold text-white">{galleryCount}</div>
-            <div className="text-xs text-white/70 mt-0.5">Galerie</div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#8B5CF6]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#8B5CF6]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+            <div className="relative">
+              <Image size={24} className="text-[#8B5CF6] mx-auto mb-2" />
+              <div className="text-2xl font-bold text-white">{galleryCount}</div>
+              <div className="text-xs text-white/80 mt-0.5">Galerie</div>
+            </div>
           </div>
         </div>
       </div>
