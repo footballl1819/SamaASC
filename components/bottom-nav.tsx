@@ -40,7 +40,7 @@ export default function BottomNav() {
               className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all duration-300 min-w-[44px] ${
                 isActive
                   ? 'scale-105'
-                  : 'text-gray-400 hover:text-gray-600'
+                  : 'text-white/70 hover:text-white/90'
               }`}
               style={{
                 backgroundColor: isActive ? (team?.accent_color ? `${team.accent_color}30` : 'rgba(34, 197, 94, 0.1)') : undefined,
@@ -61,7 +61,7 @@ export default function BottomNav() {
                 )}
               </div>
               <span className={`text-[10px] leading-tight font-medium transition-all duration-300 ${
-                isActive ? '' : 'text-gray-400'
+                isActive ? '' : 'text-white/70'
               }`}>
                 {item.label}
               </span>

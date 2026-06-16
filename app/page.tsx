@@ -137,7 +137,7 @@ export default function AccueilPage() {
           <div 
             className="relative overflow-hidden rounded-2xl p-5 text-white shadow-xl"
             style={{ 
-              background: team?.primary_color ? `linear-gradient(135deg, ${team.primary_color}, ${team.primary_color}dd)` : 'linear-gradient(135deg, #22c55e, #15803d)'
+              background: 'linear-gradient(135deg, #22c55e, #15803d)'
             }}
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
@@ -151,10 +151,14 @@ export default function AccueilPage() {
               </div>
               <div className="flex items-center justify-between mb-4">
                 <div className="text-center">
-                  <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-1.5 shadow-inner">
-                    <span className="font-bold text-lg">SA</span>
+                  <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-1.5 shadow-inner overflow-hidden">
+                    {team?.logo_url ? (
+                      <img src={team.logo_url} alt="Logo" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="font-bold text-lg">{team?.name?.substring(0, 2).toUpperCase() || 'SA'}</span>
+                    )}
                   </div>
-                  <span className="text-xs text-green-200">Sama ASC</span>
+                  <span className="text-xs text-green-200">{team?.name || 'Sama ASC'}</span>
                 </div>
                 <div className="text-center px-3">
                   <span className="text-3xl font-bold">VS</span>

@@ -143,6 +143,23 @@ export default function ResultatsPage() {
     return players.find(p => p.id === topId) || null;
   };
 
+  const getTopPlayers = (matchId: string) => {
+    const matchVotes = votes.filter(v => v.match_id === matchId);
+    if (matchVotes.length === 0) return [];
+    const counts: Record<string, number> = {};
+    matchVotes.forEach(v => {
+      counts[v.player_id] = (counts[v.player_id] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([playerId, count]) => ({
+        player: players.find(p => p.id === playerId),
+        count
+      }))
+      .filter(item => item.player);
+  };
+
   const filteredMatches = matches.filter(m => m.status === 'completed' && (!selectedCompetition || m.competition === selectedCompetition));
 
   if (loading || contextLoading) {
@@ -314,6 +331,34 @@ export default function ResultatsPage() {
                   </div>
                 </div>
               )}
+
+              {/* Top 3 Players Table */}
+              {(() => {
+                const topPlayers = getTopPlayers(match.id);
+                if (topPlayers.length === 0) return null;
+                return (
+                  <div className="mx-4 mb-3 p-4 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Trophy size={16} className="text-green-600" />
+                      <span className="text-[10px] text-green-600 font-bold uppercase">Top 3 des votes</span>
+                    </div>
+                    <div className="space-y-2">
+                      {topPlayers.map((item, index) => (
+                        <div key={item.player?.id} className="flex items-center gap-3 p-2 rounded-lg bg-white/60 border border-green-100">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-sm flex-shrink-0">
+                            <span className="text-white font-bold text-sm">{index + 1}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-gray-900">{item.player?.name}</div>
+                            <div className="text-xs text-gray-500">#{item.player?.jersey_number || '?'}</div>
+                          </div>
+                          <div className="text-sm font-bold text-green-600">{item.count} votes</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           );
         })}
