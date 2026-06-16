@@ -451,6 +451,7 @@ export default function ParametresPage() {
               </div>
             </div>
           </div>
+          </div>
         </div>
       </div>
     </AppShell>
