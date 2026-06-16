@@ -221,24 +221,38 @@ export default function SupportersPage() {
             ))}
           </div>
           
-          <textarea
-            placeholder="Votre message de soutien..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            rows={3}
-            className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 resize-none"
-            style={{
-              '--tw-ring-color': team?.secondary_color || '#22c55e',
-            } as React.CSSProperties}
-          />
+          <div className="relative overflow-hidden rounded-xl border">
+            <textarea
+              placeholder="Votre message de soutien..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              rows={3}
+              className="w-full rounded-xl px-3 py-2.5 text-sm focus:outline-none resize-none relative z-10"
+              style={{
+                background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                borderColor: '#0ea5e9',
+                color: '#0c4a6e',
+              }}
+            />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+          </div>
           <button
             type="submit"
             disabled={(!message.trim() && !selectedSticker) || submitting}
-            className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            style={{ backgroundColor: team?.secondary_color || '#22c55e' }}
+            className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            style={{
+              background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+              borderColor: '#0ea5e9',
+              boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+            }}
           >
-            <Send size={16} />
-            {submitting ? 'Envoi...' : 'Envoyer'}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+            <div className="relative z-10 flex items-center justify-center gap-2">
+              <Send size={16} />
+              {submitting ? 'Envoi...' : 'Envoyer'}
+            </div>
           </button>
         </form>
 

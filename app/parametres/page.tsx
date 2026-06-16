@@ -26,6 +26,13 @@ export default function ParametresPage() {
   const [teamPhotoFile, setTeamPhotoFile] = useState<File | null>(null);
   const [teamPhotoPreview, setTeamPhotoPreview] = useState<string | null>(null);
 
+  const COLORS = [
+    '#22c55e', '#16a34a', '#15803d', '#3b82f6', '#2563eb', '#1d4ed8',
+    '#8b5cf6', '#7c3aed', '#6d28d9', '#f59e0b', '#d97706', '#b45309',
+    '#ef4444', '#dc2626', '#b91c1c', '#06b6d4', '#0891b2', '#0e7490',
+    '#0ea5e9', '#0284c7', '#0369a1', '#ec4899', '#db2777', '#be185d'
+  ];
+
   useEffect(() => {
     // Check authentication
     if (!contextLoading) {
@@ -355,79 +362,71 @@ export default function ParametresPage() {
           </h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Couleur de lueur (cartes, champs, tableaux)
               </label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={glowColor}
-                  onChange={(e) => setGlowColor(e.target.value)}
-                  className="w-12 h-12 rounded-lg border-2 border-gray-200 cursor-pointer"
-                />
-                <input
-                  type="text"
-                  value={glowColor}
-                  onChange={(e) => setGlowColor(e.target.value)}
-                  className="flex-1 rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
-                />
+              <div className="flex flex-wrap gap-2">
+                {COLORS.map((color) => (
+                  <button
+                    key={color}
+                    onClick={() => setGlowColor(color)}
+                    className={`w-10 h-10 rounded-lg border-2 transition-all ${
+                      glowColor === color ? 'border-green-500 scale-110 shadow-lg' : 'border-gray-200 hover:scale-105'
+                    }`}
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Couleur des icônes (fenêtres)
               </label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={iconColor}
-                  onChange={(e) => setIconColor(e.target.value)}
-                  className="w-12 h-12 rounded-lg border-2 border-gray-200 cursor-pointer"
-                />
-                <input
-                  type="text"
-                  value={iconColor}
-                  onChange={(e) => setIconColor(e.target.value)}
-                  className="flex-1 rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
-                />
+              <div className="flex flex-wrap gap-2">
+                {COLORS.map((color) => (
+                  <button
+                    key={color}
+                    onClick={() => setIconColor(color)}
+                    className={`w-10 h-10 rounded-lg border-2 transition-all ${
+                      iconColor === color ? 'border-green-500 scale-110 shadow-lg' : 'border-gray-200 hover:scale-105'
+                    }`}
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Couleur des boutons
               </label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={buttonColor}
-                  onChange={(e) => setButtonColor(e.target.value)}
-                  className="w-12 h-12 rounded-lg border-2 border-gray-200 cursor-pointer"
-                />
-                <input
-                  type="text"
-                  value={buttonColor}
-                  onChange={(e) => setButtonColor(e.target.value)}
-                  className="flex-1 rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
-                />
+              <div className="flex flex-wrap gap-2">
+                {COLORS.map((color) => (
+                  <button
+                    key={color}
+                    onClick={() => setButtonColor(color)}
+                    className={`w-10 h-10 rounded-lg border-2 transition-all ${
+                      buttonColor === color ? 'border-green-500 scale-110 shadow-lg' : 'border-gray-200 hover:scale-105'
+                    }`}
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Couleur des barres de navigation
               </label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={navColor}
-                  onChange={(e) => setNavColor(e.target.value)}
-                  className="w-12 h-12 rounded-lg border-2 border-gray-200 cursor-pointer"
-                />
-                <input
-                  type="text"
-                  value={navColor}
-                  onChange={(e) => setNavColor(e.target.value)}
-                  className="flex-1 rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
-                />
+              <div className="flex flex-wrap gap-2">
+                {COLORS.map((color) => (
+                  <button
+                    key={color}
+                    onClick={() => setNavColor(color)}
+                    className={`w-10 h-10 rounded-lg border-2 transition-all ${
+                      navColor === color ? 'border-green-500 scale-110 shadow-lg' : 'border-gray-200 hover:scale-105'
+                    }`}
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
               </div>
             </div>
           </div>

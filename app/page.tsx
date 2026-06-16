@@ -244,7 +244,7 @@ export default function AccueilPage() {
                   key={ann.id}
                   className="relative overflow-hidden rounded-xl border p-4 hover-lift"
                   style={{
-                    background: 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #e0f2fe 100%)',
+                    background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
                     borderColor: '#0ea5e9',
                     boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                   }}
@@ -280,7 +280,7 @@ export default function AccueilPage() {
         </div>
 
         {/* New Stats Cards */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-4 gap-3">
           <div 
             className="rounded-xl p-4 text-center shadow-2xl border border-sky-300 relative overflow-hidden"
             style={{
