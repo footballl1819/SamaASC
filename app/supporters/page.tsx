@@ -38,6 +38,7 @@ export default function SupportersPage() {
       if (!team || !supabase) return;
 
       const { data } = await supabase.from('supporters').select('*').eq('team_id', team.id).order('created_at', { ascending: false });
+      console.log('Initial load supporters:', data);
       setSupporters(data || []);
       setLoading(false);
     }
@@ -57,17 +58,21 @@ export default function SupportersPage() {
           },
           (payload) => {
             console.log('Realtime event:', payload.eventType, payload);
+            console.log('Current supporters count before event:', supporters.length);
             if (payload.eventType === 'INSERT') {
               setSupporters(prev => {
                 // Avoid duplicates
                 if (prev.some(s => s.id === payload.new.id)) {
+                  console.log('Duplicate detected, skipping');
                   return prev;
                 }
+                console.log('Adding new supporter to state');
                 return [payload.new as Supporter, ...prev];
               });
             } else if (payload.eventType === 'UPDATE') {
               setSupporters(prev => prev.map(s => s.id === payload.new.id ? payload.new as Supporter : s));
             } else if (payload.eventType === 'DELETE') {
+              console.log('Deleting supporter from state:', payload.old.id);
               setSupporters(prev => prev.filter(s => s.id !== payload.old.id));
             }
           }
