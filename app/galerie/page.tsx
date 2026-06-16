@@ -98,8 +98,8 @@ export default function GaleriePage() {
             </div>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 drop-shadow-md">Galerie</h1>
-            <p className="text-sm text-gray-600 drop-shadow-sm">Photos et vidéos</p>
+            <h1 className="text-2xl font-bold text-black drop-shadow-md">Galerie</h1>
+            <p className="text-sm text-gray-800 drop-shadow-sm">Photos et vidéos</p>
           </div>
         </div>
 
@@ -110,13 +110,15 @@ export default function GaleriePage() {
             <button
               key={type}
               onClick={() => setFilter(type)}
-              className={`px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300 capitalize ${
+              className={`px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300 capitalize relative overflow-hidden ${
                 filter === type
                   ? 'text-white shadow-lg'
                   : 'bg-white text-gray-600 shadow-sm hover:shadow-md'
               }`}
               style={{
-                backgroundColor: filter === type ? (team?.secondary_color || '#22c55e') : undefined,
+                background: filter === type ? 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)' : undefined,
+                borderColor: filter === type ? '#0ea5e9' : undefined,
+                boxShadow: filter === type ? '0 4px 30px -4px rgba(14, 165, 233, 0.3)' : undefined
               }}
             >
               {type === 'all' ? 'Tout' : type}

@@ -218,24 +218,32 @@ export default function EquipePage() {
             </div>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 drop-shadow-md">Mon Équipe</h1>
-            <p className="text-sm text-gray-600 drop-shadow-sm">Joueurs et composition</p>
+            <h1 className="text-2xl font-bold text-black drop-shadow-md">Mon Équipe</h1>
+            <p className="text-sm text-gray-800 drop-shadow-sm">Joueurs et composition</p>
           </div>
         </div>
 
         {/* Coach */}
         {coach && (
-          <div className="rounded-xl bg-gradient-to-r from-green-600 to-green-700 p-4 shadow-lg flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden border-2 border-white/30">
-              {coach.photo_url ? (
-                <img src={coach.photo_url} alt={coach.name} className="w-full h-full object-cover" />
-              ) : (
-                <User size={24} className="text-white" />
-              )}
-            </div>
-            <div>
-              <div className="text-white/70 text-xs font-medium">{coach.role}</div>
-              <div className="text-white font-bold">{coach.name}</div>
+          <div className="rounded-xl p-4 shadow-lg flex items-center gap-3 relative overflow-hidden" style={{
+            background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 100%)',
+            borderColor: '#0ea5e9',
+            boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+          }}>
+            <div className="absolute top-0 right-0 w-24 h-24 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+            <div className="relative z-10 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden border-2 border-white/30">
+                {coach.photo_url ? (
+                  <img src={coach.photo_url} alt={coach.name} className="w-full h-full object-cover" />
+                ) : (
+                  <User size={24} className="text-white" />
+                )}
+              </div>
+              <div>
+                <div className="text-white/70 text-xs font-medium">{coach.role}</div>
+                <div className="text-white font-bold">{coach.name}</div>
+              </div>
             </div>
           </div>
         )}

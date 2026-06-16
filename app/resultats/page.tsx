@@ -193,8 +193,8 @@ export default function ResultatsPage() {
             </div>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 drop-shadow-md">Résultats</h1>
-            <p className="text-sm text-gray-600 drop-shadow-sm">Matchs terminés et votes</p>
+            <h1 className="text-2xl font-bold text-black drop-shadow-md">Résultats</h1>
+            <p className="text-sm text-gray-800 drop-shadow-sm">Matchs terminés et votes</p>
           </div>
         </div>
 
@@ -203,10 +203,13 @@ export default function ResultatsPage() {
           <select
             value={selectedCompetition}
             onChange={(e) => setSelectedCompetition(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 appearance-none shadow-md"
+            className="w-full px-4 py-3 rounded-xl border text-sm font-medium focus:outline-none focus:ring-2 appearance-none shadow-md relative z-10"
             style={{
-              '--tw-ring-color': team?.primary_color ?? '#22c55e',
-              borderColor: team?.primary_color ?? '#e5e7eb',
+              background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 100%)',
+              borderColor: '#0ea5e9',
+              color: '#0c4a6e',
+              '--tw-ring-color': '#0ea5e9',
+              boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
             } as React.CSSProperties}
           >
             <option value="">Toutes les compétitions</option>

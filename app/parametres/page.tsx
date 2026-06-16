@@ -201,8 +201,8 @@ export default function ParametresPage() {
             </div>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 drop-shadow-md">Paramètres</h1>
-            <p className="text-sm text-gray-600 drop-shadow-sm">Personnalisation de l'équipe</p>
+            <h1 className="text-2xl font-bold text-black drop-shadow-md">Paramètres</h1>
+            <p className="text-sm text-gray-800 drop-shadow-sm">Personnalisation de l'équipe</p>
           </div>
         </div>
 
@@ -212,8 +212,12 @@ export default function ParametresPage() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 text-white rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed btn-shadow"
-            style={{ backgroundColor: team?.secondary_color || '#22c55e' }}
+            className="flex items-center gap-2 px-4 py-2 text-white rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+              borderColor: '#0ea5e9',
+              boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+            }}
           >
             {saving ? (
               <>

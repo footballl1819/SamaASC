@@ -30,22 +30,14 @@ export default function Header() {
       <div className="relative flex items-center justify-between px-4 py-3 max-w-lg mx-auto">
         {/* Centered logo and name */}
         <div className="flex items-center gap-2.5">
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center shadow-lg overflow-hidden border border-sky-400/30 relative"
-            style={{
-              background: 'linear-gradient(135deg, #e0f2fe 0%, #0ea5e9 50%, #0284c7 100%)',
-              boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
-            }}
-          >
-            <div className="absolute top-0 right-0 w-12 h-12 bg-[#0ea5e9]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-10 h-10 bg-[#0284c7]/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
-            <div className="relative z-10">
-              {team?.logo_url ? (
-                <img src={team.logo_url} alt="Logo" className="w-full h-full object-cover" />
-              ) : (
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+            {team?.logo_url ? (
+              <img src={team.logo_url} alt="Logo" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full rounded-lg flex items-center justify-center bg-gradient-to-br from-sky-400 to-sky-600">
                 <span className="text-white font-bold text-xs">{team?.name?.substring(0, 2).toUpperCase() || 'SA'}</span>
-              )}
-            </div>
+              </div>
+            )}
           </div>
           <h1 className="text-lg font-bold text-white tracking-tight drop-shadow-lg">{team?.name || title}</h1>
         </div>

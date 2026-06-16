@@ -601,8 +601,8 @@ export default function AdminPage() {
             </div>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 drop-shadow-md">Administration</h1>
-            <p className="text-sm text-gray-600 drop-shadow-sm">Gestion de l'équipe</p>
+            <h1 className="text-2xl font-bold text-black drop-shadow-md">Administration</h1>
+            <p className="text-sm text-gray-800 drop-shadow-sm">Gestion de l'équipe</p>
           </div>
         </div>
 
