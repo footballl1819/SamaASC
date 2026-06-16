@@ -35,9 +35,11 @@ export default function SupportersPage() {
 
   useEffect(() => {
     async function load() {
-      if (!team || !supabase) return;
+      if (!team) return;
 
-      const { data } = await supabase.from('supporters').select('*').eq('team_id', team.id).order('created_at', { ascending: false });
+      console.log('Loading supporters from API...');
+      const response = await fetch(`/api/data/supporters?team_id=${team.id}`);
+      const data = await response.json();
       console.log('Initial load supporters:', data);
       setSupporters(data || []);
       setLoading(false);
