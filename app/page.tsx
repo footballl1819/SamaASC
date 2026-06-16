@@ -39,6 +39,7 @@ export default function AccueilPage() {
   const [allMatches, setAllMatches] = useState<Match[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [galleryCount, setGalleryCount] = useState(0);
+  const [userCount, setUserCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -59,16 +60,18 @@ export default function AccueilPage() {
     async function load() {
       if (!team) return;
       
-      const [ann, m, p, g] = await Promise.all([
+      const [ann, m, p, g, u] = await Promise.all([
         fetch(`/api/data/announcements?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/matches?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/players?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/gallery?team_id=${team.id}`).then(r => r.json()).catch(() => []),
+        fetch(`/api/data/users?team_id=${team.id}`).then(r => r.json()).catch(() => []),
       ]);
       setAnnouncements(ann);
       setAllMatches(m);
       setPlayers(p);
       setGalleryCount(g.length || 0);
+      setUserCount(u.length || 0);
       const upcoming = m.filter((match: Match) => match.status === 'upcoming');
       // Sort by date and show only the closest one
       const sorted = upcoming.sort((a: Match, b: Match) => new Date(a.match_date).getTime() - new Date(b.match_date).getTime());
@@ -277,16 +280,17 @@ export default function AccueilPage() {
         </div>
 
         {/* New Stats Cards */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <div 
             className="rounded-xl p-4 text-center shadow-2xl border border-sky-300 relative overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #e0f2fe 100%)',
+              background: 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #020617 100%)',
               boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
             }}
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-sky-400/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-sky-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+            <div className="absolute bottom-0 right-0 w-32 h-32 bg-[#22D3EE]/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
             <div className="relative">
               <Users size={24} className="text-sky-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-sky-900">{players.length}</div>
@@ -296,13 +300,14 @@ export default function AccueilPage() {
           <div 
             className="rounded-xl p-4 text-center shadow-2xl border border-sky-300 cursor-pointer hover:shadow-sky-400/50 transition-all relative overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #e0f2fe 100%)',
+              background: 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #020617 100%)',
               boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
             }}
             onClick={() => router.push('/resultats')}
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-sky-400/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-sky-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+            <div className="absolute bottom-0 right-0 w-32 h-32 bg-[#3B82F6]/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
             <div className="relative">
               <Trophy size={24} className="text-sky-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-sky-900">{completedMatches}</div>
@@ -312,17 +317,34 @@ export default function AccueilPage() {
           <div 
             className="rounded-xl p-4 text-center shadow-2xl border border-sky-300 cursor-pointer hover:shadow-sky-400/50 transition-all relative overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #e0f2fe 100%)',
+              background: 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #020617 100%)',
               boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
             }}
             onClick={() => router.push('/galerie')}
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-sky-400/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-sky-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+            <div className="absolute bottom-0 right-0 w-32 h-32 bg-[#8B5CF6]/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
             <div className="relative">
               <Image size={24} className="text-sky-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-sky-900">{galleryCount}</div>
               <div className="text-xs text-sky-700 mt-0.5">Galerie</div>
+            </div>
+          </div>
+          <div 
+            className="rounded-xl p-4 text-center shadow-2xl border border-sky-300 relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #020617 100%)',
+              boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+            }}
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-sky-400/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-sky-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+            <div className="absolute bottom-0 right-0 w-32 h-32 bg-[#22D3EE]/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+            <div className="relative">
+              <Users size={24} className="text-sky-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-sky-900">{userCount}</div>
+              <div className="text-xs text-sky-700 mt-0.5">Membres</div>
             </div>
           </div>
         </div>
