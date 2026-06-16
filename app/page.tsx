@@ -3,16 +3,16 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { Announcement, Match } from '@/lib/types';
+import { Announcement, Match, Player } from '@/lib/types';
 import AppShell from '@/components/app-shell';
 import { useTeam } from '@/contexts/team-context';
-import { Calendar, MapPin, Clock, Trophy, Dumbbell, Users, Megaphone, ChevronRight, Home } from 'lucide-react';
+import { Calendar, MapPin, Clock, Trophy, Users, Image, ChevronRight, Home } from 'lucide-react';
 
 const TYPE_CONFIG: Record<string, { icon: typeof Calendar; color: string; bg: string; label: string }> = {
   match: { icon: Trophy, color: 'text-green-600', bg: 'bg-green-50 border-green-200', label: 'Match' },
-  training: { icon: Dumbbell, color: 'text-blue-600', bg: 'bg-blue-50 border-blue-200', label: 'Entraînement' },
+  training: { icon: Calendar, color: 'text-blue-600', bg: 'bg-blue-50 border-blue-200', label: 'Entraînement' },
   meeting: { icon: Users, color: 'text-amber-600', bg: 'bg-amber-50 border-amber-200', label: 'Réunion' },
-  other: { icon: Megaphone, color: 'text-purple-600', bg: 'bg-purple-50 border-purple-200', label: 'Annonce' },
+  other: { icon: Calendar, color: 'text-purple-600', bg: 'bg-purple-50 border-purple-200', label: 'Annonce' },
 };
 
 function formatDate(dateStr: string) {
@@ -36,6 +36,8 @@ export default function AccueilPage() {
   const { team, user, loading: contextLoading } = useTeam();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [upcomingMatches, setUpcomingMatches] = useState<Match[]>([]);
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [galleryCount, setGalleryCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -56,11 +58,15 @@ export default function AccueilPage() {
     async function load() {
       if (!team) return;
       
-      const [ann, m] = await Promise.all([
+      const [ann, m, p, g] = await Promise.all([
         fetch(`/api/data/announcements?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/matches?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/players?team_id=${team.id}`).then(r => r.json()),
+        fetch(`/api/data/gallery?team_id=${team.id}`).then(r => r.json()).catch(() => []),
       ]);
       setAnnouncements(ann);
+      setPlayers(p);
+      setGalleryCount(g.length || 0);
       const upcoming = m.filter((match: Match) => match.status === 'upcoming');
       // Sort by date and show only the closest one
       const sorted = upcoming.sort((a: Match, b: Match) => new Date(a.match_date).getTime() - new Date(b.match_date).getTime());
@@ -72,7 +78,7 @@ export default function AccueilPage() {
     // Setup realtime subscriptions
     if (team && supabase) {
       const channels: any[] = [];
-      const tables = ['announcements', 'matches'];
+      const tables = ['announcements', 'matches', 'players', 'gallery'];
 
       tables.forEach(table => {
         const channel = supabase!
@@ -112,6 +118,8 @@ export default function AccueilPage() {
   }
 
   const nextMatch = upcomingMatches[0];
+  const completedMatches = upcomingMatches.length > 0 ? 
+    upcomingMatches.filter((m: Match) => m.status === 'completed').length : 0;
 
   return (
     <AppShell>
@@ -132,62 +140,84 @@ export default function AccueilPage() {
           </div>
         </div>
 
+        {/* Team Photo Card */}
+        {team?.logo_url && (
+          <div 
+            className="relative overflow-hidden rounded-2xl shadow-2xl"
+            style={{ 
+              background: 'linear-gradient(135deg, #020617, #071A3D)',
+              height: '200px'
+            }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-[#22D3EE]/20 via-[#3B82F6]/20 to-[#8B5CF6]/20" />
+            <div className="absolute top-0 left-0 w-96 h-96 bg-[#22D3EE]/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#8B5CF6]/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+            <div className="relative h-full flex items-center justify-center p-8">
+              <img 
+                src={team.logo_url} 
+                alt={team.name} 
+                className="h-full object-contain drop-shadow-2xl"
+              />
+            </div>
+          </div>
+        )}
+
         {/* Hero / Next Match Banner */}
         {nextMatch && (
           <div 
-            className="relative overflow-hidden rounded-2xl p-5 text-white shadow-xl"
+            className="relative overflow-hidden rounded-2xl p-5 text-white shadow-2xl"
             style={{ 
-              background: 'linear-gradient(135deg, #22c55e, #15803d)'
+              background: 'linear-gradient(135deg, #020617, #071A3D, #2D0A5B)'
             }}
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#22D3EE]/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#8B5CF6]/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl" />
             <div className="relative">
               <div className="flex items-center gap-2 mb-3">
-                <div className="px-2 py-0.5 bg-white/20 rounded-full text-xs font-medium backdrop-blur-sm">
+                <div className="px-2 py-0.5 bg-[#22D3EE]/20 rounded-full text-xs font-medium backdrop-blur-sm border border-[#22D3EE]/30">
                   Prochain Match
                 </div>
-                <span className="text-green-200 text-xs">{daysUntil(nextMatch.match_date)}</span>
+                <span className="text-[#22D3EE] text-xs">{daysUntil(nextMatch.match_date)}</span>
               </div>
               <div className="flex items-center justify-between mb-4">
                 <div className="text-center">
-                  <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-1.5 shadow-inner overflow-hidden">
+                  <div className="w-14 h-14 rounded-xl bg-[#22D3EE]/20 backdrop-blur-sm flex items-center justify-center mb-1.5 shadow-inner overflow-hidden border border-[#22D3EE]/30">
                     {team?.logo_url ? (
                       <img src={team.logo_url} alt="Logo" className="w-full h-full object-cover" />
                     ) : (
-                      <span className="font-bold text-lg">{team?.name?.substring(0, 2).toUpperCase() || 'SA'}</span>
+                      <span className="font-bold text-lg text-[#22D3EE]">{team?.name?.substring(0, 2).toUpperCase() || 'SA'}</span>
                     )}
                   </div>
-                  <span className="text-xs text-green-200">{team?.name || 'Sama ASC'}</span>
+                  <span className="text-xs text-white/70">{team?.name || 'Sama ASC'}</span>
                 </div>
                 <div className="text-center px-3">
-                  <span className="text-3xl font-bold">VS</span>
-                  <div className="text-xs text-green-200 mt-1">
+                  <span className="text-3xl font-bold bg-gradient-to-r from-[#22D3EE] via-[#3B82F6] to-[#8B5CF6] bg-clip-text text-transparent">VS</span>
+                  <div className="text-xs text-white/70 mt-1">
                     {nextMatch.competition || 'Amical'}
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="w-14 h-14 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center mb-1.5 shadow-inner border border-white/20">
-                    <span className="font-bold text-sm">{nextMatch.opponent.replace('ASC ', '')}</span>
+                  <div className="w-14 h-14 rounded-xl bg-[#8B5CF6]/20 backdrop-blur-sm flex items-center justify-center mb-1.5 shadow-inner border border-[#8B5CF6]/30">
+                    <span className="font-bold text-sm text-white">{nextMatch.opponent.replace('ASC ', '')}</span>
                   </div>
-                  <span className="text-xs text-green-200">{nextMatch.opponent}</span>
+                  <span className="text-xs text-white/70">{nextMatch.opponent}</span>
                 </div>
               </div>
-              <div className="flex items-center justify-center gap-4 text-sm text-green-100">
+              <div className="flex items-center justify-center gap-4 text-sm text-white/80">
                 <div className="flex items-center gap-1.5">
-                  <Calendar size={14} />
+                  <Calendar size={14} className="text-[#22D3EE]" />
                   <span>{formatDate(nextMatch.match_date)}</span>
                 </div>
                 {nextMatch.match_time && (
                   <div className="flex items-center gap-1.5">
-                    <Clock size={14} />
+                    <Clock size={14} className="text-[#22D3EE]" />
                     <span>{nextMatch.match_time}</span>
                   </div>
                 )}
               </div>
               {nextMatch.venue && (
-                <div className="flex items-center justify-center gap-1.5 text-sm text-green-200 mt-1.5">
-                  <MapPin size={14} />
+                <div className="flex items-center justify-center gap-1.5 text-sm text-white/70 mt-1.5">
+                  <MapPin size={14} className="text-[#22D3EE]" />
                   <span>{nextMatch.venue}</span>
                 </div>
               )}
@@ -239,19 +269,39 @@ export default function AccueilPage() {
           </div>
         </div>
 
-        {/* Quick Stats */}
+        {/* New Stats Cards */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-xl bg-white p-3 text-center shadow-md hover-lift">
-            <div className="text-2xl font-bold text-green-600">{upcomingMatches.length}</div>
-            <div className="text-xs text-gray-500 mt-0.5">Matchs à venir</div>
+          <div 
+            className="rounded-xl bg-gradient-to-br from-[#020617] to-[#071A3D] p-4 text-center shadow-2xl border border-[#22D3EE]/20"
+            style={{
+              boxShadow: '0 4px 30px -4px rgba(34, 211, 238, 0.3)'
+            }}
+          >
+            <Users size={24} className="text-[#22D3EE] mx-auto mb-2" />
+            <div className="text-2xl font-bold text-white">{players.length}</div>
+            <div className="text-xs text-white/70 mt-0.5">Joueurs</div>
           </div>
-          <div className="rounded-xl bg-white p-3 text-center shadow-md hover-lift">
-            <div className="text-2xl font-bold text-blue-600">{announcements.filter(a => a.type === 'training').length}</div>
-            <div className="text-xs text-gray-500 mt-0.5">Entraînements</div>
+          <div 
+            className="rounded-xl bg-gradient-to-br from-[#020617] to-[#071A3D] p-4 text-center shadow-2xl border border-[#3B82F6]/20 cursor-pointer hover:shadow-[#3B82F6]/30 transition-all"
+            style={{
+              boxShadow: '0 4px 30px -4px rgba(59, 130, 246, 0.3)'
+            }}
+            onClick={() => router.push('/resultats')}
+          >
+            <Trophy size={24} className="text-[#3B82F6] mx-auto mb-2" />
+            <div className="text-2xl font-bold text-white">{completedMatches}</div>
+            <div className="text-xs text-white/70 mt-0.5">Matchs</div>
           </div>
-          <div className="rounded-xl bg-white p-3 text-center shadow-md hover-lift">
-            <div className="text-2xl font-bold text-amber-600">{announcements.filter(a => a.type === 'meeting').length}</div>
-            <div className="text-xs text-gray-500 mt-0.5">Réunions</div>
+          <div 
+            className="rounded-xl bg-gradient-to-br from-[#020617] to-[#071A3D] p-4 text-center shadow-2xl border border-[#8B5CF6]/20 cursor-pointer hover:shadow-[#8B5CF6]/30 transition-all"
+            style={{
+              boxShadow: '0 4px 30px -4px rgba(139, 92, 246, 0.3)'
+            }}
+            onClick={() => router.push('/galerie')}
+          >
+            <Image size={24} className="text-[#8B5CF6] mx-auto mb-2" />
+            <div className="text-2xl font-bold text-white">{galleryCount}</div>
+            <div className="text-xs text-white/70 mt-0.5">Galerie</div>
           </div>
         </div>
       </div>
