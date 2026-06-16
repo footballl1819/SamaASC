@@ -36,6 +36,7 @@ export default function AccueilPage() {
   const { team, user, loading: contextLoading } = useTeam();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [upcomingMatches, setUpcomingMatches] = useState<Match[]>([]);
+  const [allMatches, setAllMatches] = useState<Match[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [galleryCount, setGalleryCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -65,6 +66,7 @@ export default function AccueilPage() {
         fetch(`/api/data/gallery?team_id=${team.id}`).then(r => r.json()).catch(() => []),
       ]);
       setAnnouncements(ann);
+      setAllMatches(m);
       setPlayers(p);
       setGalleryCount(g.length || 0);
       const upcoming = m.filter((match: Match) => match.status === 'upcoming');
@@ -118,7 +120,6 @@ export default function AccueilPage() {
   }
 
   const nextMatch = upcomingMatches[0];
-  const allMatches = upcomingMatches;
   const completedMatches = allMatches.filter((m: Match) => m.status === 'completed').length;
 
   return (
@@ -240,33 +241,33 @@ export default function AccueilPage() {
                   key={ann.id}
                   className="relative overflow-hidden rounded-xl border p-4 hover-lift"
                   style={{
-                    background: 'linear-gradient(135deg, #0a0f1e 0%, #071A3D 50%, #0a0f1e 100%)',
-                    borderColor: `${config.color.replace('text-', '')}40`,
-                    boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}80` : undefined
+                    background: 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #e0f2fe 100%)',
+                    borderColor: '#0ea5e9',
+                    boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                   }}
                 >
-                  <div className="absolute top-0 right-0 w-48 h-48 bg-[#22D3EE]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#8B5CF6]/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
                   <div className="relative">
                     <div className="flex items-start gap-3">
-                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-white/20 backdrop-blur-sm border border-white/30`}>
-                        <Icon size={18} className={config.color} />
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-white/60 backdrop-blur-sm border border-white/80`}>
+                        <Icon size={18} className="text-sky-600" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className={`text-xs font-semibold ${config.color}`}>
+                          <span className="text-xs font-semibold text-sky-700">
                             {config.label}
                           </span>
                           {ann.event_date && (
-                            <span className="text-xs text-white/60">
+                            <span className="text-xs text-sky-600/70">
                               {daysUntil(ann.event_date)}
                             </span>
                           )}
                         </div>
-                        <h3 className="font-semibold text-white text-sm mb-1">{ann.title}</h3>
-                        <p className="text-xs text-white/80 leading-relaxed">{ann.content}</p>
+                        <h3 className="font-semibold text-sky-900 text-sm mb-1">{ann.title}</h3>
+                        <p className="text-xs text-sky-800/80 leading-relaxed">{ann.content}</p>
                       </div>
-                      <ChevronRight size={16} className="text-white/60 flex-shrink-0 mt-2" />
+                      <ChevronRight size={16} className="text-sky-600/70 flex-shrink-0 mt-2" />
                     </div>
                   </div>
                 </div>
@@ -278,50 +279,50 @@ export default function AccueilPage() {
         {/* New Stats Cards */}
         <div className="grid grid-cols-3 gap-3">
           <div 
-            className="rounded-xl p-4 text-center shadow-2xl border border-[#22D3EE]/30 relative overflow-hidden"
+            className="rounded-xl p-4 text-center shadow-2xl border border-sky-300 relative overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, #0a0f1e 0%, #071A3D 50%, #0a0f1e 100%)',
-              boxShadow: '0 4px 30px -4px rgba(34, 211, 238, 0.5)'
+              background: 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #e0f2fe 100%)',
+              boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
             }}
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#22D3EE]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#22D3EE]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-sky-400/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-sky-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
             <div className="relative">
-              <Users size={24} className="text-[#22D3EE] mx-auto mb-2" />
-              <div className="text-2xl font-bold text-white">{players.length}</div>
-              <div className="text-xs text-white/80 mt-0.5">Joueurs</div>
+              <Users size={24} className="text-sky-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-sky-900">{players.length}</div>
+              <div className="text-xs text-sky-700 mt-0.5">Joueurs</div>
             </div>
           </div>
           <div 
-            className="rounded-xl p-4 text-center shadow-2xl border border-[#3B82F6]/30 cursor-pointer hover:shadow-[#3B82F6]/50 transition-all relative overflow-hidden"
+            className="rounded-xl p-4 text-center shadow-2xl border border-sky-300 cursor-pointer hover:shadow-sky-400/50 transition-all relative overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, #0a0f1e 0%, #071A3D 50%, #0a0f1e 100%)',
-              boxShadow: '0 4px 30px -4px rgba(59, 130, 246, 0.5)'
+              background: 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #e0f2fe 100%)',
+              boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
             }}
             onClick={() => router.push('/resultats')}
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#3B82F6]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#3B82F6]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-sky-400/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-sky-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
             <div className="relative">
-              <Trophy size={24} className="text-[#3B82F6] mx-auto mb-2" />
-              <div className="text-2xl font-bold text-white">{completedMatches}</div>
-              <div className="text-xs text-white/80 mt-0.5">Matchs</div>
+              <Trophy size={24} className="text-sky-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-sky-900">{completedMatches}</div>
+              <div className="text-xs text-sky-700 mt-0.5">Matchs</div>
             </div>
           </div>
           <div 
-            className="rounded-xl p-4 text-center shadow-2xl border border-[#8B5CF6]/30 cursor-pointer hover:shadow-[#8B5CF6]/50 transition-all relative overflow-hidden"
+            className="rounded-xl p-4 text-center shadow-2xl border border-sky-300 cursor-pointer hover:shadow-sky-400/50 transition-all relative overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, #0a0f1e 0%, #071A3D 50%, #0a0f1e 100%)',
-              boxShadow: '0 4px 30px -4px rgba(139, 92, 246, 0.5)'
+              background: 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #e0f2fe 100%)',
+              boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
             }}
             onClick={() => router.push('/galerie')}
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#8B5CF6]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#8B5CF6]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-sky-400/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-sky-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
             <div className="relative">
-              <Image size={24} className="text-[#8B5CF6] mx-auto mb-2" />
-              <div className="text-2xl font-bold text-white">{galleryCount}</div>
-              <div className="text-xs text-white/80 mt-0.5">Galerie</div>
+              <Image size={24} className="text-sky-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-sky-900">{galleryCount}</div>
+              <div className="text-xs text-sky-700 mt-0.5">Galerie</div>
             </div>
           </div>
         </div>

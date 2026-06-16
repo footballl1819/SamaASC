@@ -9,20 +9,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div 
-      className="min-h-screen bg-gray-50 relative"
+      className="min-h-screen relative"
+      style={{
+        background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f8fafc 100%)'
+      }}
     >
-      {/* Logo background overlay */}
-      {team?.logo_url && (
-        <div 
-          className="absolute inset-0 opacity-5 pointer-events-none"
-          style={{
-            backgroundImage: `url(${team.logo_url})`,
-            backgroundSize: 'contain',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
-        />
-      )}
       <Header />
       <main className="relative pt-14 pb-20 px-4 max-w-lg mx-auto">
         {children}
