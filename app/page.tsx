@@ -118,8 +118,8 @@ export default function AccueilPage() {
   }
 
   const nextMatch = upcomingMatches[0];
-  const completedMatches = upcomingMatches.length > 0 ? 
-    upcomingMatches.filter((m: Match) => m.status === 'completed').length : 0;
+  const allMatches = upcomingMatches;
+  const completedMatches = allMatches.filter((m: Match) => m.status === 'completed').length;
 
   return (
     <AppShell>
@@ -141,22 +141,22 @@ export default function AccueilPage() {
         </div>
 
         {/* Team Photo Card */}
-        {team?.logo_url && (
+        {team?.team_photo_url && (
           <div 
             className="relative overflow-hidden rounded-2xl shadow-2xl"
             style={{ 
-              background: 'linear-gradient(135deg, #020617, #071A3D)',
-              height: '200px'
+              background: 'linear-gradient(135deg, #020617, #071A3D, #2D0A5B)',
+              height: '220px'
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-[#22D3EE]/20 via-[#3B82F6]/20 to-[#8B5CF6]/20" />
             <div className="absolute top-0 left-0 w-96 h-96 bg-[#22D3EE]/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
             <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#8B5CF6]/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
-            <div className="relative h-full flex items-center justify-center p-8">
+            <div className="relative h-full">
               <img 
-                src={team.logo_url} 
+                src={team.team_photo_url} 
                 alt={team.name} 
-                className="h-full object-contain drop-shadow-2xl"
+                className="w-full h-full object-cover"
               />
             </div>
           </div>
@@ -238,30 +238,36 @@ export default function AccueilPage() {
               return (
                 <div
                   key={ann.id}
-                  className={`rounded-xl border p-4 hover-lift ${config.bg}`}
+                  className="relative overflow-hidden rounded-xl border p-4 hover-lift"
                   style={{
+                    background: 'linear-gradient(135deg, #020617, #071A3D)',
+                    borderColor: `${config.color.replace('text-', '')}30`,
                     boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
                   }}
                 >
-                  <div className="flex items-start gap-3">
-                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-white/60 shadow-sm`}>
-                      <Icon size={18} className={config.color} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className={`text-xs font-semibold ${config.color}`}>
-                          {config.label}
-                        </span>
-                        {ann.event_date && (
-                          <span className="text-xs text-gray-400">
-                            {daysUntil(ann.event_date)}
-                          </span>
-                        )}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#22D3EE]/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#8B5CF6]/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+                  <div className="relative">
+                    <div className="flex items-start gap-3">
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-white/10 backdrop-blur-sm border border-white/20`}>
+                        <Icon size={18} className={config.color} />
                       </div>
-                      <h3 className="font-semibold text-gray-900 text-sm mb-1">{ann.title}</h3>
-                      <p className="text-xs text-gray-500 leading-relaxed">{ann.content}</p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-xs font-semibold ${config.color}`}>
+                            {config.label}
+                          </span>
+                          {ann.event_date && (
+                            <span className="text-xs text-white/50">
+                              {daysUntil(ann.event_date)}
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="font-semibold text-white text-sm mb-1">{ann.title}</h3>
+                        <p className="text-xs text-white/70 leading-relaxed">{ann.content}</p>
+                      </div>
+                      <ChevronRight size={16} className="text-white/50 flex-shrink-0 mt-2" />
                     </div>
-                    <ChevronRight size={16} className="text-gray-300 flex-shrink-0 mt-2" />
                   </div>
                 </div>
               );

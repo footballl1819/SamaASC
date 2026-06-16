@@ -13,7 +13,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, name, slug, description, primary_color, secondary_color, accent_color, nav_color, logo_url } = body;
+    const { id, name, slug, description, primary_color, secondary_color, accent_color, nav_color, logo_url, team_photo_url } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Missing team id' }, { status: 400 });
@@ -30,6 +30,7 @@ export async function PUT(request: NextRequest) {
         accent_color,
         nav_color,
         logo_url,
+        team_photo_url,
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)

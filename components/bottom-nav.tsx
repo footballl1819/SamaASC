@@ -28,8 +28,10 @@ export default function BottomNav() {
   });
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl border-t border-gray-800" style={{ backgroundColor: team?.nav_color ? `${team.nav_color}95` : 'rgba(31, 41, 55, 0.95)' }}>
-      <div className="flex items-center justify-around py-2 px-2 max-w-lg mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl border-t border-white/10 relative overflow-hidden" style={{ backgroundColor: 'rgba(2, 6, 23, 0.95)' }}>
+      <div className="absolute top-0 left-0 w-96 h-96 bg-[#22D3EE]/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#8B5CF6]/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+      <div className="relative flex items-center justify-around py-2 px-2 max-w-lg mx-auto">
         {filteredNavItems.map((item) => {
           const isActive = pathname === item.path;
           const Icon = item.icon;
@@ -43,8 +45,10 @@ export default function BottomNav() {
                   : 'text-white hover:text-white'
               }`}
               style={{
-                backgroundColor: isActive ? (team?.accent_color ? `${team.accent_color}30` : 'rgba(34, 197, 94, 0.1)') : undefined,
-                color: isActive ? (team?.accent_color || '#16a34a') : undefined,
+                backgroundColor: isActive ? 'rgba(34, 211, 238, 0.15)' : undefined,
+                color: isActive ? '#22D3EE' : undefined,
+                boxShadow: isActive ? '0 4px 30px -4px rgba(34, 211, 238, 0.3)' : undefined,
+                border: isActive ? '1px solid rgba(34, 211, 238, 0.3)' : undefined,
               }}
             >
               <div className={`relative ${isActive ? 'drop-shadow-sm' : ''}`}>
@@ -56,7 +60,7 @@ export default function BottomNav() {
                 {isActive && (
                   <div 
                     className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
-                    style={{ backgroundColor: team?.accent_color || '#16a34a' }}
+                    style={{ backgroundColor: '#22D3EE' }}
                   />
                 )}
               </div>

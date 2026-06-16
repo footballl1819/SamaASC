@@ -8,6 +8,7 @@ interface Team {
   name: string;
   slug: string;
   logo_url: string | null;
+  team_photo_url: string | null;
   primary_color: string;
   secondary_color: string;
   accent_color: string;

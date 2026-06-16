@@ -23,6 +23,8 @@ export default function ParametresPage() {
   const [navColor, setNavColor] = useState('#1f2937');
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [teamPhotoFile, setTeamPhotoFile] = useState<File | null>(null);
+  const [teamPhotoPreview, setTeamPhotoPreview] = useState<string | null>(null);
 
   useEffect(() => {
     // Check authentication
@@ -53,6 +55,7 @@ export default function ParametresPage() {
       setButtonColor(team.secondary_color || '#16a34a');
       setNavColor(team.nav_color || '#1f2937');
       setLogoPreview(team.logo_url);
+      setTeamPhotoPreview(team.team_photo_url);
       setLoading(false);
     }
   }, [team]);
@@ -69,6 +72,18 @@ export default function ParametresPage() {
     }
   };
 
+  const handleTeamPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setTeamPhotoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setTeamPhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSave = async () => {
     if (!team) return;
     
@@ -77,6 +92,7 @@ export default function ParametresPage() {
 
     try {
       let logoUrl = team.logo_url;
+      let teamPhotoUrl = team.team_photo_url;
 
       // Upload logo if changed
       if (logoFile && supabase) {
@@ -97,6 +113,25 @@ export default function ParametresPage() {
         logoUrl = publicUrl;
       }
 
+      // Upload team photo if changed
+      if (teamPhotoFile && supabase) {
+        const fileExt = teamPhotoFile.name.split('.').pop();
+        const fileName = `${team.id}-photo-${Date.now()}.${fileExt}`;
+        const filePath = `team-photos/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('team-assets')
+          .upload(filePath, teamPhotoFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('team-assets')
+          .getPublicUrl(filePath);
+
+        teamPhotoUrl = publicUrl;
+      }
+
       // Update team via API route
       const response = await fetch('/api/admin/team', {
         method: 'PUT',
@@ -111,6 +146,7 @@ export default function ParametresPage() {
           accent_color: iconColor,
           nav_color: navColor,
           logo_url: logoUrl,
+          team_photo_url: teamPhotoUrl,
         }),
       });
 
@@ -221,6 +257,42 @@ export default function ParametresPage() {
               >
                 <Upload size={18} />
                 Choisir un logo
+              </label>
+              <p className="text-xs text-gray-500 mt-2">
+                Formats acceptés: JPG, PNG, GIF (max 5MB)
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Team Photo Upload */}
+        <div className="rounded-2xl bg-white shadow-lg p-5">
+          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <Palette size={20} className="text-green-600" />
+            Photo de l'équipe
+          </h2>
+          <div className="flex items-center gap-4">
+            <div className="w-32 h-48 rounded-2xl bg-gray-100 flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300">
+              {teamPhotoPreview ? (
+                <img src={teamPhotoPreview} alt="Photo de l'équipe" className="w-full h-full object-cover" />
+              ) : (
+                <Upload size={32} className="text-gray-400" />
+              )}
+            </div>
+            <div className="flex-1">
+              <input
+                type="file"
+                id="team-photo-upload"
+                accept="image/*"
+                onChange={handleTeamPhotoChange}
+                className="hidden"
+              />
+              <label
+                htmlFor="team-photo-upload"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors cursor-pointer"
+              >
+                <Upload size={18} />
+                Choisir une photo
               </label>
               <p className="text-xs text-gray-500 mt-2">
                 Formats acceptés: JPG, PNG, GIF (max 5MB)
