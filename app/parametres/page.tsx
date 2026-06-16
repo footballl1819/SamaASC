@@ -24,13 +24,6 @@ export default function ParametresPage() {
   const [teamPhotoFile, setTeamPhotoFile] = useState<File | null>(null);
   const [teamPhotoPreview, setTeamPhotoPreview] = useState<string | null>(null);
 
-  const COLORS = [
-    '#22c55e', '#16a34a', '#15803d', '#3b82f6', '#2563eb', '#1d4ed8',
-    '#8b5cf6', '#7c3aed', '#6d28d9', '#f59e0b', '#d97706', '#b45309',
-    '#ef4444', '#dc2626', '#b91c1c', '#06b6d4', '#0891b2', '#0e7490',
-    '#0ea5e9', '#0284c7', '#0369a1', '#ec4899', '#db2777', '#be185d'
-  ];
-
   useEffect(() => {
     // Check authentication
     if (!contextLoading) {
@@ -242,178 +235,220 @@ export default function ParametresPage() {
         )}
 
         {/* Logo Upload */}
-        <div className="rounded-2xl bg-white shadow-lg p-5">
-          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Palette size={20} className="text-green-600" />
-            Logo de l'équipe
-          </h2>
-          <div className="flex items-center gap-4">
-            <div className="w-24 h-24 rounded-2xl bg-gray-100 flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300">
-              {logoPreview ? (
-                <img src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
-              ) : (
-                <Upload size={32} className="text-gray-400" />
-              )}
-            </div>
-            <div className="flex-1">
-              <input
-                type="file"
-                id="logo-upload"
-                accept="image/*"
-                onChange={handleLogoChange}
-                className="hidden"
-              />
-              <label
-                htmlFor="logo-upload"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors cursor-pointer"
-              >
-                <Upload size={18} />
-                Choisir un logo
-              </label>
-              <p className="text-xs text-gray-500 mt-2">
-                Formats acceptés: JPG, PNG, GIF (max 5MB)
-              </p>
+        <div className="rounded-2xl shadow-lg p-5 relative overflow-hidden" style={{
+          background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+          borderColor: '#0ea5e9',
+          boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+        }}>
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+          <div className="relative z-10">
+            <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <Palette size={20} className="text-white" />
+              Logo de l'équipe
+            </h2>
+            <div className="flex items-center gap-4">
+              <div className="w-24 h-24 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden border-2 border-dashed border-white/30">
+                {logoPreview ? (
+                  <img src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
+                ) : (
+                  <Upload size={32} className="text-white/70" />
+                )}
+              </div>
+              <div className="flex-1">
+                <input
+                  type="file"
+                  id="logo-upload"
+                  accept="image/*"
+                  onChange={handleLogoChange}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="logo-upload"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-xl font-medium hover:bg-white/30 transition-colors cursor-pointer border border-white/30"
+                >
+                  <Upload size={18} />
+                  Choisir un logo
+                </label>
+                <p className="text-xs text-white/70 mt-2">
+                  Formats acceptés: JPG, PNG, GIF (max 5MB)
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Team Photo Upload */}
-        <div className="rounded-2xl bg-white shadow-lg p-5">
-          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Palette size={20} className="text-green-600" />
-            Photo de l'équipe
-          </h2>
-          <div className="flex items-center gap-4">
-            <div className="w-32 h-48 rounded-2xl bg-gray-100 flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300">
-              {teamPhotoPreview ? (
-                <img src={teamPhotoPreview} alt="Photo de l'équipe" className="w-full h-full object-cover" />
-              ) : (
-                <Upload size={32} className="text-gray-400" />
-              )}
-            </div>
-            <div className="flex-1">
-              <input
-                type="file"
-                id="team-photo-upload"
-                accept="image/*"
-                onChange={handleTeamPhotoChange}
-                className="hidden"
-              />
-              <label
-                htmlFor="team-photo-upload"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors cursor-pointer"
-              >
-                <Upload size={18} />
-                Choisir une photo
-              </label>
-              <p className="text-xs text-gray-500 mt-2">
-                Formats acceptés: JPG, PNG, GIF (max 5MB)
-              </p>
+        <div className="rounded-2xl shadow-lg p-5 relative overflow-hidden" style={{
+          background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+          borderColor: '#0ea5e9',
+          boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+        }}>
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+          <div className="relative z-10">
+            <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <Palette size={20} className="text-white" />
+              Photo de l'équipe
+            </h2>
+            <div className="flex items-center gap-4">
+              <div className="w-32 h-48 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden border-2 border-dashed border-white/30">
+                {teamPhotoPreview ? (
+                  <img src={teamPhotoPreview} alt="Photo de l'équipe" className="w-full h-full object-cover" />
+                ) : (
+                  <Upload size={32} className="text-white/70" />
+                )}
+              </div>
+              <div className="flex-1">
+                <input
+                  type="file"
+                  id="team-photo-upload"
+                  accept="image/*"
+                  onChange={handleTeamPhotoChange}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="team-photo-upload"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-xl font-medium hover:bg-white/30 transition-colors cursor-pointer border border-white/30"
+                >
+                  <Upload size={18} />
+                  Choisir une photo
+                </label>
+                <p className="text-xs text-white/70 mt-2">
+                  Formats acceptés: JPG, PNG, GIF (max 5MB)
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Team Info */}
-        <div className="rounded-2xl bg-white shadow-lg p-5">
-          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Palette size={20} className="text-green-600" />
-            Informations de l'équipe
-          </h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Nom de l'ASC
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
-                placeholder="Ex: ASC Diambars"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Slug (identifiant unique)
-              </label>
-              <input
-                type="text"
-                value={slug}
-                onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
-                className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
-                placeholder="Ex: asc-diambars"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description
-              </label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={3}
-                className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm input-shadow focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 resize-none"
-                placeholder="Décrivez votre équipe..."
-              />
+        <div className="rounded-2xl shadow-lg p-5 relative overflow-hidden" style={{
+          background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+          borderColor: '#0ea5e9',
+          boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+        }}>
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+          <div className="relative z-10">
+            <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <Palette size={20} className="text-white" />
+              Informations de l'équipe
+            </h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-white/90 mb-1">
+                  Nom de l'ASC
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full rounded-xl border border-white/30 px-3 py-2.5 text-sm bg-white/20 backdrop-blur-sm text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/50"
+                  placeholder="Ex: ASC Diambars"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-white/90 mb-1">
+                  Slug (identifiant unique)
+                </label>
+                <input
+                  type="text"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
+                  className="w-full rounded-xl border border-white/30 px-3 py-2.5 text-sm bg-white/20 backdrop-blur-sm text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/50"
+                  placeholder="Ex: asc-diambars"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-white/90 mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={3}
+                  className="w-full rounded-xl border border-white/30 px-3 py-2.5 text-sm bg-white/20 backdrop-blur-sm text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/50 resize-none"
+                  placeholder="Décrivez votre équipe..."
+                />
+              </div>
             </div>
           </div>
         </div>
 
         {/* Colors */}
-        <div className="rounded-2xl bg-white shadow-lg p-5">
-          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Palette size={20} className="text-green-600" />
-            Couleurs de l'équipe
-          </h2>
+        <div className="rounded-2xl shadow-lg p-5 relative overflow-hidden" style={{
+          background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+          borderColor: '#0ea5e9',
+          boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+        }}>
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+          <div className="relative z-10">
+            <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <Palette size={20} className="text-white" />
+              Couleurs de l'équipe
+            </h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-white/90 mb-2">
                 Couleur Premium (dégradé foncé)
               </label>
-              <div className="flex flex-wrap gap-2">
-                {COLORS.map((color) => (
-                  <button
-                    key={color}
-                    onClick={() => setPrimaryColor(color)}
-                    className={`w-10 h-10 rounded-lg border-2 transition-all ${
-                      primaryColor === color ? 'border-green-500 scale-110 shadow-lg' : 'border-gray-200 hover:scale-105'
-                    }`}
-                    style={{ backgroundColor: color }}
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div
+                    className="w-16 h-16 rounded-xl shadow-md"
+                    style={{ backgroundColor: primaryColor }}
                   />
-                ))}
+                  {primaryColor === '#020617' && (
+                    <div className="absolute top-1 right-1 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md">
+                      <Check size={12} className="text-green-600" />
+                    </div>
+                  )}
+                </div>
+                <input
+                  type="color"
+                  value={primaryColor}
+                  onChange={(e) => setPrimaryColor(e.target.value)}
+                  className="w-10 h-10 rounded-lg cursor-pointer border-2 border-white/30"
+                />
+                <button
+                  onClick={() => setPrimaryColor('#020617')}
+                  className="px-3 py-1.5 bg-white/20 backdrop-blur-sm text-white rounded-lg text-sm font-medium hover:bg-white/30 transition-colors border border-white/30"
+                >
+                  Réinitialiser
+                </button>
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-white/90 mb-2">
                 Couleur Bleu Clair (dégradé clair)
               </label>
-              <div className="flex flex-wrap gap-2">
-                {COLORS.map((color) => (
-                  <button
-                    key={color}
-                    onClick={() => setSecondaryColor(color)}
-                    className={`w-10 h-10 rounded-lg border-2 transition-all ${
-                      secondaryColor === color ? 'border-green-500 scale-110 shadow-lg' : 'border-gray-200 hover:scale-105'
-                    }`}
-                    style={{ backgroundColor: color }}
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div
+                    className="w-16 h-16 rounded-xl shadow-md"
+                    style={{ backgroundColor: secondaryColor }}
                   />
-                ))}
+                  {secondaryColor === '#e0f2fe' && (
+                    <div className="absolute top-1 right-1 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md">
+                      <Check size={12} className="text-green-600" />
+                    </div>
+                  )}
+                </div>
+                <input
+                  type="color"
+                  value={secondaryColor}
+                  onChange={(e) => setSecondaryColor(e.target.value)}
+                  className="w-10 h-10 rounded-lg cursor-pointer border-2 border-white/30"
+                />
+                <button
+                  onClick={() => setSecondaryColor('#e0f2fe')}
+                  className="px-3 py-1.5 bg-white/20 backdrop-blur-sm text-white rounded-lg text-sm font-medium hover:bg-white/30 transition-colors border border-white/30"
+                >
+                  Réinitialiser
+                </button>
               </div>
-            </div>
-          </div>
-
-          {/* Color Preview */}
-          <div className="mt-6 p-4 rounded-xl border border-gray-200">
-            <p className="text-xs font-medium text-gray-500 mb-3">Aperçu</p>
-            <div className="flex gap-2">
-              <div
-                className="w-16 h-16 rounded-lg shadow-md"
-                style={{ backgroundColor: primaryColor }}
-              />
-              <div
-                className="w-16 h-16 rounded-lg shadow-md"
-                style={{ backgroundColor: secondaryColor }}
-              />
             </div>
           </div>
         </div>
