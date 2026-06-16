@@ -634,7 +634,7 @@ export default function AdminPage() {
             )}
             {!showForm && !coach && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({}); }} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
-                background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                 borderColor: '#0ea5e9',
                 boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
               }}>
@@ -659,7 +659,7 @@ export default function AdminPage() {
                 />
                 <Input label="Rôle" field="role" placeholder="Entraineur" value={form.role || ''} onChange={(value) => setForm(prev => ({ ...prev, role: value }))} />
                 <button onClick={handleCoachSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
-                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                 }}>
@@ -680,7 +680,7 @@ export default function AdminPage() {
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ position: 'DEF' }); }}
                 className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
-                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                 }}>
@@ -709,7 +709,7 @@ export default function AdminPage() {
                 ]} value={form.position || ''} onChange={(value) => setForm(prev => ({ ...prev, position: value }))} />
                 <Input label="Numéro" field="jersey_number" type="number" placeholder="10" value={form.jersey_number || ''} onChange={(value) => setForm(prev => ({ ...prev, jersey_number: value }))} />
                 <button onClick={handlePlayerSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
-                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                 }}>
@@ -745,7 +745,7 @@ export default function AdminPage() {
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ is_home: 'true', status: 'upcoming', formation: '4-3-3' }); }}
                 className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
-                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                 }}>
@@ -778,7 +778,7 @@ export default function AdminPage() {
                 </div>
                 <Input label="Buteurs" field="scorers" placeholder="Noms des buteurs (séparés par virgule)" value={form.scorers || ''} onChange={(value) => setForm(prev => ({ ...prev, scorers: value }))} />
                 <button onClick={handleMatchSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
-                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                 }}>
@@ -946,7 +946,7 @@ export default function AdminPage() {
                   </div>
 
                   <button onClick={handleSaveLineup} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
-                    background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                    background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                     borderColor: '#0ea5e9',
                     boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                   }}>
@@ -968,7 +968,7 @@ export default function AdminPage() {
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ type: 'other' }); }}
                 className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
-                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                 }}>
@@ -998,7 +998,7 @@ export default function AdminPage() {
                 ]} value={form.type || ''} onChange={(value) => setForm(prev => ({ ...prev, type: value }))} />
                 <Input label="Date événement" field="event_date" type="date" value={form.event_date || ''} onChange={(value) => setForm(prev => ({ ...prev, event_date: value }))} />
                 <button onClick={handleAnnouncementSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
-                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                 }}>
@@ -1050,7 +1050,7 @@ export default function AdminPage() {
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ competition_name: standingsComp || '' }); }}
                 className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
-                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                 }}>
@@ -1082,7 +1082,7 @@ export default function AdminPage() {
                 </div>
                 <Input label="Buts contre" field="goals_against" type="number" value={form.goals_against || ''} onChange={(value) => setForm(prev => ({ ...prev, goals_against: value }))} />
                 <button onClick={handleStandingSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
-                  background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                  background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                 }}>

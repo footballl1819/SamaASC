@@ -229,7 +229,7 @@ export default function SupportersPage() {
               rows={3}
               className="w-full rounded-xl px-3 py-2.5 text-sm focus:outline-none resize-none relative z-10"
               style={{
-                background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                 borderColor: '#0ea5e9',
                 color: '#0c4a6e',
               }}
@@ -242,7 +242,7 @@ export default function SupportersPage() {
             disabled={(!message.trim() && !selectedSticker) || submitting}
             className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             style={{
-              background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+              background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
               borderColor: '#0ea5e9',
               boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
             }}

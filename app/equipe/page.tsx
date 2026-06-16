@@ -236,7 +236,7 @@ export default function EquipePage() {
         )}
 
         {/* View Toggle */}
-        <div className="flex bg-gray-100 rounded-xl p-1">
+        <div className="flex gap-2">
           {[
             { key: 'field' as const, label: 'Terrain' },
             { key: 'list' as const, label: 'Liste' },
@@ -245,16 +245,24 @@ export default function EquipePage() {
             <button
               key={v.key}
               onClick={() => setView(v.key)}
-              className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 ${
+              className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 relative overflow-hidden ${
                 view === v.key
                   ? 'text-white shadow-md'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
               style={{
-                backgroundColor: view === v.key ? (team?.secondary_color || '#16a34a') : undefined,
+                background: view === v.key ? 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)' : undefined,
+                borderColor: view === v.key ? '#0ea5e9' : undefined,
+                boxShadow: view === v.key ? '0 4px 30px -4px rgba(14, 165, 233, 0.3)' : undefined
               }}
             >
-              {v.label}
+              {view === v.key && (
+                <>
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-16 h-16 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                </>
+              )}
+              <span className="relative z-10">{v.label}</span>
             </button>
           ))}
         </div>
@@ -294,16 +302,24 @@ export default function EquipePage() {
                     <button
                       key={f}
                       onClick={() => setSelectedFormation(f)}
-                      className={`flex-1 py-2 rounded-lg text-xs font-bold tracking-wider transition-all duration-300 ${
+                      className={`flex-1 py-2 rounded-lg text-xs font-bold tracking-wider transition-all duration-300 relative overflow-hidden ${
                         selectedFormation === f
                           ? 'text-white shadow-lg'
                           : 'bg-white text-gray-600 shadow-sm hover:shadow-md'
                       }`}
                       style={{
-                        backgroundColor: selectedFormation === f ? (team?.secondary_color || '#16a34a') : undefined,
+                        background: selectedFormation === f ? 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)' : undefined,
+                        borderColor: selectedFormation === f ? '#0ea5e9' : undefined,
+                        boxShadow: selectedFormation === f ? '0 4px 30px -4px rgba(14, 165, 233, 0.3)' : undefined
                       }}
                     >
-                      {f}
+                      {selectedFormation === f && (
+                        <>
+                          <div className="absolute top-0 right-0 w-16 h-16 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                          <div className="absolute bottom-0 left-0 w-12 h-12 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                        </>
+                      )}
+                      <span className="relative z-10">{f}</span>
                     </button>
                   ))}
                 </div>
@@ -313,7 +329,7 @@ export default function EquipePage() {
             {/* Match info banner */}
             {selectedMatch && (
               <div className="relative overflow-hidden rounded-xl border p-3" style={{
-                background: 'linear-gradient(135deg, #020617 0%, #e0f2fe 50%, #020617 100%)',
+                background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                 borderColor: '#0ea5e9',
                 boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
               }}>
@@ -455,25 +471,47 @@ export default function EquipePage() {
             <div className="flex gap-2 overflow-x-auto pb-1">
               <button
                 onClick={() => setStatsComp('all')}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300 ${
+                className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300 relative overflow-hidden ${
                   statsComp === 'all'
-                    ? 'bg-green-600 text-white shadow-lg'
+                    ? 'text-white shadow-lg'
                     : 'bg-white text-gray-600 shadow-sm hover:shadow-md'
                 }`}
+                style={{
+                  background: statsComp === 'all' ? 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)' : undefined,
+                  borderColor: statsComp === 'all' ? '#0ea5e9' : undefined,
+                  boxShadow: statsComp === 'all' ? '0 4px 30px -4px rgba(14, 165, 233, 0.3)' : undefined
+                }}
               >
-                Toutes
+                {statsComp === 'all' && (
+                  <>
+                    <div className="absolute top-0 right-0 w-16 h-16 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 w-12 h-12 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                  </>
+                )}
+                <span className="relative z-10">Toutes</span>
               </button>
               {competitions.map(c => (
                 <button
                   key={c}
                   onClick={() => setStatsComp(c)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300 ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300 relative overflow-hidden ${
                     statsComp === c
-                      ? 'bg-green-600 text-white shadow-lg'
+                      ? 'text-white shadow-lg'
                       : 'bg-white text-gray-600 shadow-sm hover:shadow-md'
                   }`}
+                  style={{
+                    background: statsComp === c ? 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)' : undefined,
+                    borderColor: statsComp === c ? '#0ea5e9' : undefined,
+                    boxShadow: statsComp === c ? '0 4px 30px -4px rgba(14, 165, 233, 0.3)' : undefined
+                  }}
                 >
-                  {c}
+                  {statsComp === c && (
+                    <>
+                      <div className="absolute top-0 right-0 w-16 h-16 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                      <div className="absolute bottom-0 left-0 w-12 h-12 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                    </>
+                  )}
+                  <span className="relative z-10">{c}</span>
                 </button>
               ))}
             </div>
