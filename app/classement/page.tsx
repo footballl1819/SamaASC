@@ -48,8 +48,9 @@ export default function ClassementPage() {
     load();
 
     // Setup realtime subscription
+    let channel: any;
     if (team && supabase) {
-      const channel = supabase
+      channel = supabase
         .channel('standings-changes')
         .on(
           'postgres_changes',
@@ -64,11 +65,13 @@ export default function ClassementPage() {
           }
         )
         .subscribe();
-
-      return () => {
-        supabase!.removeChannel(channel);
-      };
     }
+
+    return () => {
+      if (channel && supabase) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, [team]);
 
   if (loading || contextLoading) {
@@ -243,8 +246,10 @@ export default function ClassementPage() {
                 );
             })}
           </div>
+        </div>
         )}
       </div>
     </AppShell>
   );
 }
+
