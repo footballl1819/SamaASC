@@ -204,17 +204,22 @@ export default function EquipePage() {
       <div className="space-y-5 pt-4">
         {/* Page Header with Icon */}
         <div className="flex items-center gap-3">
-          <div 
-            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover"
-            style={{ 
-              background: team?.accent_color ? team.accent_color : '#15803d'
+          <div
+            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, #e0f2fe 0%, #0ea5e9 50%, #0284c7 100%)',
+              boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
             }}
           >
-            <Users size={24} className="text-white" />
+            <div className="absolute top-0 right-0 w-16 h-16 bg-[#0ea5e9]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-14 h-14 bg-[#0284c7]/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+            <div className="relative z-10">
+              <Users size={24} className="text-white" />
+            </div>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Mon Équipe</h1>
-            <p className="text-sm text-gray-500">Joueurs et composition</p>
+            <h1 className="text-2xl font-bold text-gray-900 drop-shadow-md">Mon Équipe</h1>
+            <p className="text-sm text-gray-600 drop-shadow-sm">Joueurs et composition</p>
           </div>
         </div>
 
@@ -427,37 +432,49 @@ export default function EquipePage() {
               {players.map((player) => (
                 <div
                   key={player.id}
-                  className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-md hover-lift"
+                  className="flex items-center gap-3 rounded-xl p-3 shadow-md hover-lift relative overflow-hidden transition-all duration-300 hover:scale-[1.01]"
                   style={{
-                    boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
+                    background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+                    borderColor: '#0ea5e9',
+                    boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                   }}
                 >
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border-2 relative" style={{ backgroundColor: team?.secondary_color ? `${team.secondary_color}20` : '#dcfce7', borderColor: team?.secondary_color || '#bbf7d0' }}>
-                    {player.photo_url ? (
-                      <img src={player.photo_url} alt={player.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <Shirt size={20} style={{ color: team?.secondary_color || '#16a34a' }} />
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                  <div className="relative z-10 flex items-center gap-3 w-full">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border-2 relative" style={{ backgroundColor: team?.secondary_color ? `${team.secondary_color}20` : '#dcfce7', borderColor: team?.secondary_color || '#bbf7d0' }}>
+                      {player.photo_url ? (
+                        <img src={player.photo_url} alt={player.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <Shirt size={20} style={{ color: team?.secondary_color || '#16a34a' }} />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold text-sm text-white">{player.name}</div>
+                      <div className="text-xs text-sky-200">{POSITION_LABELS[player.position]}</div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 text-xs">
+                        <Target size={12} style={{ color: '#e0f2fe' }} />
+                        <span className="font-bold text-white">{getPlayerGoals(player.id)}</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs">
+                        <Footprints size={12} style={{ color: '#bae6fd' }} />
+                        <span className="font-bold text-white">{getPlayerAssists(player.id)}</span>
+                      </div>
+                    </div>
+                    {player.jersey_number && (
+                      <div className="w-7 h-7 rounded-full text-white flex items-center justify-center text-xs font-bold shadow-sm relative overflow-hidden" style={{
+                        background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+                        borderColor: '#0ea5e9',
+                        boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+                      }}>
+                        <div className="absolute top-0 right-0 w-8 h-8 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 w-6 h-6 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                        <span className="relative z-10">{player.jersey_number}</span>
+                      </div>
                     )}
                   </div>
-                  <div className="flex-1">
-                    <div className="font-semibold text-sm text-gray-900">{player.name}</div>
-                    <div className="text-xs text-gray-500">{POSITION_LABELS[player.position]}</div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1 text-xs">
-                      <Target size={12} style={{ color: team?.accent_color || '#22c55e' }} />
-                      <span className="font-bold" style={{ color: team?.accent_color || '#16a34a' }}>{getPlayerGoals(player.id)}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs">
-                      <Footprints size={12} style={{ color: team?.secondary_color || '#3b82f6' }} />
-                      <span className="font-bold" style={{ color: team?.secondary_color || '#2563eb' }}>{getPlayerAssists(player.id)}</span>
-                    </div>
-                  </div>
-                  {player.jersey_number && (
-                    <div className="w-7 h-7 rounded-full text-white flex items-center justify-center text-xs font-bold shadow-sm" style={{ backgroundColor: team?.secondary_color || '#16a34a' }}>
-                      {player.jersey_number}
-                    </div>
-                  )}
                 </div>
               ))}
             </div>

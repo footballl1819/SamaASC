@@ -587,17 +587,22 @@ export default function AdminPage() {
       <div className="space-y-4 pt-4">
         {/* Page Header with Icon */}
         <div className="flex items-center gap-3">
-          <div 
-            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover"
-            style={{ 
-              background: team?.accent_color ? team.accent_color : '#15803d'
+          <div
+            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, #e0f2fe 0%, #0ea5e9 50%, #0284c7 100%)',
+              boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
             }}
           >
-            <Settings size={24} className="text-white" />
+            <div className="absolute top-0 right-0 w-16 h-16 bg-[#0ea5e9]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-14 h-14 bg-[#0284c7]/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+            <div className="relative z-10">
+              <Settings size={24} className="text-white" />
+            </div>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Administration</h1>
-            <p className="text-sm text-gray-500">Gestion de l'équipe</p>
+            <h1 className="text-2xl font-bold text-gray-900 drop-shadow-md">Administration</h1>
+            <p className="text-sm text-gray-600 drop-shadow-sm">Gestion de l'équipe</p>
           </div>
         </div>
 
@@ -633,7 +638,7 @@ export default function AdminPage() {
               </div>
             )}
             {!showForm && !coach && (
-              <button onClick={() => { setShowForm(true); setEditing(null); setForm({}); }} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+              <button onClick={() => { setShowForm(true); setEditing(null); setForm({}); }} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg" style={{
                 background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                 borderColor: '#0ea5e9',
                 boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
@@ -658,7 +663,7 @@ export default function AdminPage() {
                   label="Photo"
                 />
                 <Input label="Rôle" field="role" placeholder="Entraineur" value={form.role || ''} onChange={(value) => setForm(prev => ({ ...prev, role: value }))} />
-                <button onClick={handleCoachSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                <button onClick={handleCoachSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg" style={{
                   background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
@@ -679,7 +684,7 @@ export default function AdminPage() {
           <>
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ position: 'DEF' }); }}
-                className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg" style={{
                   background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
@@ -708,7 +713,7 @@ export default function AdminPage() {
                   { value: 'MIL', label: 'Milieu' }, { value: 'ATT', label: 'Attaquant' },
                 ]} value={form.position || ''} onChange={(value) => setForm(prev => ({ ...prev, position: value }))} />
                 <Input label="Numéro" field="jersey_number" type="number" placeholder="10" value={form.jersey_number || ''} onChange={(value) => setForm(prev => ({ ...prev, jersey_number: value }))} />
-                <button onClick={handlePlayerSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                <button onClick={handlePlayerSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg" style={{
                   background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
@@ -744,7 +749,7 @@ export default function AdminPage() {
           <>
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ is_home: 'true', status: 'upcoming', formation: '4-3-3' }); }}
-                className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg" style={{
                   background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
@@ -777,7 +782,7 @@ export default function AdminPage() {
                   <Input label="Score extérieur" field="score_away" type="number" value={form.score_away || ''} onChange={(value) => setForm(prev => ({ ...prev, score_away: value }))} />
                 </div>
                 <Input label="Buteurs" field="scorers" placeholder="Noms des buteurs (séparés par virgule)" value={form.scorers || ''} onChange={(value) => setForm(prev => ({ ...prev, scorers: value }))} />
-                <button onClick={handleMatchSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                <button onClick={handleMatchSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg" style={{
                   background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
@@ -945,7 +950,7 @@ export default function AdminPage() {
                     </div>
                   </div>
 
-                  <button onClick={handleSaveLineup} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                  <button onClick={handleSaveLineup} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg" style={{
                     background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                     borderColor: '#0ea5e9',
                     boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
@@ -967,7 +972,7 @@ export default function AdminPage() {
           <>
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ type: 'other' }); }}
-                className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg" style={{
                   background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
@@ -997,7 +1002,7 @@ export default function AdminPage() {
                   { value: 'meeting', label: 'Réunion' }, { value: 'other', label: 'Autre' },
                 ]} value={form.type || ''} onChange={(value) => setForm(prev => ({ ...prev, type: value }))} />
                 <Input label="Date événement" field="event_date" type="date" value={form.event_date || ''} onChange={(value) => setForm(prev => ({ ...prev, event_date: value }))} />
-                <button onClick={handleAnnouncementSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                <button onClick={handleAnnouncementSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg" style={{
                   background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
@@ -1049,7 +1054,7 @@ export default function AdminPage() {
             </div>
             {!showForm && (
               <button onClick={() => { setShowForm(true); setEditing(null); setForm({ competition_name: standingsComp || '' }); }}
-                className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg" style={{
                   background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
@@ -1081,7 +1086,7 @@ export default function AdminPage() {
                   <Input label="Buts pour" field="goals_for" type="number" value={form.goals_for || ''} onChange={(value) => setForm(prev => ({ ...prev, goals_for: value }))} />
                 </div>
                 <Input label="Buts contre" field="goals_against" type="number" value={form.goals_against || ''} onChange={(value) => setForm(prev => ({ ...prev, goals_against: value }))} />
-                <button onClick={handleStandingSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2" style={{
+                <button onClick={handleStandingSubmit} className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg" style={{
                   background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
                   borderColor: '#0ea5e9',
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'

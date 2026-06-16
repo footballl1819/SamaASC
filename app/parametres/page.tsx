@@ -17,10 +17,8 @@ export default function ParametresPage() {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
-  const [glowColor, setGlowColor] = useState('#22c55e');
-  const [iconColor, setIconColor] = useState('#15803d');
-  const [buttonColor, setButtonColor] = useState('#16a34a');
-  const [navColor, setNavColor] = useState('#1f2937');
+  const [primaryColor, setPrimaryColor] = useState('#020617');
+  const [secondaryColor, setSecondaryColor] = useState('#e0f2fe');
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [teamPhotoFile, setTeamPhotoFile] = useState<File | null>(null);
@@ -57,10 +55,8 @@ export default function ParametresPage() {
       setName(team.name);
       setSlug(team.slug);
       setDescription(team.description || '');
-      setGlowColor(team.primary_color || '#22c55e');
-      setIconColor(team.accent_color || '#15803d');
-      setButtonColor(team.secondary_color || '#16a34a');
-      setNavColor(team.nav_color || '#1f2937');
+      setPrimaryColor(team.primary_color || '#020617');
+      setSecondaryColor(team.secondary_color || '#e0f2fe');
       setLogoPreview(team.logo_url);
       setTeamPhotoPreview(team.team_photo_url);
       setLoading(false);
@@ -148,10 +144,10 @@ export default function ParametresPage() {
           name,
           slug,
           description,
-          primary_color: glowColor,
-          secondary_color: buttonColor,
-          accent_color: iconColor,
-          nav_color: navColor,
+          primary_color: primaryColor,
+          secondary_color: secondaryColor,
+          accent_color: primaryColor,
+          nav_color: primaryColor,
           logo_url: logoUrl,
           team_photo_url: teamPhotoUrl,
         }),
@@ -191,17 +187,22 @@ export default function ParametresPage() {
       <div className="space-y-5 pt-4">
         {/* Page Header with Icon */}
         <div className="flex items-center gap-3">
-          <div 
-            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover"
-            style={{ 
-              background: team?.accent_color ? team.accent_color : '#15803d'
+          <div
+            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, #e0f2fe 0%, #0ea5e9 50%, #0284c7 100%)',
+              boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
             }}
           >
-            <Palette size={24} className="text-white" />
+            <div className="absolute top-0 right-0 w-16 h-16 bg-[#0ea5e9]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-14 h-14 bg-[#0284c7]/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+            <div className="relative z-10">
+              <Palette size={24} className="text-white" />
+            </div>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Paramètres</h1>
-            <p className="text-sm text-gray-500">Personnalisation de l'équipe</p>
+            <h1 className="text-2xl font-bold text-gray-900 drop-shadow-md">Paramètres</h1>
+            <p className="text-sm text-gray-600 drop-shadow-sm">Personnalisation de l'équipe</p>
           </div>
         </div>
 
@@ -363,15 +364,15 @@ export default function ParametresPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Couleur de lueur (cartes, champs, tableaux)
+                Couleur Premium (dégradé foncé)
               </label>
               <div className="flex flex-wrap gap-2">
                 {COLORS.map((color) => (
                   <button
                     key={color}
-                    onClick={() => setGlowColor(color)}
+                    onClick={() => setPrimaryColor(color)}
                     className={`w-10 h-10 rounded-lg border-2 transition-all ${
-                      glowColor === color ? 'border-green-500 scale-110 shadow-lg' : 'border-gray-200 hover:scale-105'
+                      primaryColor === color ? 'border-green-500 scale-110 shadow-lg' : 'border-gray-200 hover:scale-105'
                     }`}
                     style={{ backgroundColor: color }}
                   />
@@ -380,49 +381,15 @@ export default function ParametresPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Couleur des icônes (fenêtres)
+                Couleur Bleu Clair (dégradé clair)
               </label>
               <div className="flex flex-wrap gap-2">
                 {COLORS.map((color) => (
                   <button
                     key={color}
-                    onClick={() => setIconColor(color)}
+                    onClick={() => setSecondaryColor(color)}
                     className={`w-10 h-10 rounded-lg border-2 transition-all ${
-                      iconColor === color ? 'border-green-500 scale-110 shadow-lg' : 'border-gray-200 hover:scale-105'
-                    }`}
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Couleur des boutons
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {COLORS.map((color) => (
-                  <button
-                    key={color}
-                    onClick={() => setButtonColor(color)}
-                    className={`w-10 h-10 rounded-lg border-2 transition-all ${
-                      buttonColor === color ? 'border-green-500 scale-110 shadow-lg' : 'border-gray-200 hover:scale-105'
-                    }`}
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Couleur des barres de navigation
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {COLORS.map((color) => (
-                  <button
-                    key={color}
-                    onClick={() => setNavColor(color)}
-                    className={`w-10 h-10 rounded-lg border-2 transition-all ${
-                      navColor === color ? 'border-green-500 scale-110 shadow-lg' : 'border-gray-200 hover:scale-105'
+                      secondaryColor === color ? 'border-green-500 scale-110 shadow-lg' : 'border-gray-200 hover:scale-105'
                     }`}
                     style={{ backgroundColor: color }}
                   />
@@ -437,19 +404,11 @@ export default function ParametresPage() {
             <div className="flex gap-2">
               <div
                 className="w-16 h-16 rounded-lg shadow-md"
-                style={{ backgroundColor: glowColor }}
+                style={{ backgroundColor: primaryColor }}
               />
               <div
                 className="w-16 h-16 rounded-lg shadow-md"
-                style={{ backgroundColor: iconColor }}
-              />
-              <div
-                className="w-16 h-16 rounded-lg shadow-md"
-                style={{ backgroundColor: buttonColor }}
-              />
-              <div
-                className="w-16 h-16 rounded-lg shadow-md"
-                style={{ backgroundColor: navColor }}
+                style={{ backgroundColor: secondaryColor }}
               />
             </div>
           </div>

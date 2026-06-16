@@ -162,17 +162,22 @@ export default function SupportersPage() {
       <div className="space-y-5 pt-4">
         {/* Page Header with Icon */}
         <div className="flex items-center gap-3">
-          <div 
-            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover"
-            style={{ 
-              background: team?.accent_color ? team.accent_color : '#15803d'
+          <div
+            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, #e0f2fe 0%, #0ea5e9 50%, #0284c7 100%)',
+              boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
             }}
           >
-            <Heart size={24} className="text-white" />
+            <div className="absolute top-0 right-0 w-16 h-16 bg-[#0ea5e9]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-14 h-14 bg-[#0284c7]/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+            <div className="relative z-10">
+              <Heart size={24} className="text-white" />
+            </div>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Supporters</h1>
-            <p className="text-sm text-gray-500">Messages de soutien</p>
+            <h1 className="text-2xl font-bold text-gray-900 drop-shadow-md">Supporters</h1>
+            <p className="text-sm text-gray-600 drop-shadow-sm">Messages de soutien</p>
           </div>
         </div>
 
@@ -192,46 +197,49 @@ export default function SupportersPage() {
         </div>
 
         {/* Post Form */}
-        <form onSubmit={handleSubmit} className="rounded-2xl bg-white p-4 shadow-lg space-y-3" style={{
-          boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
+        <form onSubmit={handleSubmit} className="rounded-2xl p-4 shadow-lg space-y-3 relative overflow-hidden" style={{
+          background: 'linear-gradient(135deg, #e0f2fe 0%, #0ea5e9 50%, #0284c7 100%)',
+          borderColor: '#0ea5e9',
+          boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
         }}>
-          <div className="flex items-center gap-2 mb-1">
-            <MessageCircle size={16} className="text-green-600" />
-            <span className="text-sm font-bold text-gray-700">Votre message</span>
-          </div>
-          
-          {/* Sticker Picker */}
-          <div className="flex gap-2 flex-wrap">
-            {STICKERS.map((sticker) => (
-              <button
-                key={sticker}
-                type="button"
-                onClick={() => setSelectedSticker(selectedSticker === sticker ? null : sticker)}
-                className={`text-2xl p-2 rounded-lg transition-all ${
-                  selectedSticker === sticker 
-                    ? 'ring-2 scale-110' 
-                    : 'bg-gray-100 hover:bg-gray-200'
-                }`}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-1">
+              <MessageCircle size={16} className="text-white" />
+              <span className="text-sm font-bold text-white">Votre message</span>
+            </div>
+
+            {/* Sticker Picker */}
+            <div className="flex gap-2 flex-wrap">
+              {STICKERS.map((sticker) => (
+                <button
+                  key={sticker}
+                  type="button"
+                  onClick={() => setSelectedSticker(selectedSticker === sticker ? null : sticker)}
+                  className={`text-2xl p-2 rounded-lg transition-all ${
+                    selectedSticker === sticker
+                      ? 'ring-2 scale-110'
+                      : 'bg-white/20 hover:bg-white/30'
+                  }`}
+                  style={{
+                    backgroundColor: selectedSticker === sticker ? 'rgba(255, 255, 255, 0.3)' : undefined,
+                  } as React.CSSProperties}
+                >
+                  {sticker}
+                </button>
+              ))}
+            </div>
+
+            <div className="relative overflow-hidden rounded-xl border">
+              <textarea
+                placeholder="Votre message de soutien..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                rows={3}
+                className="w-full rounded-xl px-3 py-2.5 text-sm focus:outline-none resize-none relative z-10 bg-white/90"
                 style={{
-                  backgroundColor: selectedSticker === sticker ? (team?.secondary_color ? `${team.secondary_color}20` : 'rgba(34, 197, 94, 0.1)') : undefined,
-                } as React.CSSProperties}
-              >
-                {sticker}
-              </button>
-            ))}
-          </div>
-          
-          <div className="relative overflow-hidden rounded-xl border">
-            <textarea
-              placeholder="Votre message de soutien..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={3}
-              className="w-full rounded-xl px-3 py-2.5 text-sm focus:outline-none resize-none relative z-10"
-              style={{
-                background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
-                borderColor: '#0ea5e9',
-                color: '#0c4a6e',
+                  color: '#0c4a6e',
               }}
             />
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
@@ -254,6 +262,7 @@ export default function SupportersPage() {
               {submitting ? 'Envoi...' : 'Envoyer'}
             </div>
           </button>
+          </div>
         </form>
 
         {/* Messages */}
@@ -261,12 +270,16 @@ export default function SupportersPage() {
           {supporters.map((s, idx) => (
             <div
               key={s.id}
-              className="rounded-xl bg-white p-4 shadow-md hover-lift"
+              className="rounded-xl p-4 shadow-md hover-lift relative overflow-hidden transition-all duration-300 hover:scale-[1.01]"
               style={{
-                boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
+                background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+                borderColor: '#0ea5e9',
+                boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
               }}
             >
-              <div className="flex items-start gap-3">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+              <div className="relative z-10 flex items-start gap-3">
                 <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${COLORS[idx % COLORS.length]} flex items-center justify-center flex-shrink-0 shadow-sm`}>
                   <span className="text-white text-xs font-bold">
                     {s.name.charAt(0).toUpperCase()}
@@ -274,10 +287,10 @@ export default function SupportersPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] text-gray-400">{timeAgo(s.created_at)}</span>
+                    <span className="text-[10px] text-sky-200">{timeAgo(s.created_at)}</span>
                   </div>
-                  <p className="text-sm text-gray-600 leading-relaxed">{s.message}</p>
-                  <p className="text-xs text-gray-400 mt-1">- {s.name}</p>
+                  <p className="text-sm text-white leading-relaxed">{s.message}</p>
+                  <p className="text-xs text-sky-200 mt-1">- {s.name}</p>
                 </div>
               </div>
             </div>

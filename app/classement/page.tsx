@@ -89,17 +89,22 @@ export default function ClassementPage() {
       <div className="space-y-5 pt-4">
         {/* Page Header with Icon */}
         <div className="flex items-center gap-3">
-          <div 
-            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover"
-            style={{ 
-              background: team?.accent_color ? team.accent_color : '#15803d'
+          <div
+            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg icon-hover relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, #e0f2fe 0%, #0ea5e9 50%, #0284c7 100%)',
+              boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
             }}
           >
-            <Trophy size={24} className="text-white" />
+            <div className="absolute top-0 right-0 w-16 h-16 bg-[#0ea5e9]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-14 h-14 bg-[#0284c7]/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+            <div className="relative z-10">
+              <Trophy size={24} className="text-white" />
+            </div>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Classement</h1>
-            <p className="text-sm text-gray-500">Position en compétition</p>
+            <h1 className="text-2xl font-bold text-gray-900 drop-shadow-md">Classement</h1>
+            <p className="text-sm text-gray-600 drop-shadow-sm">Position en compétition</p>
           </div>
         </div>
 
@@ -186,51 +191,56 @@ export default function ClassementPage() {
 
         {/* Full Standings Table */}
         {filtered.length > 0 && (
-          <div className="rounded-2xl bg-white shadow-lg overflow-hidden" style={{
-            boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
+          <div className="rounded-2xl shadow-lg overflow-hidden relative" style={{
+            background: 'linear-gradient(135deg, #e0f2fe 0%, #0ea5e9 50%, #0284c7 100%)',
+            borderColor: '#0ea5e9',
+            boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
           }}>
-            <div className="grid grid-cols-[32px_1fr_32px_32px_32px_32px_32px_40px] gap-1 px-3 py-2.5 bg-gray-50 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-              <div>#</div>
-              <div>Équipe</div>
-              <div>J</div>
-              <div>V</div>
-              <div>N</div>
-              <div>D</div>
-              <div>Pts</div>
-              <div>Diff</div>
-            </div>
-            {filtered.map((standing, idx) => {
-              const isUs = standing.team_name === team?.name;
-              const diff = standing.goals_for - standing.goals_against;
-              return (
-                <div
-                  key={standing.id}
-                  className={`grid grid-cols-[32px_1fr_32px_32px_32px_32px_32px_40px] gap-1 px-3 py-2.5 text-xs items-center transition-colors duration-200 ${
-                    isUs
-                      ? 'bg-green-50 border-l-2 border-green-600'
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+            <div className="relative z-10">
+              <div className="grid grid-cols-[32px_1fr_32px_32px_32px_32px_32px_40px] gap-1 px-3 py-2.5 bg-white/20 backdrop-blur-sm text-[10px] font-bold text-white uppercase tracking-wider">
+                <div>#</div>
+                <div>Équipe</div>
+                <div>J</div>
+                <div>V</div>
+                <div>N</div>
+                <div>D</div>
+                <div>Pts</div>
+                <div>Diff</div>
+              </div>
+              {filtered.map((standing, idx) => {
+                const isUs = standing.team_name === team?.name;
+                const diff = standing.goals_for - standing.goals_against;
+                return (
+                  <div
+                    key={standing.id}
+                    className={`grid grid-cols-[32px_1fr_32px_32px_32px_32px_32px_40px] gap-1 px-3 py-2.5 text-xs items-center transition-colors duration-200 ${
+                      isUs
+                      ? 'bg-white/30 backdrop-blur-sm border-l-2 border-white'
                       : idx % 2 === 0
-                      ? 'bg-white'
-                      : 'bg-gray-50/50'
-                  } ${idx < filtered.length - 1 ? 'border-b border-gray-100' : ''}`}
-                >
-                  <div className={`font-bold ${isUs ? 'text-green-600' : 'text-gray-400'}`}>
-                    {standing.position}
+                      ? 'bg-white/10'
+                      : 'bg-white/5'
+                  } ${idx < filtered.length - 1 ? 'border-b border-white/20' : ''}`}
+                  >
+                    <div className={`font-bold ${isUs ? 'text-white' : 'text-white/80'}`}>
+                      {standing.position}
+                    </div>
+                    <div className={`font-semibold truncate ${isUs ? 'text-white' : 'text-white/90'}`}>
+                      {standing.team_name}
+                    </div>
+                    <div className="text-white/70 text-center">{standing.played}</div>
+                    <div className="text-white/70 text-center">{standing.won}</div>
+                    <div className="text-white/70 text-center">{standing.drawn}</div>
+                    <div className="text-white/70 text-center">{standing.lost}</div>
+                    <div className={`font-bold text-center ${isUs ? 'text-white' : 'text-white/90'}`}>
+                      {standing.points}
+                    </div>
+                    <div className={`text-center ${diff > 0 ? 'text-green-300' : diff < 0 ? 'text-red-300' : 'text-white/60'}`}>
+                      {diff > 0 ? '+' : ''}{diff}
+                    </div>
                   </div>
-                  <div className={`font-semibold truncate ${isUs ? 'text-green-700' : 'text-gray-800'}`}>
-                    {standing.team_name}
-                  </div>
-                  <div className="text-gray-500 text-center">{standing.played}</div>
-                  <div className="text-gray-500 text-center">{standing.won}</div>
-                  <div className="text-gray-500 text-center">{standing.drawn}</div>
-                  <div className="text-gray-500 text-center">{standing.lost}</div>
-                  <div className={`font-bold text-center ${isUs ? 'text-green-600' : 'text-gray-700'}`}>
-                    {standing.points}
-                  </div>
-                  <div className={`text-center ${diff > 0 ? 'text-green-600' : diff < 0 ? 'text-red-500' : 'text-gray-400'}`}>
-                    {diff > 0 ? '+' : ''}{diff}
-                  </div>
-                </div>
-              );
+                );
             })}
           </div>
         )}
