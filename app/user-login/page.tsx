@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { Lock, User, ArrowRight, Plus } from 'lucide-react';
+import { Lock, User, ArrowRight } from 'lucide-react';
 
 export default function UserLoginPage() {
   const router = useRouter();
@@ -154,19 +154,6 @@ export default function UserLoginPage() {
               )}
             </button>
           </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
-              Pas encore de compte ?{' '}
-              <button
-                onClick={() => router.push(`/user-register?team=${teamSlug}`)}
-                className="text-green-600 font-medium hover:underline flex items-center justify-center gap-1"
-              >
-                <Plus size={14} />
-                Créer un compte
-              </button>
-            </p>
-          </div>
 
           <div className="mt-4 pt-4 border-t border-gray-100">
             <button
