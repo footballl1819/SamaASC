@@ -236,56 +236,6 @@ export default function AccueilPage() {
           </div>
         )}
 
-        {/* Announcements */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base font-bold text-gray-900">Annonces</h2>
-            <span className="text-xs text-gray-400">{announcements.length} annonces</span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {announcements.map((ann) => {
-              const config = TYPE_CONFIG[ann.type];
-              const Icon = config.icon;
-              return (
-                <div
-                  key={ann.id}
-                  className="relative overflow-hidden rounded-xl border p-4 hover-lift"
-                  style={{
-                    background: `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 50%, ${team?.secondary_color || '#e0f2fe'} 100%)`,
-                    borderColor: '#0ea5e9',
-                    boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
-                  }}
-                >
-                  <div className="absolute top-0 right-0 w-48 h-48 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-                  <div className="relative">
-                    <div className="flex items-start gap-3">
-                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-white/60 backdrop-blur-sm border border-white/80`}>
-                        <Icon size={18} className="text-sky-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xs font-semibold text-sky-700">
-                            {config.label}
-                          </span>
-                          {ann.event_date && (
-                            <span className="text-xs text-sky-600/70">
-                              {daysUntil(ann.event_date)}
-                            </span>
-                          )}
-                        </div>
-                        <h3 className="font-semibold text-sky-900 text-sm mb-1">{ann.title}</h3>
-                        <p className="text-xs text-sky-800/80 leading-relaxed">{ann.content}</p>
-                      </div>
-                      <ChevronRight size={16} className="text-sky-600/70 flex-shrink-0 mt-2" />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
         {/* New Stats Cards */}
         <div className="grid grid-cols-4 gap-3">
           <div 
@@ -353,6 +303,56 @@ export default function AccueilPage() {
               <div className="text-2xl font-bold text-sky-900">{userCount}</div>
               <div className="text-xs text-sky-700 mt-0.5">Membres</div>
             </div>
+          </div>
+        </div>
+
+        {/* Announcements */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-base font-bold text-gray-900">Annonces</h2>
+            <span className="text-xs text-gray-400">{announcements.length} annonces</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {announcements.map((ann) => {
+              const config = TYPE_CONFIG[ann.type];
+              const Icon = config.icon;
+              return (
+                <div
+                  key={ann.id}
+                  className="relative overflow-hidden rounded-xl border p-4 hover-lift"
+                  style={{
+                    background: `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 50%, ${team?.secondary_color || '#e0f2fe'} 100%)`,
+                    borderColor: '#0ea5e9',
+                    boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+                  }}
+                >
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+                  <div className="relative">
+                    <div className="flex items-start gap-3">
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-white/60 backdrop-blur-sm border border-white/80`}>
+                        <Icon size={18} className="text-sky-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xs font-semibold text-sky-700">
+                            {config.label}
+                          </span>
+                          {ann.event_date && (
+                            <span className="text-xs text-sky-600/70">
+                              {daysUntil(ann.event_date)}
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="font-semibold text-sky-900 text-sm mb-1">{ann.title}</h3>
+                        <p className="text-xs text-sky-800/80 leading-relaxed">{ann.content}</p>
+                      </div>
+                      <ChevronRight size={16} className="text-sky-600/70 flex-shrink-0 mt-2" />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
