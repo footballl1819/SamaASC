@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { hashPassword } from '@/lib/auth-utils';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -19,25 +20,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Create user in Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-    });
+    // Hash the password
+    const hashedPassword = await hashPassword(password);
 
-    if (authError) {
-      console.error('Error creating auth user:', authError);
-      return NextResponse.json({ error: authError.message }, { status: 500 });
-    }
+    // Generate a UUID for the user
+    const userId = crypto.randomUUID();
 
-    // Create user record in users table
+    // Create user record in users table (without Supabase Auth)
     const { data: userData, error: userError } = await supabase
       .from('users')
       .insert({
-        id: authData.user.id,
+        id: userId,
         team_id,
         username,
+        password: hashedPassword,
         name,
         role: role || 'member',
       })
@@ -46,8 +42,6 @@ export async function POST(request: NextRequest) {
 
     if (userError) {
       console.error('Error creating user record:', userError);
-      // Rollback: delete auth user if user record creation fails
-      await supabase.auth.admin.deleteUser(authData.user.id);
       return NextResponse.json({ error: userError.message }, { status: 500 });
     }
 
@@ -85,7 +79,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Cannot delete admin users' }, { status: 403 });
     }
 
-    // Delete user record
+    // Delete user record (no Supabase Auth to delete)
     const { error: deleteError } = await supabase
       .from('users')
       .delete()
@@ -95,13 +89,6 @@ export async function DELETE(request: NextRequest) {
     if (deleteError) {
       console.error('Error deleting user:', deleteError);
       return NextResponse.json({ error: deleteError.message }, { status: 500 });
-    }
-
-    // Delete auth user
-    const { error: authDeleteError } = await supabase.auth.admin.deleteUser(id);
-    if (authDeleteError) {
-      console.error('Error deleting auth user:', authDeleteError);
-      return NextResponse.json({ error: authDeleteError.message }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
