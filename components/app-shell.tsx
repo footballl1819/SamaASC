@@ -21,7 +21,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
       </div>
       <Header />
-      <main className="relative pt-14 pb-24 px-4 w-full overflow-x-hidden">
+      <main className="relative pt-14 px-4 w-full overflow-x-hidden">
         {children}
       </main>
       <BottomNav />
