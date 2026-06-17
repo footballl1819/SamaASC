@@ -203,8 +203,8 @@ export default function ClassementPage() {
           }}>
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
-            <div className="relative z-10">
-              <div className="grid grid-cols-[32px_1fr_32px_32px_32px_32px_32px_40px] gap-1 px-3 py-2.5 bg-white/20 backdrop-blur-sm text-[10px] font-bold text-white uppercase tracking-wider">
+            <div className="relative z-10 overflow-x-auto">
+              <div className="grid grid-cols-[32px_1fr_32px_32px_32px_32px_32px_40px] gap-1 px-3 py-2.5 bg-white/20 backdrop-blur-sm text-[10px] font-bold text-white uppercase tracking-wider min-w-[500px]">
                 <div>#</div>
                 <div>Équipe</div>
                 <div>J</div>
@@ -220,7 +220,7 @@ export default function ClassementPage() {
                 return (
                   <div
                     key={standing.id}
-                    className={`grid grid-cols-[32px_1fr_32px_32px_32px_32px_32px_40px] gap-1 px-3 py-2.5 text-xs items-center transition-colors duration-200 ${
+                    className={`grid grid-cols-[32px_1fr_32px_32px_32px_32px_32px_40px] gap-1 px-3 py-2.5 text-xs items-center transition-colors duration-200 min-w-[500px] ${
                       isUs
                       ? 'bg-white/30 backdrop-blur-sm border-l-2 border-white'
                       : idx % 2 === 0

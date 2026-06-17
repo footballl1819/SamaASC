@@ -606,19 +606,31 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Tab Selector */}
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        {/* Card Grid for Admin Sections */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
           {TAB_CONFIG.map(t => {
             const Icon = t.icon;
             const isActive = tab === t.key;
             return (
               <button key={t.key} onClick={() => { setTab(t.key); setShowForm(false); setEditing(null); setForm({}); }}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all duration-300 ${
-                  isActive ? 'text-white shadow-lg' : 'bg-white text-gray-600 shadow-md hover:shadow-lg'}`}
+                className="rounded-2xl p-4 cursor-pointer hover-lift relative overflow-hidden transition-all duration-300"
                 style={{
-                  backgroundColor: isActive ? (team?.secondary_color || '#22c55e') : undefined,
+                  height: '120px',
+                  background: isActive 
+                    ? `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 100%)`
+                    : `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 100%)`,
+                  borderColor: '#0ea5e9',
+                  boxShadow: isActive ? '0 4px 30px -4px rgba(14, 165, 233, 0.3)' : '0 4px 20px -4px rgba(14, 165, 233, 0.2)',
+                  opacity: isActive ? 1 : 0.7
                 }}>
-                <Icon size={14} />{t.label}
+                <div className="absolute top-0 right-0 w-24 h-24 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                <div className="relative z-10 flex flex-col items-center justify-center h-full gap-2">
+                  <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <Icon size={20} className="text-white" />
+                  </div>
+                  <span className="text-xs font-medium text-white text-center">{t.label}</span>
+                </div>
               </button>
             );
           })}

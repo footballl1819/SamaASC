@@ -242,7 +242,7 @@ export default function AccueilPage() {
             <h2 className="text-base font-bold text-gray-900">Annonces</h2>
             <span className="text-xs text-gray-400">{announcements.length} annonces</span>
           </div>
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {announcements.map((ann) => {
               const config = TYPE_CONFIG[ann.type];
               const Icon = config.icon;
