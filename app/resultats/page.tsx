@@ -255,65 +255,70 @@ export default function ResultatsPage() {
                   setShowVoteModal(true);
                   setSelectedPlayer('');
                 }}
-                className="rounded-2xl bg-white shadow-lg p-4 cursor-pointer hover-lift relative overflow-hidden"
+                className="rounded-2xl shadow-lg p-4 cursor-pointer hover-lift relative overflow-hidden"
                 style={{
-                  boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
+                  height: '220px',
+                  background: `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 100%)`,
+                  borderColor: '#0ea5e9',
+                  boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                 }}
               >
+                <div className="absolute top-0 right-0 w-24 h-24 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
                 <div className="relative z-10">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs font-medium text-gray-400">{match.competition}</span>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-green-100 text-green-600">
+                    <span className="text-xs font-medium text-white/80">{match.competition}</span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-white/20 text-white">
                       Terminé
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between mb-3">
                     <div className="text-center flex-1">
-                      <div className="font-bold text-gray-900 text-sm">Sama ASC</div>
+                      <div className="font-bold text-white text-sm">Sama ASC</div>
                     </div>
                     <div className="flex items-center gap-2 px-2">
-                      <span className={`text-xl font-bold ${
+                      <span className={`text-xl font-bold text-white ${
                         match.score_home !== null && match.score_home > (match.score_away || 0)
-                          ? 'text-green-600'
-                          : 'text-gray-800'
+                          ? 'text-green-400'
+                          : ''
                       }`}>
                         {match.score_home ?? '-'}
                       </span>
-                      <span className="text-gray-300">-</span>
-                      <span className={`text-xl font-bold ${
+                      <span className="text-white/60">-</span>
+                      <span className={`text-xl font-bold text-white ${
                         match.score_home !== null && match.score_home < (match.score_away || 0)
-                          ? 'text-green-600'
-                          : 'text-gray-800'
+                          ? 'text-green-400'
+                          : ''
                       }`}>
                         {match.score_away ?? '-'}
                       </span>
                     </div>
                     <div className="text-center flex-1">
-                      <div className="font-bold text-gray-900 text-sm">{match.opponent}</div>
+                      <div className="font-bold text-white text-sm">{match.opponent}</div>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-center gap-2 text-xs text-gray-400 mb-3">
+                  <div className="flex items-center justify-center gap-2 text-xs text-white/70 mb-3">
                     <div className="flex items-center gap-1">
-                      <Calendar size={10} />
+                      <Calendar size={10} className="text-white/70" />
                       <span>{formatDate(match.match_date)}</span>
                     </div>
                     {match.venue && (
                       <div className="flex items-center gap-1">
-                        <MapPin size={10} />
+                        <MapPin size={10} className="text-white/70" />
                         <span>{match.venue}</span>
                       </div>
                     )}
                   </div>
 
                   {match.scorers && (
-                    <div className="p-2 rounded-lg bg-blue-50 border border-blue-200">
+                    <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30">
                       <div className="flex items-center gap-1 mb-1">
-                        <span className="text-blue-600 text-xs">⚽</span>
-                        <span className="text-[10px] text-blue-600 font-medium uppercase">Buteurs</span>
+                        <span className="text-white text-xs">⚽</span>
+                        <span className="text-[10px] text-white font-medium uppercase">Buteurs</span>
                       </div>
-                      <div className="text-xs text-blue-800">{match.scorers}</div>
+                      <div className="text-xs text-white">{match.scorers}</div>
                     </div>
                   )}
                 </div>
@@ -321,23 +326,30 @@ export default function ResultatsPage() {
 
               {/* Card 2: Top 3 Votes */}
               {topPlayers.length > 0 && (
-                <div className="rounded-2xl bg-white shadow-lg p-4 relative overflow-hidden">
+                <div className="rounded-2xl shadow-lg p-4 relative overflow-hidden" style={{
+                  height: '220px',
+                  background: `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 100%)`,
+                  borderColor: '#0ea5e9',
+                  boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+                }}>
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
                   <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-3">
-                      <Trophy size={14} className="text-green-600" />
-                      <span className="text-[10px] text-green-600 font-bold uppercase">Top 3 des votes</span>
+                      <Trophy size={14} className="text-white" />
+                      <span className="text-[10px] text-white font-bold uppercase">Top 3 des votes</span>
                     </div>
                     <div className="space-y-2">
                       {topPlayers.map((item, index) => (
-                        <div key={item.player?.id} className="flex items-center gap-2 p-2 rounded-lg bg-green-50 border border-green-100">
+                        <div key={item.player?.id} className="flex items-center gap-2 p-2 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30">
                           <div className="w-6 h-6 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-sm flex-shrink-0">
                             <span className="text-white font-bold text-xs">{index + 1}</span>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-xs font-medium text-gray-900 truncate">{item.player?.name}</div>
-                            <div className="text-[10px] text-gray-500">#{item.player?.jersey_number || '?'}</div>
+                            <div className="text-xs font-medium text-white truncate">{item.player?.name}</div>
+                            <div className="text-[10px] text-white/70">#{item.player?.jersey_number || '?'}</div>
                           </div>
-                          <div className="text-xs font-bold text-green-600">{item.count}</div>
+                          <div className="text-xs font-bold text-white">{item.count}</div>
                         </div>
                       ))}
                     </div>
@@ -347,8 +359,10 @@ export default function ResultatsPage() {
 
               {/* Card 3: Player Photo with Encouragement */}
               {motm && (
-                <div className="rounded-2xl bg-white shadow-lg overflow-hidden relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50" />
+                <div className="rounded-2xl shadow-lg overflow-hidden relative" style={{
+                  height: '220px',
+                  boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+                }}>
                   <div className="relative z-10 h-full flex flex-col">
                     {motm.photo_url ? (
                       <img src={motm.photo_url} alt={motm.name} className="w-full h-full object-cover" />
