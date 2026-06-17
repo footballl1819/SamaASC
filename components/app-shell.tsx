@@ -9,7 +9,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div 
-      className="min-h-screen relative overflow-x-hidden"
+      className="min-h-screen h-screen relative overflow-x-hidden flex flex-col"
       style={{
         background: 'linear-gradient(135deg, #020617 0%, #071A3D 50%, #2D0A5B 100%)'
       }}
@@ -21,7 +21,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
       </div>
       <Header />
-      <main className="relative pt-14 px-4 w-full overflow-x-hidden">
+      <main className="relative pt-14 px-4 w-full overflow-x-hidden flex-1 overflow-y-auto">
         {children}
       </main>
       <BottomNav />
