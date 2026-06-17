@@ -181,11 +181,20 @@ export default function GaleriePage() {
             <X size={20} />
           </button>
           <div className="max-w-sm w-full" onClick={e => e.stopPropagation()}>
-            <img
-              src={selectedItem.url}
-              alt={selectedItem.caption || ''}
-              className="w-full rounded-xl shadow-2xl"
-            />
+            {selectedItem.type === 'video' ? (
+              <video
+                src={selectedItem.url}
+                controls
+                autoPlay
+                className="w-full rounded-xl shadow-2xl"
+              />
+            ) : (
+              <img
+                src={selectedItem.url}
+                alt={selectedItem.caption || ''}
+                className="w-full rounded-xl shadow-2xl"
+              />
+            )}
             {selectedItem.caption && (
               <p className="text-white text-sm mt-3 text-center">{selectedItem.caption}</p>
             )}
