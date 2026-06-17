@@ -207,7 +207,7 @@ export default function ParametresPage() {
             disabled={saving}
             className="flex items-center gap-2 px-4 py-2 text-white rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+              background: `linear-gradient(135deg, ${secondaryColor} 0%, ${primaryColor} 50%, ${secondaryColor} 100%)`,
               borderColor: '#0ea5e9',
               boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
             }}
@@ -236,7 +236,7 @@ export default function ParametresPage() {
 
         {/* Logo Upload */}
         <div className="rounded-2xl shadow-lg p-5 relative overflow-hidden" style={{
-          background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+          background: `linear-gradient(135deg, ${secondaryColor} 0%, ${primaryColor} 50%, ${secondaryColor} 100%)`,
           borderColor: '#0ea5e9',
           boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
         }}>
@@ -280,7 +280,7 @@ export default function ParametresPage() {
 
         {/* Team Photo Upload */}
         <div className="rounded-2xl shadow-lg p-5 relative overflow-hidden" style={{
-          background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+          background: `linear-gradient(135deg, ${secondaryColor} 0%, ${primaryColor} 50%, ${secondaryColor} 100%)`,
           borderColor: '#0ea5e9',
           boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
         }}>
@@ -324,7 +324,7 @@ export default function ParametresPage() {
 
         {/* Team Info */}
         <div className="rounded-2xl shadow-lg p-5 relative overflow-hidden" style={{
-          background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+          background: `linear-gradient(135deg, ${secondaryColor} 0%, ${primaryColor} 50%, ${secondaryColor} 100%)`,
           borderColor: '#0ea5e9',
           boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
         }}>
@@ -378,7 +378,7 @@ export default function ParametresPage() {
 
         {/* Colors */}
         <div className="rounded-2xl shadow-lg p-5 relative overflow-hidden" style={{
-          background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+          background: `linear-gradient(135deg, ${secondaryColor} 0%, ${primaryColor} 50%, ${secondaryColor} 100%)`,
           borderColor: '#0ea5e9',
           boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
         }}>

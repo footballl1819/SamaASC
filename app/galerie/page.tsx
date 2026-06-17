@@ -116,7 +116,7 @@ export default function GaleriePage() {
                   : 'bg-white text-gray-600 shadow-sm hover:shadow-md'
               }`}
               style={{
-                background: filter === type ? 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)' : undefined,
+                background: filter === type ? `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 50%, ${team?.secondary_color || '#e0f2fe'} 100%)` : undefined,
                 borderColor: filter === type ? '#0ea5e9' : undefined,
                 boxShadow: filter === type ? '0 4px 30px -4px rgba(14, 165, 233, 0.3)' : undefined
               }}

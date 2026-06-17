@@ -251,7 +251,7 @@ export default function AccueilPage() {
                   key={ann.id}
                   className="relative overflow-hidden rounded-xl border p-4 hover-lift"
                   style={{
-                    background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+                    background: `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 50%, ${team?.secondary_color || '#e0f2fe'} 100%)`,
                     borderColor: '#0ea5e9',
                     boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                   }}

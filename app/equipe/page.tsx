@@ -226,7 +226,7 @@ export default function EquipePage() {
         {/* Coach */}
         {coach && (
           <div className="rounded-xl p-4 shadow-lg flex items-center gap-3 relative overflow-hidden" style={{
-            background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 100%)',
+            background: `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 100%)`,
             borderColor: '#0ea5e9',
             boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
           }}>
@@ -264,7 +264,7 @@ export default function EquipePage() {
                   : 'text-gray-500 hover:text-gray-700'
               }`}
               style={{
-                background: view === v.key ? 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)' : undefined,
+                background: view === v.key ? `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 50%, ${team?.secondary_color || '#e0f2fe'} 100%)` : undefined,
                 borderColor: view === v.key ? '#0ea5e9' : undefined,
                 boxShadow: view === v.key ? '0 4px 30px -4px rgba(14, 165, 233, 0.3)' : undefined
               }}
@@ -321,7 +321,7 @@ export default function EquipePage() {
                           : 'bg-white text-gray-600 shadow-sm hover:shadow-md'
                       }`}
                       style={{
-                        background: selectedFormation === f ? 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)' : undefined,
+                        background: selectedFormation === f ? `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 50%, ${team?.secondary_color || '#e0f2fe'} 100%)` : undefined,
                         borderColor: selectedFormation === f ? '#0ea5e9' : undefined,
                         boxShadow: selectedFormation === f ? '0 4px 30px -4px rgba(14, 165, 233, 0.3)' : undefined
                       }}
@@ -342,7 +342,7 @@ export default function EquipePage() {
             {/* Match info banner */}
             {selectedMatch && (
               <div className="relative overflow-hidden rounded-xl border p-3" style={{
-                background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+                background: `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 50%, ${team?.secondary_color || '#e0f2fe'} 100%)`,
                 borderColor: '#0ea5e9',
                 boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
               }}>
@@ -442,7 +442,7 @@ export default function EquipePage() {
                   key={player.id}
                   className="flex items-center gap-3 rounded-xl p-3 shadow-md hover-lift relative overflow-hidden transition-all duration-300 hover:scale-[1.01]"
                   style={{
-                    background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+                    background: `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 50%, ${team?.secondary_color || '#e0f2fe'} 100%)`,
                     borderColor: '#0ea5e9',
                     boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                   }}
@@ -473,7 +473,7 @@ export default function EquipePage() {
                     </div>
                     {player.jersey_number && (
                       <div className="w-7 h-7 rounded-full text-white flex items-center justify-center text-xs font-bold shadow-sm relative overflow-hidden" style={{
-                        background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+                        background: `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 50%, ${team?.secondary_color || '#e0f2fe'} 100%)`,
                         borderColor: '#0ea5e9',
                         boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                       }}>
@@ -502,7 +502,7 @@ export default function EquipePage() {
                     : 'bg-white text-gray-600 shadow-sm hover:shadow-md'
                 }`}
                 style={{
-                  background: statsComp === 'all' ? 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)' : undefined,
+                  background: statsComp === 'all' ? `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 50%, ${team?.secondary_color || '#e0f2fe'} 100%)` : undefined,
                   borderColor: statsComp === 'all' ? '#0ea5e9' : undefined,
                   boxShadow: statsComp === 'all' ? '0 4px 30px -4px rgba(14, 165, 233, 0.3)' : undefined
                 }}
@@ -525,7 +525,7 @@ export default function EquipePage() {
                       : 'bg-white text-gray-600 shadow-sm hover:shadow-md'
                   }`}
                   style={{
-                    background: statsComp === c ? 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)' : undefined,
+                    background: statsComp === c ? `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 50%, ${team?.secondary_color || '#e0f2fe'} 100%)` : undefined,
                     borderColor: statsComp === c ? '#0ea5e9' : undefined,
                     boxShadow: statsComp === c ? '0 4px 30px -4px rgba(14, 165, 233, 0.3)' : undefined
                   }}

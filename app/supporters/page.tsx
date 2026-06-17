@@ -250,7 +250,7 @@ export default function SupportersPage() {
             disabled={(!message.trim() && !selectedSticker) || submitting}
             className="relative overflow-hidden w-full py-2.5 rounded-xl text-white text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             style={{
-              background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+              background: `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 50%, ${team?.secondary_color || '#e0f2fe'} 100%)`,
               borderColor: '#0ea5e9',
               boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
             }}
@@ -272,7 +272,7 @@ export default function SupportersPage() {
               key={s.id}
               className="rounded-xl p-4 shadow-md hover-lift relative overflow-hidden transition-all duration-300 hover:scale-[1.01]"
               style={{
-                background: 'linear-gradient(135deg, #e0f2fe 0%, #020617 50%, #e0f2fe 100%)',
+                background: `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 50%, ${team?.secondary_color || '#e0f2fe'} 100%)`,
                 borderColor: '#0ea5e9',
                 boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
               }}
