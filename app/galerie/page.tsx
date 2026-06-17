@@ -137,11 +137,15 @@ export default function GaleriePage() {
                 boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
               }}
             >
-              <img
-                src={item.url}
-                alt={item.caption || ''}
-                className="w-full h-full object-cover"
-              />
+              {item.type === 'video' ? (
+                <video src={item.url} className="w-full h-full object-cover" muted />
+              ) : (
+                <img
+                  src={item.url}
+                  alt={item.caption || ''}
+                  className="w-full h-full object-cover"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               {item.type === 'video' && (
                 <div className="absolute inset-0 flex items-center justify-center">

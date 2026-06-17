@@ -7,7 +7,7 @@ import { Player, Match, Announcement, Standing, GalleryItem, Coach, PlayerStat, 
 import AppShell from '@/components/app-shell';
 import FileUpload from '@/components/file-upload';
 import { useTeam } from '@/contexts/team-context';
-import { Users, Calendar, Megaphone, Trophy, Image, Settings, Plus, Trash2, Edit2, Save, X, ChevronDown, Target, Shirt, Check } from 'lucide-react';
+import { Users, Calendar, Megaphone, Trophy, Image, Settings, Plus, Trash2, Edit2, Save, X, ChevronDown, Target, Shirt, Check, Play } from 'lucide-react';
 
 type Tab = 'players' | 'matches' | 'lineup' | 'announcements' | 'standings' | 'gallery' | 'coach' | 'stats' | 'competitions' | 'users';
 
@@ -1257,8 +1257,19 @@ export default function AdminPage() {
               {gallery.map(g => (
                 <div key={g.id} className="relative group">
                   <div className="aspect-square rounded-xl overflow-hidden shadow-md">
-                    <img src={g.url} alt={g.caption || ''} className="w-full h-full object-cover" />
+                    {g.type === 'video' ? (
+                      <video src={g.url} className="w-full h-full object-cover" muted />
+                    ) : (
+                      <img src={g.url} alt={g.caption || ''} className="w-full h-full object-cover" />
+                    )}
                   </div>
+                  {g.type === 'video' && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                        <Play size={14} className="text-green-600 ml-0.5" />
+                      </div>
+                    </div>
+                  )}
                   <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button onClick={() => startEdit(g, ['type','url','caption','event_type'])} className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center shadow"><Edit2 size={10} className="text-blue-500" /></button>
                     <button onClick={() => handleDelete('gallery', g.id)} className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center shadow"><Trash2 size={10} className="text-red-500" /></button>
