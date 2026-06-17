@@ -239,14 +239,13 @@ export default function ResultatsPage() {
 
         {filteredMatches.map((match) => {
           const motm = getManOfMatch(match.id);
-          const userHasVoted = votes.some(v => v.match_id === match.id && v.voter_name === user?.name || v.voter_name === user?.username);
+          const topPlayers = getTopPlayers(match.id);
+          const userHasVoted = votes.some(v => v.match_id === match.id && (v.voter_name === user?.name || v.voter_name === user?.username));
 
           return (
-            <div key={match.id} className="rounded-2xl bg-white shadow-lg overflow-hidden hover-lift" style={{
-              boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
-            }}>
-              {/* Match Header */}
-              <button
+            <div key={match.id} className="grid grid-cols-3 gap-3">
+              {/* Card 1: Result */}
+              <div
                 onClick={() => {
                   if (userHasVoted) {
                     setVoteError('Vous avez déjà voté pour ce match');
@@ -256,117 +255,119 @@ export default function ResultatsPage() {
                   setShowVoteModal(true);
                   setSelectedPlayer('');
                 }}
-                className="w-full p-4 text-left"
+                className="rounded-2xl bg-white shadow-lg p-4 cursor-pointer hover-lift relative overflow-hidden"
+                style={{
+                  boxShadow: team?.primary_color ? `0 4px 30px -4px ${team.primary_color}60` : undefined
+                }}
               >
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-medium text-gray-400">{match.competition}</span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-green-100 text-green-600">
-                    Terminé
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between mb-3">
-                  <div className="text-center flex-1">
-                    <div className="font-bold text-gray-900 text-sm">Sama ASC</div>
-                  </div>
-                  <div className="flex items-center gap-3 px-3">
-                    <span className={`text-2xl font-bold ${
-                      match.score_home !== null && match.score_home > (match.score_away || 0)
-                        ? 'text-green-600'
-                        : 'text-gray-800'
-                    }`}>
-                      {match.score_home ?? '-'}
-                    </span>
-                    <span className="text-gray-300">-</span>
-                    <span className={`text-2xl font-bold ${
-                      match.score_home !== null && match.score_home < (match.score_away || 0)
-                        ? 'text-green-600'
-                        : 'text-gray-800'
-                    }`}>
-                      {match.score_away ?? '-'}
+                <div className="relative z-10">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-xs font-medium text-gray-400">{match.competition}</span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-green-100 text-green-600">
+                      Terminé
                     </span>
                   </div>
-                  <div className="text-center flex-1">
-                    <div className="font-bold text-gray-900 text-sm">{match.opponent}</div>
-                  </div>
-                </div>
 
-                <div className="flex items-center justify-center gap-3 text-xs text-gray-400">
-                  <div className="flex items-center gap-1">
-                    <Calendar size={12} />
-                    <span>{formatDate(match.match_date)}</span>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-center flex-1">
+                      <div className="font-bold text-gray-900 text-sm">Sama ASC</div>
+                    </div>
+                    <div className="flex items-center gap-2 px-2">
+                      <span className={`text-xl font-bold ${
+                        match.score_home !== null && match.score_home > (match.score_away || 0)
+                          ? 'text-green-600'
+                          : 'text-gray-800'
+                      }`}>
+                        {match.score_home ?? '-'}
+                      </span>
+                      <span className="text-gray-300">-</span>
+                      <span className={`text-xl font-bold ${
+                        match.score_home !== null && match.score_home < (match.score_away || 0)
+                          ? 'text-green-600'
+                          : 'text-gray-800'
+                      }`}>
+                        {match.score_away ?? '-'}
+                      </span>
+                    </div>
+                    <div className="text-center flex-1">
+                      <div className="font-bold text-gray-900 text-sm">{match.opponent}</div>
+                    </div>
                   </div>
-                  {match.venue && (
+
+                  <div className="flex items-center justify-center gap-2 text-xs text-gray-400 mb-3">
                     <div className="flex items-center gap-1">
-                      <MapPin size={12} />
-                      <span>{match.venue}</span>
+                      <Calendar size={10} />
+                      <span>{formatDate(match.match_date)}</span>
+                    </div>
+                    {match.venue && (
+                      <div className="flex items-center gap-1">
+                        <MapPin size={10} />
+                        <span>{match.venue}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {match.scorers && (
+                    <div className="p-2 rounded-lg bg-blue-50 border border-blue-200">
+                      <div className="flex items-center gap-1 mb-1">
+                        <span className="text-blue-600 text-xs">⚽</span>
+                        <span className="text-[10px] text-blue-600 font-medium uppercase">Buteurs</span>
+                      </div>
+                      <div className="text-xs text-blue-800">{match.scorers}</div>
                     </div>
                   )}
                 </div>
-              </button>
+              </div>
 
-              {/* Scorers Section */}
-              {match.scorers && (
-                <div className="mx-4 mb-3 p-3 rounded-xl bg-blue-50 border border-blue-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-blue-600">⚽</span>
-                    <span className="text-[10px] text-blue-600 font-medium uppercase">Buteurs</span>
-                  </div>
-                  <div className="text-sm text-blue-800">{match.scorers}</div>
-                </div>
-              )}
-
-              {/* Man of the Match */}
-              {motm && (
-                <div className="mx-4 mb-3 p-4 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200">
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
-                      {motm.photo_url ? (
-                        <img src={motm.photo_url} alt={motm.name} className="w-full h-full object-cover rounded-full" />
-                      ) : (
-                        <span className="text-3xl font-bold text-white">{motm.jersey_number || '?'}</span>
-                      )}
-                    </div>
-                    <div className="text-center">
-                      <div className="flex items-center justify-center gap-2 mb-1">
-                        <Trophy size={16} className="text-amber-500" />
-                        <span className="text-[10px] text-amber-600 font-bold uppercase">Homme du match</span>
-                      </div>
-                      <div className="text-lg font-bold text-gray-900">{motm.name}</div>
-                      <div className="text-sm text-gray-600">#{motm.jersey_number || '?'}</div>
-                      <div className="text-sm font-bold text-amber-700 mt-2">Bonne continuation {motm.name}!</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Top 3 Players Table */}
-              {(() => {
-                const topPlayers = getTopPlayers(match.id);
-                if (topPlayers.length === 0) return null;
-                return (
-                  <div className="mx-4 mb-3 p-4 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200">
+              {/* Card 2: Top 3 Votes */}
+              {topPlayers.length > 0 && (
+                <div className="rounded-2xl bg-white shadow-lg p-4 relative overflow-hidden">
+                  <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-3">
-                      <Trophy size={16} className="text-green-600" />
+                      <Trophy size={14} className="text-green-600" />
                       <span className="text-[10px] text-green-600 font-bold uppercase">Top 3 des votes</span>
                     </div>
                     <div className="space-y-2">
                       {topPlayers.map((item, index) => (
-                        <div key={item.player?.id} className="flex items-center gap-3 p-2 rounded-lg bg-white/60 border border-green-100">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-sm flex-shrink-0">
-                            <span className="text-white font-bold text-sm">{index + 1}</span>
+                        <div key={item.player?.id} className="flex items-center gap-2 p-2 rounded-lg bg-green-50 border border-green-100">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-sm flex-shrink-0">
+                            <span className="text-white font-bold text-xs">{index + 1}</span>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-gray-900">{item.player?.name}</div>
-                            <div className="text-xs text-gray-500">#{item.player?.jersey_number || '?'}</div>
+                            <div className="text-xs font-medium text-gray-900 truncate">{item.player?.name}</div>
+                            <div className="text-[10px] text-gray-500">#{item.player?.jersey_number || '?'}</div>
                           </div>
-                          <div className="text-sm font-bold text-green-600">{item.count} votes</div>
+                          <div className="text-xs font-bold text-green-600">{item.count}</div>
                         </div>
                       ))}
                     </div>
                   </div>
-                );
-              })()}
+                </div>
+              )}
+
+              {/* Card 3: Player Photo with Encouragement */}
+              {motm && (
+                <div className="rounded-2xl bg-white shadow-lg overflow-hidden relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50" />
+                  <div className="relative z-10 h-full flex flex-col">
+                    {motm.photo_url ? (
+                      <img src={motm.photo_url} alt={motm.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                        <span className="text-4xl font-bold text-white">{motm.jersey_number || '?'}</span>
+                      </div>
+                    )}
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+                      <div className="flex items-center gap-1 mb-1">
+                        <Trophy size={12} className="text-amber-400" />
+                        <span className="text-[10px] text-amber-400 font-bold uppercase">Homme du match</span>
+                      </div>
+                      <div className="text-sm font-bold text-white">{motm.name}</div>
+                      <div className="text-xs text-white/80">Bonne continuation {motm.name}!</div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           );
         })}
