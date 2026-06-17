@@ -69,6 +69,38 @@ export function TeamProvider({ children }: { children: ReactNode }) {
     };
 
     initializeAuth();
+
+    // Listen for localStorage changes (for login updates)
+    const handleStorageChange = () => {
+      const storedUser = localStorage.getItem('user');
+      const storedTeam = localStorage.getItem('team');
+      
+      if (storedUser && storedTeam) {
+        const userData = JSON.parse(storedUser);
+        const teamData = JSON.parse(storedTeam);
+        
+        setUser({
+          id: userData.id,
+          team_id: userData.team_id,
+          username: userData.username,
+          name: userData.name,
+          role: userData.role as 'admin' | 'member',
+        });
+        
+        setTeam(teamData);
+      } else {
+        setUser(null);
+        setTeam(null);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('localStorageUpdated', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('localStorageUpdated', handleStorageChange);
+    };
   }, []);
 
   const logout = async () => {

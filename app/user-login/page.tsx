@@ -84,6 +84,9 @@ export default function UserLoginPage() {
       // Store user in localStorage for session management
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('team', JSON.stringify(team));
+      
+      // Dispatch custom event to notify team context
+      window.dispatchEvent(new Event('localStorageUpdated'));
 
       // Redirect to home
       router.push('/');
