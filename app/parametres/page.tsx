@@ -158,7 +158,7 @@ export default function ParametresPage() {
       window.location.reload();
     } catch (error) {
       console.error('Error saving team settings:', error);
-      alert('Erreur lors de la sauvegarde');
+      alert('Erreur lors de la sauvegarde: ' + (error as Error).message);
     } finally {
       setSaving(false);
     }
