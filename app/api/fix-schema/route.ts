@@ -3,6 +3,10 @@ import { supabase } from '@/lib/supabase';
 
 export async function POST() {
   try {
+    if (!supabase) {
+      return NextResponse.json({ error: 'Supabase client not initialized' }, { status: 500 });
+    }
+
     // Check if password column exists in users table
     const { data: columnInfo, error: checkError } = await supabase.rpc('exec_sql', {
       sql: `
