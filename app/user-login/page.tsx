@@ -54,21 +54,33 @@ export default function UserLoginPage() {
         return;
       }
 
-      // Extract username from email (remove @domain.com)
-      const usernameOnly = username.split('@')[0];
+      // Get user from custom users table
+      const { data: user, error: userError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('team_id', team.id)
+        .eq('username', username)
+        .single();
 
-      // Sign in with Supabase Auth
-      const userEmail = `${usernameOnly}@${teamSlug}.com`;
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: userEmail,
-        password: password,
-      });
-
-      if (authError) {
+      if (userError || !user) {
         setError('Identifiants incorrects');
         setLoading(false);
         return;
       }
+
+      // Verify password
+      const { verifyPassword } = await import('@/lib/auth-utils');
+      const isValid = await verifyPassword(password, user.password);
+
+      if (!isValid) {
+        setError('Identifiants incorrects');
+        setLoading(false);
+        return;
+      }
+
+      // Store user in localStorage for session management
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('team', JSON.stringify(team));
 
       // Redirect to home
       router.push('/');

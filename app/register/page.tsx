@@ -57,31 +57,21 @@ export default function RegisterPage() {
 
       if (teamError) throw teamError;
 
-      // Create Supabase Auth user for admin
-      const adminEmail = `admin-${slug}@sama-asc.com`;
+      // Create custom user record for admin (without Supabase Auth)
+      const adminEmail = `admin@${slug}.com`;
       const adminPassword = 'admin123';
       
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: adminEmail,
-        password: adminPassword,
+      const { hashPassword } = await import('@/lib/auth-utils');
+      const hashedPassword = await hashPassword(adminPassword);
+
+      await supabase.from('users').insert({
+        id: crypto.randomUUID(),
+        team_id: team.id,
+        username: 'admin',
+        password: hashedPassword,
+        name: 'Admin',
+        role: 'admin',
       });
-
-      if (authError) throw authError;
-
-      // Create custom user record linked to Supabase Auth
-      if (authData.user) {
-        const { hashPassword } = await import('@/lib/auth-utils');
-        const hashedPassword = await hashPassword(adminPassword);
-
-        await supabase.from('users').insert({
-          id: authData.user.id,
-          team_id: team.id,
-          username: 'admin',
-          password: hashedPassword,
-          name: 'Admin',
-          role: 'admin',
-        });
-      }
 
       setSuccess(true);
       

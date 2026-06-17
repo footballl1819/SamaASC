@@ -43,39 +43,23 @@ export function TeamProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        // Check Supabase auth session
-        const { data: { session } } = await supabase!.auth.getSession();
+        // Check localStorage for user and team data
+        const storedUser = localStorage.getItem('user');
+        const storedTeam = localStorage.getItem('team');
         
-        if (session) {
-          // Load user and team data from API route (bypasses RLS)
-          const { data: { session: currentSession } } = await supabase!.auth.getSession();
-          const token = currentSession?.access_token;
+        if (storedUser && storedTeam) {
+          const userData = JSON.parse(storedUser);
+          const teamData = JSON.parse(storedTeam);
           
-          if (token) {
-            const response = await fetch('/api/auth/user', {
-              headers: {
-                'Authorization': `Bearer ${token}`,
-              },
-            });
-            
-            if (response.ok) {
-              const data = await response.json();
-              
-              if (data.user) {
-                setUser({
-                  id: data.user.id,
-                  team_id: data.user.team_id,
-                  username: data.user.username,
-                  name: data.user.name,
-                  role: data.user.role as 'admin' | 'member',
-                });
-              }
-              
-              if (data.team) {
-                setTeam(data.team);
-              }
-            }
-          }
+          setUser({
+            id: userData.id,
+            team_id: userData.team_id,
+            username: userData.username,
+            name: userData.name,
+            role: userData.role as 'admin' | 'member',
+          });
+          
+          setTeam(teamData);
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
@@ -85,50 +69,11 @@ export function TeamProvider({ children }: { children: ReactNode }) {
     };
 
     initializeAuth();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase!.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        const token = session.access_token;
-        
-        if (token) {
-          const response = await fetch('/api/auth/user', {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            
-            if (data.user) {
-              setUser({
-                id: data.user.id,
-                team_id: data.user.team_id,
-                username: data.user.username,
-                name: data.user.name,
-                role: data.user.role as 'admin' | 'member',
-              });
-            }
-            
-            if (data.team) {
-              setTeam(data.team);
-            }
-          }
-        }
-      } else if (event === 'SIGNED_OUT') {
-        setTeam(null);
-        setUser(null);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
   }, []);
 
   const logout = async () => {
-    await supabase!.auth.signOut();
+    localStorage.removeItem('user');
+    localStorage.removeItem('team');
     setTeam(null);
     setUser(null);
     window.location.href = '/login';
