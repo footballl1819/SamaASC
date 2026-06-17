@@ -55,11 +55,14 @@ export default function UserLoginPage() {
       }
 
       // Get user from custom users table
+      // Extract username from email if user entered full email
+      const usernameOnly = username.includes('@') ? username.split('@')[0] : username;
+      
       const { data: user, error: userError } = await supabase
         .from('users')
         .select('*')
         .eq('team_id', team.id)
-        .eq('username', username)
+        .eq('username', usernameOnly)
         .single();
 
       if (userError || !user) {
@@ -146,12 +149,12 @@ export default function UserLoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full pl-12 pr-4 py-4 rounded-2xl bg-[#020617]/50 border border-[#22D3EE]/30 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/50 focus:border-[#22D3EE] backdrop-blur-sm transition-all"
-                  placeholder="Nom d'utilisateur"
+                  placeholder="Nom d'utilisateur (ex: admin)"
                   required
                 />
               </div>
               <p className="text-xs text-white/50 mt-2">
-                Entrez votre nom d'utilisateur (email auto-généré)
+                Entrez votre nom d'utilisateur (ex: admin) ou email complet
               </p>
             </div>
 
