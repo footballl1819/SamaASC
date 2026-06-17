@@ -1,15 +1,52 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { User, ArrowRight, Plus, Users } from 'lucide-react';
+import { User, ArrowRight, Plus, Users, Download } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
   const [slug, setSlug] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
+
+  useEffect(() => {
+    // Check if app is already installed
+    const checkInstalled = () => {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+      setIsInstalled(isStandalone);
+    };
+
+    checkInstalled();
+
+    // Listen for beforeinstallprompt event
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const installApp = async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      setIsInstalled(true);
+    }
+    
+    setDeferredPrompt(null);
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +99,7 @@ export default function LoginPage() {
         <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 bg-[#8B5CF6] rounded-full animate-pulse delay-200" />
       </div>
 
-      <div className="relative z-10 w-full max-w-md">
+      <div className="relative z-10 w-full max-w-md mx-auto">
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="w-24 h-24 mx-auto mb-4 relative">
@@ -149,6 +186,25 @@ export default function LoginPage() {
               <Users size={18} />
               Créer une nouvelle équipe
             </button>
+
+            {/* PWA Install button */}
+            {deferredPrompt && !isInstalled && (
+              <button
+                type="button"
+                onClick={installApp}
+                className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] text-white rounded-2xl font-bold hover:shadow-lg hover:shadow-[#22D3EE]/30 transition-all relative overflow-hidden group"
+              >
+                <Download size={18} />
+                Installer l'application
+              </button>
+            )}
+
+            {isInstalled && (
+              <div className="w-full flex items-center justify-center gap-2 py-4 bg-green-500/20 border border-green-500/30 text-green-400 rounded-2xl font-medium">
+                <Download size={18} />
+                Application déjà installée
+              </div>
+            )}
           </form>
 
           <div className="mt-6 text-center">
