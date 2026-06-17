@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { TeamProvider } from '@/contexts/team-context';
+import SplashScreen from '@/components/splash-screen';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -11,9 +12,14 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   icons: {
     icon: '/icon-192.png',
-    apple: '/icon-192.png',
+    apple: '/icon-512.png',
   },
-  themeColor: '#16a34a',
+  themeColor: '#22D3EE',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Sama ASC',
+  },
 };
 
 export default function RootLayout({
@@ -27,6 +33,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </head>
       <body className={`${inter.className} antialiased`}>
+        <SplashScreen />
         <TeamProvider>{children}</TeamProvider>
       </body>
     </html>
