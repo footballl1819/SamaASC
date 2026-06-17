@@ -64,7 +64,7 @@ export default function RegisterPage() {
       const { hashPassword } = await import('@/lib/auth-utils');
       const hashedPassword = await hashPassword(adminPassword);
 
-      await supabase.from('users').insert({
+      const { error: userError } = await supabase.from('users').insert({
         id: crypto.randomUUID(),
         team_id: team.id,
         username: 'admin',
@@ -72,6 +72,11 @@ export default function RegisterPage() {
         name: 'Admin',
         role: 'admin',
       });
+
+      if (userError) {
+        console.error('Error creating admin user:', userError);
+        throw new Error('Erreur lors de la création du compte admin: ' + userError.message);
+      }
 
       setSuccess(true);
       
