@@ -154,8 +154,25 @@ export default function ParametresPage() {
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
       
-      // Reload team data to reflect changes
-      window.location.reload();
+      // Update team context with new data
+      if (team) {
+        const updatedTeam = {
+          ...team,
+          name,
+          slug,
+          description,
+          primary_color: primaryColor,
+          secondary_color: secondaryColor,
+          accent_color: primaryColor,
+          nav_color: primaryColor,
+          logo_url: logoUrl,
+          team_photo_url: teamPhotoUrl,
+        };
+        // Update localStorage to reflect changes
+        localStorage.setItem('team', JSON.stringify(updatedTeam));
+        // Dispatch event to notify team context
+        window.dispatchEvent(new Event('localStorageUpdated'));
+      }
     } catch (error) {
       console.error('Error saving team settings:', error);
       alert('Erreur lors de la sauvegarde: ' + (error as Error).message);
