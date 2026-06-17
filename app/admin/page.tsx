@@ -457,7 +457,7 @@ export default function AdminPage() {
       const payload = {
         email,
         password: form.password,
-        username: form.username,
+        username: email,
         name: form.name,
         team_id: team.id,
         role: 'member',

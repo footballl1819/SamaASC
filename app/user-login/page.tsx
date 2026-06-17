@@ -55,14 +55,20 @@ export default function UserLoginPage() {
       }
 
       // Get user from custom users table
-      // Extract username from email if user entered full email
-      const usernameOnly = username.includes('@') ? username.split('@')[0] : username;
+      // Validate that email domain matches team slug
+      const emailDomain = username.includes('@') ? username.split('@')[1] : null;
+      
+      if (emailDomain !== `${teamSlug}.com`) {
+        setError('Identifiants incorrects');
+        setLoading(false);
+        return;
+      }
       
       const { data: user, error: userError } = await supabase
         .from('users')
         .select('*')
         .eq('team_id', team.id)
-        .eq('username', usernameOnly)
+        .eq('username', username)
         .single();
 
       if (userError || !user) {
@@ -152,12 +158,12 @@ export default function UserLoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full pl-12 pr-4 py-4 rounded-2xl bg-[#020617]/50 border border-[#22D3EE]/30 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/50 focus:border-[#22D3EE] backdrop-blur-sm transition-all"
-                  placeholder="Nom d'utilisateur (ex: admin)"
+                  placeholder="Email (ex: admin@asc-penc.com)"
                   required
                 />
               </div>
               <p className="text-xs text-white/50 mt-2">
-                Entrez votre nom d'utilisateur (ex: admin) ou email complet
+                Entrez votre email complet (ex: admin@asc-penc.com)
               </p>
             </div>
 

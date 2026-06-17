@@ -67,7 +67,7 @@ export default function RegisterPage() {
       const { error: userError } = await supabase.from('users').insert({
         id: crypto.randomUUID(),
         team_id: team.id,
-        username: 'admin',
+        username: adminEmail,
         password: hashedPassword,
         name: 'Admin',
         role: 'admin',
