@@ -243,124 +243,124 @@ export default function ResultatsPage() {
           const userHasVoted = votes.some(v => v.match_id === match.id && (v.voter_name === user?.name || v.voter_name === user?.username));
 
           return (
-            <div key={match.id} className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {/* Card 1: Result */}
-              <div
-                onClick={() => {
-                  if (userHasVoted) {
-                    setVoteError('Vous avez déjà voté pour ce match');
-                    return;
-                  }
-                  setSelectedMatch(match.id);
-                  setShowVoteModal(true);
-                  setSelectedPlayer('');
-                }}
-                className="rounded-2xl shadow-lg p-4 cursor-pointer hover-lift relative overflow-hidden"
-                style={{
-                  height: '220px',
-                  background: `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 100%)`,
-                  borderColor: '#0ea5e9',
-                  boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
-                }}
-              >
-                <div className="absolute top-0 right-0 w-24 h-24 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
-                <div className="relative z-10">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs font-medium text-white/80">{match.competition}</span>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-white/20 text-white">
-                      Terminé
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="text-center flex-1">
-                      <div className="font-bold text-white text-sm">Sama ASC</div>
-                    </div>
-                    <div className="flex items-center gap-2 px-2">
-                      <span className={`text-xl font-bold text-white ${
-                        match.score_home !== null && match.score_home > (match.score_away || 0)
-                          ? 'text-green-400'
-                          : ''
-                      }`}>
-                        {match.score_home ?? '-'}
-                      </span>
-                      <span className="text-white/60">-</span>
-                      <span className={`text-xl font-bold text-white ${
-                        match.score_home !== null && match.score_home < (match.score_away || 0)
-                          ? 'text-green-400'
-                          : ''
-                      }`}>
-                        {match.score_away ?? '-'}
-                      </span>
-                    </div>
-                    <div className="text-center flex-1">
-                      <div className="font-bold text-white text-sm">{match.opponent}</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-center gap-2 text-xs text-white/70 mb-3">
-                    <div className="flex items-center gap-1">
-                      <Calendar size={10} className="text-white/70" />
-                      <span>{formatDate(match.match_date)}</span>
-                    </div>
-                    {match.venue && (
-                      <div className="flex items-center gap-1">
-                        <MapPin size={10} className="text-white/70" />
-                        <span>{match.venue}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {match.scorers && (
-                    <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30">
-                      <div className="flex items-center gap-1 mb-1">
-                        <span className="text-white text-xs">⚽</span>
-                        <span className="text-[10px] text-white font-medium uppercase">Buteurs</span>
-                      </div>
-                      <div className="text-xs text-white">{match.scorers}</div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Card 2: Top 3 Votes */}
-              {topPlayers.length > 0 && (
-                <div className="rounded-2xl shadow-lg p-4 relative overflow-hidden" style={{
-                  height: '220px',
-                  background: `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 100%)`,
-                  borderColor: '#0ea5e9',
-                  boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
-                }}>
+            <div key={match.id} className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* Left Column: Result + Top 3 Votes */}
+              <div className="space-y-3">
+                {/* Card 1: Result */}
+                <div
+                  onClick={() => {
+                    if (userHasVoted) {
+                      setVoteError('Vous avez déjà voté pour ce match');
+                      return;
+                    }
+                    setSelectedMatch(match.id);
+                    setShowVoteModal(true);
+                    setSelectedPlayer('');
+                  }}
+                  className="rounded-2xl shadow-lg p-4 cursor-pointer hover-lift relative overflow-hidden"
+                  style={{
+                    background: `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 100%)`,
+                    borderColor: '#0ea5e9',
+                    boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+                  }}
+                >
                   <div className="absolute top-0 right-0 w-24 h-24 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
                   <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
                   <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-3">
-                      <Trophy size={14} className="text-white" />
-                      <span className="text-[10px] text-white font-bold uppercase">Top 3 des votes</span>
+                      <span className="text-xs font-medium text-white/80">{match.competition}</span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-white/20 text-white">
+                        Terminé
+                      </span>
                     </div>
-                    <div className="space-y-2">
-                      {topPlayers.map((item, index) => (
-                        <div key={item.player?.id} className="flex items-center gap-2 p-2 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30">
-                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-sm flex-shrink-0">
-                            <span className="text-white font-bold text-xs">{index + 1}</span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-xs font-medium text-white truncate">{item.player?.name}</div>
-                            <div className="text-[10px] text-white/70">#{item.player?.jersey_number || '?'}</div>
-                          </div>
-                          <div className="text-xs font-bold text-white">{item.count}</div>
+
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="text-center flex-1">
+                        <div className="font-bold text-white text-sm">Sama ASC</div>
+                      </div>
+                      <div className="flex items-center gap-2 px-2">
+                        <span className={`text-xl font-bold text-white ${
+                          match.score_home !== null && match.score_home > (match.score_away || 0)
+                            ? 'text-green-400'
+                            : ''
+                        }`}>
+                          {match.score_home ?? '-'}
+                        </span>
+                        <span className="text-white/60">-</span>
+                        <span className={`text-xl font-bold text-white ${
+                          match.score_home !== null && match.score_home < (match.score_away || 0)
+                            ? 'text-green-400'
+                            : ''
+                        }`}>
+                          {match.score_away ?? '-'}
+                        </span>
+                      </div>
+                      <div className="text-center flex-1">
+                        <div className="font-bold text-white text-sm">{match.opponent}</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-center gap-2 text-xs text-white/70 mb-3">
+                      <div className="flex items-center gap-1">
+                        <Calendar size={10} className="text-white/70" />
+                        <span>{formatDate(match.match_date)}</span>
+                      </div>
+                      {match.venue && (
+                        <div className="flex items-center gap-1">
+                          <MapPin size={10} className="text-white/70" />
+                          <span>{match.venue}</span>
                         </div>
-                      ))}
+                      )}
                     </div>
+
+                    {match.scorers && (
+                      <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30">
+                        <div className="flex items-center gap-1 mb-1">
+                          <span className="text-white text-xs">⚽</span>
+                          <span className="text-[10px] text-white font-medium uppercase">Buteurs</span>
+                        </div>
+                        <div className="text-xs text-white">{match.scorers}</div>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
 
-              {/* Card 3: Player Photo with Encouragement */}
+                {/* Card 2: Top 3 Votes */}
+                {topPlayers.length > 0 && (
+                  <div className="rounded-2xl shadow-lg p-4 relative overflow-hidden" style={{
+                    background: `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 100%)`,
+                    borderColor: '#0ea5e9',
+                    boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
+                  }}>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Trophy size={14} className="text-white" />
+                        <span className="text-[10px] text-white font-bold uppercase">Top 3 des votes</span>
+                      </div>
+                      <div className="space-y-2">
+                        {topPlayers.map((item, index) => (
+                          <div key={item.player?.id} className="flex items-center gap-2 p-2 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30">
+                            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-sm flex-shrink-0">
+                              <span className="text-white font-bold text-xs">{index + 1}</span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-xs font-medium text-white truncate">{item.player?.name}</div>
+                              <div className="text-[10px] text-white/70">#{item.player?.jersey_number || '?'}</div>
+                            </div>
+                            <div className="text-xs font-bold text-white">{item.count}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column: Player Photo with Encouragement */}
               {motm && (
-                <div className="rounded-2xl shadow-lg overflow-hidden relative" style={{
-                  height: '220px',
+                <div className="rounded-2xl shadow-lg overflow-hidden relative h-full min-h-[440px]" style={{
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                 }}>
                   <div className="relative z-10 h-full flex flex-col">
