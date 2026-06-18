@@ -276,18 +276,18 @@ export default function ResultatsPage() {
 
                     <div className="flex items-center justify-between mb-3">
                       <div className="text-center flex-1">
-                        <div className="font-bold text-white text-sm">Sama ASC</div>
+                        <div className="font-bold text-white text-lg">Sama ASC</div>
                       </div>
                       <div className="flex items-center gap-2 px-2">
-                        <span className={`text-xl font-bold text-white ${
+                        <span className={`text-2xl font-bold text-white ${
                           match.score_home !== null && match.score_home > (match.score_away || 0)
                             ? 'text-green-400'
                             : ''
                         }`}>
                           {match.score_home ?? '-'}
                         </span>
-                        <span className="text-white/60">-</span>
-                        <span className={`text-xl font-bold text-white ${
+                        <span className="text-white/60 text-xl">-</span>
+                        <span className={`text-2xl font-bold text-white ${
                           match.score_home !== null && match.score_home < (match.score_away || 0)
                             ? 'text-green-400'
                             : ''
@@ -296,7 +296,7 @@ export default function ResultatsPage() {
                         </span>
                       </div>
                       <div className="text-center flex-1">
-                        <div className="font-bold text-white text-sm">{match.opponent}</div>
+                        <div className="font-bold text-white text-lg">{match.opponent}</div>
                       </div>
                     </div>
 
@@ -314,12 +314,12 @@ export default function ResultatsPage() {
                     </div>
 
                     {match.scorers && (
-                      <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30">
-                        <div className="flex items-center gap-1 mb-1">
-                          <span className="text-white text-xs">⚽</span>
-                          <span className="text-[10px] text-white font-medium uppercase">Buteurs</span>
+                      <div className="p-3 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30">
+                        <div className="flex items-center gap-1 mb-2">
+                          <span className="text-white text-sm">⚽</span>
+                          <span className="text-xs text-white font-bold uppercase">Buteurs</span>
                         </div>
-                        <div className="text-xs text-white">{match.scorers}</div>
+                        <div className="text-sm text-white font-medium">{match.scorers}</div>
                       </div>
                     )}
                   </div>
@@ -360,12 +360,12 @@ export default function ResultatsPage() {
 
               {/* Right Column: Player Photo with Encouragement */}
               {motm && (
-                <div className="rounded-2xl shadow-lg overflow-hidden relative h-full" style={{
+                <div className="rounded-2xl shadow-lg overflow-hidden relative h-full flex items-center justify-center" style={{
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                 }}>
-                  <div className="relative z-10 h-full flex flex-col">
+                  <div className="relative z-10 h-full w-full flex flex-col">
                     {motm.photo_url ? (
-                      <img src={motm.photo_url} alt={motm.name} className="w-full h-full object-cover" />
+                      <img src={motm.photo_url} alt={motm.name} className="w-full h-full object-cover object-center" />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
                         <span className="text-4xl font-bold text-white">{motm.jersey_number || '?'}</span>
