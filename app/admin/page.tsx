@@ -331,7 +331,15 @@ export default function AdminPage() {
     if (!team) return;
     
     try {
-      const payload = { type: form.type || 'image', url: form.url, caption: form.caption || null, event_type: form.event_type || 'other', team_id: team.id };
+      // Auto-detect type from URL if not set
+      let type = form.type || 'image';
+      if (form.url) {
+        const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi'];
+        const isVideo = videoExtensions.some(ext => form.url!.toLowerCase().endsWith(ext));
+        type = isVideo ? 'video' : 'image';
+      }
+
+      const payload = { type, url: form.url, caption: form.caption || null, event_type: form.event_type || 'other', team_id: team.id };
       if (editing) {
         await fetch('/api/admin/gallery', {
           method: 'PUT',

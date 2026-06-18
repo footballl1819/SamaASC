@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, Play } from 'lucide-react';
 
 interface FileUploadProps {
   value: string | null;
@@ -21,6 +21,7 @@ export default function FileUpload({
   const [preview, setPreview] = useState<string | null>(value);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
+  const [fileType, setFileType] = useState<'image' | 'video'>('image');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,6 +36,10 @@ export default function FileUpload({
 
     setError('');
     setUploading(true);
+
+    // Determine file type
+    const isVideo = file.type.startsWith('video/');
+    setFileType(isVideo ? 'video' : 'image');
 
     try {
       // Create preview
@@ -79,6 +84,7 @@ export default function FileUpload({
 
   const handleRemove = () => {
     setPreview(null);
+    setFileType('image');
     onChange('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -92,12 +98,27 @@ export default function FileUpload({
       {preview ? (
         <div className="relative">
           <div className="w-full h-32 rounded-lg border-2 border-gray-200 overflow-hidden">
-            <img 
-              src={preview} 
-              alt="Preview" 
-              className="w-full h-full object-cover"
-            />
+            {fileType === 'video' ? (
+              <video 
+                src={preview} 
+                className="w-full h-full object-cover"
+                muted
+              />
+            ) : (
+              <img 
+                src={preview} 
+                alt="Preview" 
+                className="w-full h-full object-cover"
+              />
+            )}
           </div>
+          {fileType === 'video' && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                <Play size={18} className="text-green-600 ml-0.5" />
+              </div>
+            </div>
+          )}
           <button
             onClick={handleRemove}
             className="absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white transition-colors"
