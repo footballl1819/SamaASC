@@ -243,9 +243,9 @@ export default function ResultatsPage() {
           const userHasVoted = votes.some(v => v.match_id === match.id && (v.voter_name === user?.name || v.voter_name === user?.username));
 
           return (
-            <div key={match.id} className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div key={match.id} className="grid grid-cols-2 gap-3">
               {/* Left Column: Result + Top 3 Votes */}
-              <div className="space-y-3">
+              <div className="flex flex-col gap-3">
                 {/* Card 1: Result */}
                 <div
                   onClick={() => {
@@ -257,7 +257,7 @@ export default function ResultatsPage() {
                     setShowVoteModal(true);
                     setSelectedPlayer('');
                   }}
-                  className="rounded-2xl shadow-lg p-4 cursor-pointer hover-lift relative overflow-hidden"
+                  className="rounded-2xl shadow-lg p-4 cursor-pointer hover-lift relative overflow-hidden flex-1"
                   style={{
                     background: `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 100%)`,
                     borderColor: '#0ea5e9',
@@ -327,7 +327,7 @@ export default function ResultatsPage() {
 
                 {/* Card 2: Top 3 Votes */}
                 {topPlayers.length > 0 && (
-                  <div className="rounded-2xl shadow-lg p-4 relative overflow-hidden" style={{
+                  <div className="rounded-2xl shadow-lg p-4 relative overflow-hidden flex-1" style={{
                     background: `linear-gradient(135deg, ${team?.secondary_color || '#e0f2fe'} 0%, ${team?.primary_color || '#020617'} 100%)`,
                     borderColor: '#0ea5e9',
                     boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
@@ -360,7 +360,7 @@ export default function ResultatsPage() {
 
               {/* Right Column: Player Photo with Encouragement */}
               {motm && (
-                <div className="rounded-2xl shadow-lg overflow-hidden relative h-full min-h-[440px]" style={{
+                <div className="rounded-2xl shadow-lg overflow-hidden relative h-full" style={{
                   boxShadow: '0 4px 30px -4px rgba(14, 165, 233, 0.3)'
                 }}>
                   <div className="relative z-10 h-full flex flex-col">
