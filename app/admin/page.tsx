@@ -540,7 +540,13 @@ export default function AdminPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const startEdit = (item: any, fields: string[]) => {
     const f: Record<string, string> = {};
-    fields.forEach(field => { f[field] = String(item[field] ?? ''); });
+    fields.forEach(field => {
+      if (field === 'is_home') {
+        f[field] = item[field] === true ? 'true' : 'false';
+      } else {
+        f[field] = String(item[field] ?? '');
+      }
+    });
     setForm(f);
     setEditing(String(item.id));
     setShowForm(true);
