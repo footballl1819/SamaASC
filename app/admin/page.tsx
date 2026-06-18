@@ -1249,6 +1249,7 @@ export default function AdminPage() {
                 <FileUpload
                   value={form.url || null}
                   onChange={(url) => setForm(prev => ({ ...prev, url }))}
+                  onTypeChange={(type) => setForm(prev => ({ ...prev, type }))}
                   label="Fichier"
                   accept="image/*,video/*"
                 />

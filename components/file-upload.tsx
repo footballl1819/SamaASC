@@ -6,6 +6,7 @@ import { Upload, X, Image as ImageIcon, Play } from 'lucide-react';
 interface FileUploadProps {
   value: string | null;
   onChange: (url: string) => void;
+  onTypeChange?: (type: 'image' | 'video') => void;
   accept?: string;
   maxSize?: number; // in MB
   label?: string;
@@ -14,6 +15,7 @@ interface FileUploadProps {
 export default function FileUpload({ 
   value, 
   onChange, 
+  onTypeChange,
   accept = 'image/*',
   maxSize = 5,
   label = 'Image'
@@ -40,6 +42,9 @@ export default function FileUpload({
     // Determine file type
     const isVideo = file.type.startsWith('video/');
     setFileType(isVideo ? 'video' : 'image');
+    if (onTypeChange) {
+      onTypeChange(isVideo ? 'video' : 'image');
+    }
 
     try {
       // Create preview
