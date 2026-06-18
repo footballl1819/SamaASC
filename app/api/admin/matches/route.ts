@@ -29,8 +29,8 @@ export async function POST(request: NextRequest) {
         competition, 
         is_home: is_home !== 'false',
         status: status || 'upcoming',
-        score_home: score_home ? parseInt(score_home) : null,
-        score_away: score_away ? parseInt(score_away) : null,
+        score_home: score_home !== '' ? parseInt(score_home) : null,
+        score_away: score_away !== '' ? parseInt(score_away) : null,
         formation: '4-3-3',
         scorers: scorers || null,
         team_id 
@@ -67,8 +67,8 @@ export async function PUT(request: NextRequest) {
         competition, 
         is_home: is_home !== 'false',
         status,
-        score_home: score_home ? parseInt(score_home) : null,
-        score_away: score_away ? parseInt(score_away) : null,
+        score_home: score_home !== '' ? parseInt(score_home) : null,
+        score_away: score_away !== '' ? parseInt(score_away) : null,
         formation: '4-3-3',
         scorers: scorers || null
       })

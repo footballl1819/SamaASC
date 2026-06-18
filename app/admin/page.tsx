@@ -230,8 +230,8 @@ export default function AdminPage() {
       const payload = {
         opponent: form.opponent, match_date: form.match_date, match_time: form.match_time || null,
         venue: form.venue || null, competition: form.competition || null, is_home: form.is_home !== 'false',
-        status: form.status || 'upcoming', score_home: form.score_home ? parseInt(form.score_home) : null,
-        score_away: form.score_away ? parseInt(form.score_away) : null,
+        status: form.status || 'upcoming', score_home: form.score_home !== '' ? parseInt(form.score_home) : null,
+        score_away: form.score_away !== '' ? parseInt(form.score_away) : null,
         scorers: form.scorers || null,
         team_id: team.id,
       };
@@ -825,7 +825,7 @@ export default function AdminPage() {
                     <div className="text-xs text-gray-400">{m.match_date} {m.match_time || ''} - {m.status === 'completed' ? `${m.score_home}-${m.score_away}` : m.status} - {m.formation}</div>
                   </div>
                   <span className="px-2 py-0.5 rounded-full bg-green-50 text-green-600 text-[10px] font-bold">{m.formation}</span>
-                  <button onClick={() => startEdit(m, ['opponent','match_date','match_time','venue','competition','is_home','status','score_home','score_away','formation'])} className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"><Edit2 size={14} /></button>
+                  <button onClick={() => startEdit(m, ['opponent','match_date','match_time','venue','competition','is_home','status','score_home','score_away','formation','scorers'])} className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"><Edit2 size={14} /></button>
                   <button onClick={() => handleDelete('matches', m.id)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
                 </div>
               ))}

@@ -276,7 +276,7 @@ export default function ResultatsPage() {
 
                     <div className="flex items-center justify-between mb-3">
                       <div className="text-center flex-1">
-                        <div className="font-bold text-white text-lg">Sama ASC</div>
+                        <div className="font-bold text-white text-lg">{match.is_home ? 'Sama ASC' : match.opponent}</div>
                       </div>
                       <div className="flex items-center gap-2 px-2">
                         <span className={`text-2xl font-bold text-white ${
@@ -296,7 +296,7 @@ export default function ResultatsPage() {
                         </span>
                       </div>
                       <div className="text-center flex-1">
-                        <div className="font-bold text-white text-lg">{match.opponent}</div>
+                        <div className="font-bold text-white text-lg">{match.is_home ? match.opponent : 'Sama ASC'}</div>
                       </div>
                     </div>
 
