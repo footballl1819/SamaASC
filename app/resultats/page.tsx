@@ -243,7 +243,7 @@ export default function ResultatsPage() {
           const userHasVoted = votes.some(v => v.match_id === match.id && (v.voter_name === user?.name || v.voter_name === user?.username));
 
           return (
-            <div key={match.id} className="grid grid-cols-2 gap-3">
+            <div key={match.id} className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {/* Left Column: Result + Top 3 Votes */}
               <div className="flex flex-col gap-3">
                 {/* Card 1: Result */}
