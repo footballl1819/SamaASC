@@ -233,6 +233,7 @@ export default function AdminPage() {
         status: form.status || 'upcoming', score_home: form.score_home !== '' ? parseInt(form.score_home) : null,
         score_away: form.score_away !== '' ? parseInt(form.score_away) : null,
         scorers: form.scorers || null,
+        opponent_logo: form.opponent_logo || null,
         team_id: team.id,
       };
       if (editing) {
@@ -794,6 +795,9 @@ export default function AdminPage() {
                   <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
                 <Input label="Adversaire" field="opponent" placeholder="ASC..." value={form.opponent || ''} onChange={(value) => setForm(prev => ({ ...prev, opponent: value }))} />
+                <div>
+                  <FileUpload value={form.opponent_logo || null} onChange={(url) => setForm(prev => ({ ...prev, opponent_logo: url }))} label="Logo adverse" />
+                </div>
                 <Input label="Date" field="match_date" type="date" value={form.match_date || ''} onChange={(value) => setForm(prev => ({ ...prev, match_date: value }))} />
                 <Input label="Heure" field="match_time" type="time" value={form.match_time || ''} onChange={(value) => setForm(prev => ({ ...prev, match_time: value }))} />
                 <Input label="Lieu" field="venue" placeholder="Terrain..." value={form.venue || ''} onChange={(value) => setForm(prev => ({ ...prev, venue: value }))} />
@@ -831,7 +835,7 @@ export default function AdminPage() {
                     <div className="text-xs text-gray-400">{m.match_date} {m.match_time || ''} - {m.status === 'completed' ? `${m.score_home}-${m.score_away}` : m.status} - {m.formation}</div>
                   </div>
                   <span className="px-2 py-0.5 rounded-full bg-green-50 text-green-600 text-[10px] font-bold">{m.formation}</span>
-                  <button onClick={() => startEdit(m, ['opponent','match_date','match_time','venue','competition','is_home','status','score_home','score_away','formation','scorers'])} className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"><Edit2 size={14} /></button>
+                  <button onClick={() => startEdit(m, ['opponent','match_date','match_time','venue','competition','is_home','status','score_home','score_away','formation','scorers','opponent_logo'])} className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"><Edit2 size={14} /></button>
                   <button onClick={() => handleDelete('matches', m.id)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
                 </div>
               ))}

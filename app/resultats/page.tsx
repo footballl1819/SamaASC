@@ -276,7 +276,22 @@ export default function ResultatsPage() {
 
                     <div className="flex items-center justify-between mb-3">
                       <div className="text-center flex-1">
-                        <div className="font-bold text-white text-lg">{match.is_home ? 'Sama ASC' : match.opponent}</div>
+                        <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-1.5 shadow-inner overflow-hidden border border-white/30 mx-auto">
+                          {match.is_home ? (
+                            team?.logo_url ? (
+                              <img src={team.logo_url} alt="Logo" className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="font-bold text-sm text-white">{team?.name?.substring(0, 2).toUpperCase() || 'SA'}</span>
+                            )
+                          ) : (
+                            match.opponent_logo ? (
+                              <img src={match.opponent_logo} alt="Logo adverse" className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="font-bold text-sm text-white">{match.opponent.replace('ASC ', '')}</span>
+                            )
+                          )}
+                        </div>
+                        <div className="font-bold text-white text-sm">{match.is_home ? 'Sama ASC' : match.opponent}</div>
                       </div>
                       <div className="flex items-center gap-2 px-2">
                         <span className={`text-2xl font-bold text-white ${
@@ -296,7 +311,22 @@ export default function ResultatsPage() {
                         </span>
                       </div>
                       <div className="text-center flex-1">
-                        <div className="font-bold text-white text-lg">{match.is_home ? match.opponent : 'Sama ASC'}</div>
+                        <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-1.5 shadow-inner overflow-hidden border border-white/30 mx-auto">
+                          {match.is_home ? (
+                            match.opponent_logo ? (
+                              <img src={match.opponent_logo} alt="Logo adverse" className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="font-bold text-sm text-white">{match.opponent.replace('ASC ', '')}</span>
+                            )
+                          ) : (
+                            team?.logo_url ? (
+                              <img src={team.logo_url} alt="Logo" className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="font-bold text-sm text-white">{team?.name?.substring(0, 2).toUpperCase() || 'SA'}</span>
+                            )
+                          )}
+                        </div>
+                        <div className="font-bold text-white text-sm">{match.is_home ? match.opponent : 'Sama ASC'}</div>
                       </div>
                     </div>
 

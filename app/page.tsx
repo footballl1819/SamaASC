@@ -208,8 +208,12 @@ export default function AccueilPage() {
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="w-14 h-14 rounded-xl bg-[#8B5CF6]/20 backdrop-blur-sm flex items-center justify-center mb-1.5 shadow-inner border border-[#8B5CF6]/30">
-                    <span className="font-bold text-sm text-white">{nextMatch.opponent.replace('ASC ', '')}</span>
+                  <div className="w-14 h-14 rounded-xl bg-[#8B5CF6]/20 backdrop-blur-sm flex items-center justify-center mb-1.5 shadow-inner overflow-hidden border border-[#8B5CF6]/30">
+                    {nextMatch.opponent_logo ? (
+                      <img src={nextMatch.opponent_logo} alt="Logo adverse" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="font-bold text-sm text-white">{nextMatch.opponent.replace('ASC ', '')}</span>
+                    )}
                   </div>
                   <span className="text-xs text-white/70">{nextMatch.opponent}</span>
                 </div>

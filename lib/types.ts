@@ -37,6 +37,7 @@ export interface Match {
   poster_url: string | null;
   formation: string;
   scorers: string | null;
+  opponent_logo: string | null;
 }
 
 export interface MatchLineup {
