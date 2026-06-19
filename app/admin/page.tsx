@@ -157,6 +157,7 @@ export default function AdminPage() {
       ]);
       
       const u = tm.data || [];
+      console.log('Team members loaded:', u);
       
       setPlayers(p);
       setMatches(m);
@@ -1385,7 +1386,7 @@ export default function AdminPage() {
         {tab === 'users' && (
           <>
             {!showForm && (
-              <button onClick={() => { setShowForm(true); setEditing(null); setForm({}); }}
+              <button onClick={() => { setShowForm(true); setEditing(null); setForm({ email: '', password: '' }); }}
                 className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                 <Plus size={16} /> Ajouter un utilisateur
               </button>
@@ -1394,7 +1395,7 @@ export default function AdminPage() {
               <div className="rounded-2xl bg-white p-4 shadow-lg space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-bold">{editing ? 'Modifier' : 'Ajouter'} un membre</h3>
-                  <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
+                  <button onClick={() => { setShowForm(false); setEditing(null); setForm({ email: '', password: '' }); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
                 <Input label="Email" field="email" type="email" placeholder={`Ex: membre@${team?.domain || 'team.com'}`} value={form.email || ''} onChange={(value) => setForm(prev => ({ ...prev, email: value }))} />
                 <Input label="Mot de passe" field="password" type="password" placeholder="Mot de passe" value={form.password || ''} onChange={(value) => setForm(prev => ({ ...prev, password: value }))} />
