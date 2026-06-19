@@ -193,13 +193,21 @@ export default function AccueilPage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="text-center">
                   <div className="w-14 h-14 rounded-xl bg-[#22D3EE]/20 backdrop-blur-sm flex items-center justify-center mb-1.5 shadow-inner overflow-hidden border border-[#22D3EE]/30">
-                    {team?.logo_url ? (
-                      <img src={team.logo_url} alt="Logo" className="w-full h-full object-cover" />
+                    {nextMatch.is_home ? (
+                      team?.logo_url ? (
+                        <img src={team.logo_url} alt="Logo" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="font-bold text-lg text-[#22D3EE]">{team?.name?.substring(0, 2).toUpperCase() || 'SA'}</span>
+                      )
                     ) : (
-                      <span className="font-bold text-lg text-[#22D3EE]">{team?.name?.substring(0, 2).toUpperCase() || 'SA'}</span>
+                      nextMatch.opponent_logo ? (
+                        <img src={nextMatch.opponent_logo} alt="Logo adverse" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="font-bold text-sm text-white">{nextMatch.opponent.replace('ASC ', '')}</span>
+                      )
                     )}
                   </div>
-                  <span className="text-xs text-white/70">{team?.name || 'Sama ASC'}</span>
+                  <span className="text-xs text-white/70">{nextMatch.is_home ? (team?.name || 'Sama ASC') : nextMatch.opponent}</span>
                 </div>
                 <div className="text-center px-3">
                   <span className="text-3xl font-bold bg-gradient-to-r from-[#22D3EE] via-[#3B82F6] to-[#8B5CF6] bg-clip-text text-transparent">VS</span>
@@ -209,13 +217,21 @@ export default function AccueilPage() {
                 </div>
                 <div className="text-center">
                   <div className="w-14 h-14 rounded-xl bg-[#8B5CF6]/20 backdrop-blur-sm flex items-center justify-center mb-1.5 shadow-inner overflow-hidden border border-[#8B5CF6]/30">
-                    {nextMatch.opponent_logo ? (
-                      <img src={nextMatch.opponent_logo} alt="Logo adverse" className="w-full h-full object-cover" />
+                    {nextMatch.is_home ? (
+                      nextMatch.opponent_logo ? (
+                        <img src={nextMatch.opponent_logo} alt="Logo adverse" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="font-bold text-sm text-white">{nextMatch.opponent.replace('ASC ', '')}</span>
+                      )
                     ) : (
-                      <span className="font-bold text-sm text-white">{nextMatch.opponent.replace('ASC ', '')}</span>
+                      team?.logo_url ? (
+                        <img src={team.logo_url} alt="Logo" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="font-bold text-lg text-[#22D3EE]">{team?.name?.substring(0, 2).toUpperCase() || 'SA'}</span>
+                      )
                     )}
                   </div>
-                  <span className="text-xs text-white/70">{nextMatch.opponent}</span>
+                  <span className="text-xs text-white/70">{nextMatch.is_home ? nextMatch.opponent : (team?.name || 'Sama ASC')}</span>
                 </div>
               </div>
               <div className="flex items-center justify-center gap-4 text-sm text-white/80">

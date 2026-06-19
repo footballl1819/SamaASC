@@ -295,19 +295,19 @@ export default function ResultatsPage() {
                       </div>
                       <div className="flex items-center gap-2 px-2">
                         <span className={`text-2xl font-bold text-white ${
-                          match.score_home !== null && match.score_home > (match.score_away || 0)
-                            ? 'text-green-400'
-                            : ''
+                          match.is_home 
+                            ? (match.score_home !== null && match.score_home > (match.score_away || 0) ? 'text-green-400' : '')
+                            : (match.score_away !== null && match.score_away > (match.score_home || 0) ? 'text-green-400' : '')
                         }`}>
-                          {match.score_home ?? '-'}
+                          {match.is_home ? (match.score_home ?? '-') : (match.score_away ?? '-')}
                         </span>
                         <span className="text-white/60 text-xl">-</span>
                         <span className={`text-2xl font-bold text-white ${
-                          match.score_home !== null && match.score_home < (match.score_away || 0)
-                            ? 'text-green-400'
-                            : ''
+                          match.is_home
+                            ? (match.score_home !== null && match.score_home < (match.score_away || 0) ? 'text-green-400' : '')
+                            : (match.score_away !== null && match.score_away < (match.score_home || 0) ? 'text-green-400' : '')
                         }`}>
-                          {match.score_away ?? '-'}
+                          {match.is_home ? (match.score_away ?? '-') : (match.score_home ?? '-')}
                         </span>
                       </div>
                       <div className="text-center flex-1">

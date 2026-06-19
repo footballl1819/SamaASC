@@ -802,7 +802,7 @@ export default function AdminPage() {
                 <Input label="Heure" field="match_time" type="time" value={form.match_time || ''} onChange={(value) => setForm(prev => ({ ...prev, match_time: value }))} />
                 <Input label="Lieu" field="venue" placeholder="Terrain..." value={form.venue || ''} onChange={(value) => setForm(prev => ({ ...prev, venue: value }))} />
                 <Select label="Compétition" field="competition" options={competitions.map(c => ({ value: c.name, label: c.name }))} value={form.competition || ''} onChange={(value) => setForm(prev => ({ ...prev, competition: value }))} />
-                <Select label="Domicile" field="is_home" options={[{ value: 'true', label: 'Oui' }, { value: 'false', label: 'Non' }]} value={form.is_home || ''} onChange={(value) => setForm(prev => ({ ...prev, is_home: value }))} />
+                <Select label="Domicile" field="is_home" options={[{ value: 'true', label: 'Oui' }, { value: 'false', label: 'Non' }]} value={form.is_home || 'false'} onChange={(value) => setForm(prev => ({ ...prev, is_home: value }))} />
                 <Select label="Statut" field="status" options={[
                   { value: 'upcoming', label: 'À venir' }, { value: 'live', label: 'En direct' },
                   { value: 'completed', label: 'Terminé' }, { value: 'postponed', label: 'Reporté' },
