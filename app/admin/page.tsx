@@ -122,25 +122,31 @@ export default function AdminPage() {
 
   useEffect(() => {
     // Only check authentication after context is fully loaded
+    console.log('Admin page auth check:', { team, user, contextLoading });
     if (!contextLoading) {
       if (!team) {
+        console.log('No team, redirecting to login');
         router.push('/login');
         return;
       }
       if (!user) {
+        console.log('No user, redirecting to user-login');
         router.push('/user-login');
         return;
       }
       // Check if user is admin
       if (user.role !== 'admin') {
+        console.log('User is not admin, redirecting to home');
         router.push('/');
         return;
       }
+      console.log('User is admin, allowing access');
     }
   }, [team, user, contextLoading, router]);
 
   const loadAll = useCallback(async () => {
     if (!team) return;
+    console.log('Starting to load all data for team:', team.id);
     setLoading(true);
     try {
       const [p, m, a, s, g, c, ps, l, comp, tm] = await Promise.all([
@@ -158,6 +164,7 @@ export default function AdminPage() {
       
       const u = tm.data || [];
       console.log('Team members loaded:', u);
+      console.log('Data loaded successfully:', { players: p.length, matches: m.length, announcements: a.length });
       
       setPlayers(p);
       setMatches(m);
