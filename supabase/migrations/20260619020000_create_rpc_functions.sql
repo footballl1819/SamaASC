@@ -36,9 +36,31 @@ BEGIN
   VALUES (team_name, team_domain, admin_email)
   RETURNING id INTO new_team_id;
   
-  -- Create the admin user in auth.users
-  INSERT INTO auth.users (email, encrypted_password, email_confirmed_at)
-  VALUES (admin_email, crypt(admin_password, gen_salt('bf')), now())
+  -- Create the admin user in auth.users with all required fields
+  INSERT INTO auth.users (
+    id,
+    email,
+    encrypted_password,
+    email_confirmed_at,
+    created_at,
+    updated_at,
+    last_sign_in_at,
+    raw_app_meta_data,
+    raw_user_meta_data,
+    is_super_admin
+  )
+  VALUES (
+    gen_random_uuid(),
+    admin_email,
+    crypt(admin_password, gen_salt('bf')),
+    now(),
+    now(),
+    now(),
+    now(),
+    '{}'::jsonb,
+    '{}'::jsonb,
+    false
+  )
   RETURNING id INTO new_user_id;
   
   -- Add admin to team_members
@@ -95,9 +117,31 @@ BEGIN
     RETURN json_build_object('error', 'User already exists');
   END IF;
   
-  -- Create the member user in auth.users
-  INSERT INTO auth.users (email, encrypted_password, email_confirmed_at)
-  VALUES (member_email, crypt(member_password, gen_salt('bf')), now())
+  -- Create the member user in auth.users with all required fields
+  INSERT INTO auth.users (
+    id,
+    email,
+    encrypted_password,
+    email_confirmed_at,
+    created_at,
+    updated_at,
+    last_sign_in_at,
+    raw_app_meta_data,
+    raw_user_meta_data,
+    is_super_admin
+  )
+  VALUES (
+    gen_random_uuid(),
+    member_email,
+    crypt(member_password, gen_salt('bf')),
+    now(),
+    now(),
+    now(),
+    now(),
+    '{}'::jsonb,
+    '{}'::jsonb,
+    false
+  )
   RETURNING id INTO new_user_id;
   
   -- Add member to team_members
