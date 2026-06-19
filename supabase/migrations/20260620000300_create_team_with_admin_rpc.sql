@@ -42,11 +42,12 @@ BEGIN
   END IF;
   
   -- Create the team with default colors
-  INSERT INTO teams (name, domain, slug, primary_color, secondary_color, accent_color, nav_color)
+  INSERT INTO teams (name, domain, slug, admin_email, primary_color, secondary_color, accent_color, nav_color)
   VALUES (
     p_team_name, 
     p_team_domain, 
     p_team_domain,
+    p_admin_email,
     '#3b82f6',
     '#1e40af',
     '#f59e0b',
