@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
         username,
         password: hashedPassword,
         name,
+        email,
         role: role || 'member',
       })
       .select()
@@ -45,6 +46,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: userError.message }, { status: 500 });
     }
 
+    console.log('User created successfully:', userData);
     return NextResponse.json(userData);
   } catch (error) {
     console.error('Error in user API:', error);

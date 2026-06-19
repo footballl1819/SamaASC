@@ -61,64 +61,61 @@ export default function LoginPage() {
         return;
       }
 
-      // Sign in with Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      console.log('Login auth result:', authData, authError);
-
-      if (authError) {
-        console.error('Auth error:', authError);
-        setError('Email ou mot de passe incorrect');
+      // Find team by domain or slug (admin login doesn't have team parameter)
+      let domain = email.split('@')[1];
+      if (!domain) {
+        setError('Email invalide');
         setLoading(false);
         return;
       }
 
-      // Get user team info
-      const { data: teamInfo, error: teamError } = await supabase.rpc('get_user_team_info');
+      // Remove .com or similar TLD for matching
+      domain = domain.replace('.com', '').replace('.fr', '');
 
-      console.log('Team info result:', teamInfo, teamError);
+      const { data: team, error: teamError } = await supabase
+        .from('teams')
+        .select('*')
+        .or(`domain.eq.${domain},slug.eq.${domain}`)
+        .single();
 
-      if (teamError || !teamInfo) {
-        console.error('Team info error:', teamError);
-        setError('Erreur lors de la récupération des informations de l\'équipe');
+      if (teamError || !team) {
+        setError('Domaine d\'équipe non trouvé');
         setLoading(false);
         return;
       }
 
-      const result = teamInfo as { success?: boolean; error?: string; team_id?: string; user_role?: string; team_name?: string; team_domain?: string };
+      // Get user from custom users table
+      const username = email.split('@')[0];
+      const { data: user, error: userError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('team_id', team.id)
+        .eq('username', username)
+        .eq('role', 'admin')
+        .single();
 
-      if (result.error) {
-        setError(result.error);
+      if (userError || !user) {
+        setError('Identifiants incorrects');
         setLoading(false);
         return;
       }
 
-      // Store team info in localStorage for the old context compatibility
-      localStorage.setItem('user', JSON.stringify({
-        id: authData.user.id,
-        team_id: result.team_id,
-        username: email.split('@')[0],
-        name: email.split('@')[0],
-        email: email,
-        role: result.user_role
-      }));
+      // Verify password
+      const { verifyPassword } = await import('@/lib/auth-utils');
+      const isValid = await verifyPassword(password, user.password);
+
+      if (!isValid) {
+        setError('Identifiants incorrects');
+        setLoading(false);
+        return;
+      }
+
+      // Store user and team in localStorage
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('team', JSON.stringify(team));
       
-      localStorage.setItem('team', JSON.stringify({
-        id: result.team_id,
-        name: result.team_name || 'Team',
-        slug: result.team_domain || result.team_id,
-        domain: result.team_domain || '',
-        logo_url: null,
-        team_photo_url: null,
-        primary_color: '#3b82f6',
-        secondary_color: '#1e40af',
-        accent_color: '#f59e0b',
-        nav_color: '#3b82f6',
-        description: null
-      }));
+      // Dispatch custom event to notify team context
+      window.dispatchEvent(new Event('localStorageUpdated'));
 
       // Redirect to dashboard
       router.push('/');

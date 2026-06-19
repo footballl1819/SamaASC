@@ -44,31 +44,18 @@ export default function RegisterPage() {
         return;
       }
 
-      // First, create the user using Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: adminEmail,
-        password: adminPassword,
-      });
+      // Import hashPassword for custom password hashing
+      const { hashPassword } = await import('@/lib/auth-utils');
+      const adminUsername = adminEmail.split('@')[0];
+      const hashedPassword = await hashPassword(adminPassword);
 
-      console.log('Auth signup result:', authData, authError);
-
-      if (authError) {
-        console.error('Auth error:', authError);
-        throw authError;
-      }
-      if (!authData.user) {
-        console.error('No user data returned');
-        throw new Error('Failed to create user - no user data returned');
-      }
-
-      console.log('User created successfully:', authData.user.id);
-
-      // Then create the team and add the user to team_members via RPC
-      const { data, error: rpcError } = await supabase.rpc('create_team_and_add_user', {
-        team_name: teamName,
-        team_domain: domain,
-        admin_email: adminEmail,
-        user_id: authData.user.id
+      // Create team and admin user via RPC (using custom users table, not Supabase Auth)
+      const { data, error: rpcError } = await supabase.rpc('create_team_with_admin', {
+        p_team_name: teamName,
+        p_team_domain: domain,
+        p_admin_email: adminEmail,
+        p_admin_username: adminUsername,
+        p_admin_password_hash: hashedPassword
       });
 
       console.log('RPC result:', data, rpcError);
@@ -78,7 +65,7 @@ export default function RegisterPage() {
         throw rpcError;
       }
 
-      const result = data as { success?: boolean; error?: string; team_id?: string };
+      const result = data as { success?: boolean; error?: string; team_id?: string; user_id?: string };
 
       if (result.error) {
         setError(result.error);
@@ -86,12 +73,18 @@ export default function RegisterPage() {
         return;
       }
 
+      if (!result.team_id || !result.user_id) {
+        setError('Failed to create team or user');
+        setLoading(false);
+        return;
+      }
+
       // Store team info in localStorage for the old context compatibility
       localStorage.setItem('user', JSON.stringify({
-        id: authData.user.id,
+        id: result.user_id,
         team_id: result.team_id,
-        username: adminEmail.split('@')[0],
-        name: adminEmail.split('@')[0],
+        username: adminUsername,
+        name: adminUsername,
         email: adminEmail,
         role: 'admin'
       }));
@@ -112,27 +105,13 @@ export default function RegisterPage() {
 
       setSuccess(true);
       
-      // Wait a moment for database to commit
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Dispatch custom event to notify team context
+      window.dispatchEvent(new Event('localStorageUpdated'));
       
-      // Automatically sign in the user after registration
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: adminEmail,
-        password: adminPassword,
-      });
-
-      if (signInError) {
-        console.error('Auto sign-in error:', signInError);
-        // If auto sign-in fails, still redirect to login
-        setTimeout(() => {
-          router.push('/login');
-        }, 2000);
-      } else {
-        // Redirect to home page after successful sign-in
-        setTimeout(() => {
-          router.push('/');
-        }, 2000);
-      }
+      // Redirect to home page after a moment
+      setTimeout(() => {
+        router.push('/');
+      }, 2000);
     } catch (err) {
       console.error('Erreur lors de la création de l\'équipe:', err);
       setError('Erreur lors de la création de l\'équipe: ' + (err as Error).message);
