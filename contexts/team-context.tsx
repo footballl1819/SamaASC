@@ -117,42 +117,45 @@ export function TeamProvider({ children }: { children: ReactNode }) {
     initializeAuth();
 
     // Listen for auth state changes
-    const { data: { subscription } } = supabase?.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session?.user && supabase) {
-        // Reload data from database
-        const { data: userData } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-
-        if (userData) {
-          const { data: teamData } = await supabase
-            .from('teams')
+    let authSubscription: any = null;
+    if (supabase) {
+      authSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user && supabase) {
+          // Reload data from database
+          const { data: userData } = await supabase
+            .from('users')
             .select('*')
-            .eq('id', userData.team_id)
+            .eq('id', session.user.id)
             .single();
 
-          setUser({
-            id: userData.id,
-            team_id: userData.team_id,
-            username: userData.username,
-            name: userData.name,
-            email: userData.email || '',
-            role: userData.role as 'admin' | 'member',
-            profile_photo_url: userData.profile_photo_url || null,
-            created_at: userData.created_at || new Date().toISOString(),
-          });
+          if (userData) {
+            const { data: teamData } = await supabase
+              .from('teams')
+              .select('*')
+              .eq('id', userData.team_id)
+              .single();
 
-          if (teamData) {
-            setTeam(teamData);
+            setUser({
+              id: userData.id,
+              team_id: userData.team_id,
+              username: userData.username,
+              name: userData.name,
+              email: userData.email || '',
+              role: userData.role as 'admin' | 'member',
+              profile_photo_url: userData.profile_photo_url || null,
+              created_at: userData.created_at || new Date().toISOString(),
+            });
+
+            if (teamData) {
+              setTeam(teamData);
+            }
           }
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setTeam(null);
         }
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setTeam(null);
-      }
-    });
+      });
+    }
 
     // Setup realtime subscription for user profile updates
     let userChannel: any = null;
@@ -238,7 +241,7 @@ export function TeamProvider({ children }: { children: ReactNode }) {
     window.addEventListener('localStorageUpdated', handleStorageChange);
 
     return () => {
-      subscription?.unsubscribe();
+      authSubscription?.unsubscribe();
       if (userChannel) supabase?.removeChannel(userChannel);
       if (teamChannel) supabase?.removeChannel(teamChannel);
       window.removeEventListener('storage', handleStorageChange);
