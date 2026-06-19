@@ -12,10 +12,25 @@ DROP POLICY IF EXISTS "team_member_auth_insert" ON users;
 DROP POLICY IF EXISTS "team_member_auth_update" ON users;
 DROP POLICY IF EXISTS "team_member_auth_delete" ON users;
 
-CREATE POLICY IF NOT EXISTS "users_public_select" ON users FOR SELECT TO anon USING (true);
-CREATE POLICY IF NOT EXISTS "users_auth_insert" ON users FOR INSERT TO authenticated WITH CHECK (true);
-CREATE POLICY IF NOT EXISTS "users_auth_update" ON users FOR UPDATE TO authenticated WITH CHECK (true);
-CREATE POLICY IF NOT EXISTS "users_auth_delete" ON users FOR DELETE TO authenticated USING (true);
+-- Create policies if they don't exist
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'users_public_select' AND tablename = 'users') THEN
+    CREATE POLICY "users_public_select" ON users FOR SELECT TO anon USING (true);
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'users_auth_insert' AND tablename = 'users') THEN
+    CREATE POLICY "users_auth_insert" ON users FOR INSERT TO authenticated WITH CHECK (true);
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'users_auth_update' AND tablename = 'users') THEN
+    CREATE POLICY "users_auth_update" ON users FOR UPDATE TO authenticated WITH CHECK (true);
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'users_auth_delete' AND tablename = 'users') THEN
+    CREATE POLICY "users_auth_delete" ON users FOR DELETE TO authenticated USING (true);
+  END IF;
+END $$;
 
 -- Update indexes on users table
 DROP INDEX IF EXISTS idx_team_member_team_id;
