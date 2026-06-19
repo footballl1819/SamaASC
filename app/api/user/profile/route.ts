@@ -27,6 +27,7 @@ export async function PUT(request: NextRequest) {
       .select();
 
     if (error) {
+      console.error('Supabase update error:', error);
       return NextResponse.json(
         { error: error.message },
         { status: 400 }
@@ -34,12 +35,14 @@ export async function PUT(request: NextRequest) {
     }
 
     if (!data || data.length === 0) {
+      console.error('No user found to update');
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
       );
     }
 
+    console.log('Profile updated successfully:', data[0]);
     return NextResponse.json(data[0]);
   } catch (error) {
     console.error('Error updating profile:', error);

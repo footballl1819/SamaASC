@@ -63,38 +63,56 @@ export default function ProfilPage() {
 
       // Upload profile photo if changed
       if (profilePhotoFile && supabase) {
-        const fileExt = profilePhotoFile.name.split('.').pop();
-        const fileName = `${user.id}-profile-${Date.now()}.${fileExt}`;
-        const filePath = `user-profiles/${fileName}`;
+        try {
+          const fileExt = profilePhotoFile.name.split('.').pop();
+          const fileName = `${user.id}-profile-${Date.now()}.${fileExt}`;
+          const filePath = `user-profiles/${fileName}`;
 
-        const { error: uploadError } = await supabase.storage
-          .from('team-assets')
-          .upload(filePath, profilePhotoFile);
+          console.log('Uploading profile photo to:', filePath);
+          
+          const { error: uploadError } = await supabase.storage
+            .from('team-assets')
+            .upload(filePath, profilePhotoFile);
 
-        if (uploadError) throw uploadError;
+          if (uploadError) {
+            console.error('Upload error:', uploadError);
+            throw new Error(`Upload failed: ${uploadError.message}`);
+          }
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('team-assets')
-          .getPublicUrl(filePath);
+          const { data: { publicUrl } } = supabase.storage
+            .from('team-assets')
+            .getPublicUrl(filePath);
 
-        profilePhotoUrl = publicUrl;
+          profilePhotoUrl = publicUrl;
+          console.log('Photo uploaded successfully:', profilePhotoUrl);
+        } catch (uploadErr) {
+          console.error('Photo upload error:', uploadErr);
+          throw uploadErr;
+        }
       }
 
       // Update user profile via API route
+      const payload = {
+        id: user.id,
+        team_id: team.id,
+        name,
+        profile_photo_url: profilePhotoUrl,
+      };
+      
+      console.log('Sending profile update with payload:', payload);
+      
       const response = await fetch('/api/user/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: user.id,
-          team_id: team.id,
-          name,
-          profile_photo_url: profilePhotoUrl,
-        }),
+        body: JSON.stringify(payload),
       });
 
+      console.log('Profile API response status:', response.status);
+      const responseData = await response.json();
+      console.log('Profile API response:', responseData);
+
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to update profile');
+        throw new Error(responseData.error || `HTTP ${response.status}: Failed to update profile`);
       }
 
       setSuccess(true);
