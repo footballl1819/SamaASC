@@ -13,9 +13,9 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, message, team_id } = body;
+    const { name, message, team_id, profile_photo_url } = body;
 
-    console.log('Creating supporter:', { name, message, team_id });
+    console.log('Creating supporter:', { name, message, team_id, profile_photo_url });
 
     if (!name || !message || !team_id) {
       console.error('Missing required fields');
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
     const { data, error } = await supabase
       .from('supporters')
-      .insert({ name, message, team_id })
+      .insert({ name, message, team_id, profile_photo_url })
       .select()
       .single();
 

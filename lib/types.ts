@@ -5,6 +5,7 @@ export interface User {
   name: string;
   email: string;
   role: 'admin' | 'member';
+  profile_photo_url: string | null;
   created_at: string;
 }
 
@@ -91,6 +92,7 @@ export interface Supporter {
   id: string;
   name: string;
   message: string;
+  profile_photo_url: string | null;
   created_at: string;
 }
 

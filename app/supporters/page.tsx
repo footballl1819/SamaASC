@@ -95,7 +95,7 @@ export default function SupportersPage() {
     if (!selectedSticker && !message.trim()) return;
     setSubmitting(true);
 
-    console.log('Submitting supporter message:', { user: user.name || user.username, message: (selectedSticker ? selectedSticker + ' ' : '') + message.trim(), team_id: team.id });
+    console.log('Submitting supporter message:', { user: user.name || user.username, message: (selectedSticker ? selectedSticker + ' ' : '') + message.trim(), team_id: team.id, profile_photo_url: user.profile_photo_url });
 
     try {
       const response = await fetch('/api/admin/supporters', {
@@ -104,7 +104,8 @@ export default function SupportersPage() {
         body: JSON.stringify({
           name: user.name || user.username,
           message: (selectedSticker ? selectedSticker + ' ' : '') + message.trim(),
-          team_id: team.id
+          team_id: team.id,
+          profile_photo_url: user.profile_photo_url || null
         }),
       });
 
@@ -280,10 +281,14 @@ export default function SupportersPage() {
               <div className="absolute top-0 right-0 w-24 h-24 bg-[#0ea5e9]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
               <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#0284c7]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
               <div className="relative z-10 flex items-start gap-3">
-                <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${COLORS[idx % COLORS.length]} flex items-center justify-center flex-shrink-0 shadow-sm`}>
-                  <span className="text-white text-xs font-bold">
-                    {s.name.charAt(0).toUpperCase()}
-                  </span>
+                <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm overflow-hidden ${!s.profile_photo_url ? `bg-gradient-to-br ${COLORS[idx % COLORS.length]}` : ''}`}>
+                  {s.profile_photo_url ? (
+                    <img src={s.profile_photo_url} alt={s.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-white text-xs font-bold">
+                      {s.name.charAt(0).toUpperCase()}
+                    </span>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">

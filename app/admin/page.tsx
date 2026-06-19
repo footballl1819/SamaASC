@@ -66,6 +66,7 @@ export default function AdminPage() {
   const [editing, setEditing] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<Record<string, string>>({});
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Lineup tab state
   const [lineupMatchId, setLineupMatchId] = useState<string>('');
@@ -537,7 +538,14 @@ export default function AdminPage() {
         throw new Error(result.error);
       }
 
-      setShowForm(false); setEditing(null); setForm({}); loadAll();
+      // Show success notification
+      setSuccessMessage(`Utilisateur ${form.email} créé avec succès !`);
+      setTimeout(() => setSuccessMessage(null), 3000);
+
+      setShowForm(false); 
+      setEditing(null); 
+      setForm({}); 
+      loadAll();
     } catch (error) {
       console.error('Error saving user:', error);
       alert('Erreur lors de la création du membre: ' + (error as Error).message);
@@ -674,6 +682,14 @@ export default function AdminPage() {
             <p className="text-sm text-gray-800 drop-shadow-sm">Gestion de l'équipe</p>
           </div>
         </div>
+
+        {/* Success Notification */}
+        {successMessage && (
+          <div className="flex items-center gap-2 px-4 py-3 bg-green-50 border border-green-200 rounded-xl">
+            <Check size={20} className="text-green-600" />
+            <span className="text-green-700 font-medium">{successMessage}</span>
+          </div>
+        )}
 
         {/* Card Grid for Admin Sections */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">

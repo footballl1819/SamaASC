@@ -125,6 +125,19 @@ export default function UserRegisterPage() {
           password: password,
         });
         
+        // Store user in localStorage for session management
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('team', JSON.stringify(team));
+        
+        // Dispatch custom event to notify team context
+        window.dispatchEvent(new Event('localStorageUpdated'));
+        
+        // Reset form fields
+        setUsername('');
+        setPassword('');
+        setConfirmPassword('');
+        setName('');
+        
         // Redirect to home
         setTimeout(() => {
           router.push('/');
