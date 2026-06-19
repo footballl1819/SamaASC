@@ -88,6 +88,9 @@ export default function RegisterPage() {
 
       setSuccess(true);
       
+      // Wait a moment for database to commit
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       // Automatically sign in the user after registration
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: adminEmail,
