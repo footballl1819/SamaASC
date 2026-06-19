@@ -44,17 +44,26 @@ export default function RegisterPage() {
         return;
       }
 
-      // Call RPC function to create team with admin
-      const { data, error: rpcError } = await supabase.rpc('create_team_with_admin', {
+      // First, create the user using Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: adminEmail,
+        password: adminPassword,
+      });
+
+      if (authError) throw authError;
+      if (!authData.user) throw new Error('Failed to create user');
+
+      // Then create the team and add the user to team_members via RPC
+      const { data, error: rpcError } = await supabase.rpc('create_team_and_add_user', {
         team_name: teamName,
         team_domain: domain,
         admin_email: adminEmail,
-        admin_password: adminPassword
+        user_id: authData.user.id
       });
 
       if (rpcError) throw rpcError;
 
-      const result = data as { success?: boolean; error?: string; team_id?: string; user_id?: string };
+      const result = data as { success?: boolean; error?: string; team_id?: string };
 
       if (result.error) {
         setError(result.error);

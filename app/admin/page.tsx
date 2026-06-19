@@ -504,11 +504,20 @@ export default function AdminPage() {
     if (!team || !form.email || !form.password || !supabase) return;
 
     try {
-      // Call RPC function to add team member
-      const { data, error } = await supabase.rpc('add_team_member', {
+      // First, create the user using Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: form.email,
+        password: form.password,
+      });
+
+      if (authError) throw authError;
+      if (!authData.user) throw new Error('Failed to create user');
+
+      // Then add the user to team_members via RPC
+      const { data, error } = await supabase.rpc('add_user_to_team', {
         team_id_param: team.id,
-        member_email: form.email,
-        member_password: form.password
+        user_id_param: authData.user.id,
+        member_email: form.email
       });
 
       if (error) {

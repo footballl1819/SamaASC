@@ -9,17 +9,16 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Function to create a new team with admin
-CREATE OR REPLACE FUNCTION create_team_with_admin(
+-- Function to create a team and add an existing user to it
+CREATE OR REPLACE FUNCTION create_team_and_add_user(
   team_name TEXT,
   team_domain TEXT,
   admin_email TEXT,
-  admin_password TEXT
+  user_id UUID
 )
 RETURNS JSON AS $$
 DECLARE
   new_team_id UUID;
-  new_user_id UUID;
 BEGIN
   -- Validate email domain
   IF NOT validate_email_domain(admin_email, team_domain) THEN
@@ -36,55 +35,26 @@ BEGIN
   VALUES (team_name, team_domain, admin_email)
   RETURNING id INTO new_team_id;
   
-  -- Create the admin user in auth.users with all required fields
-  INSERT INTO auth.users (
-    id,
-    email,
-    encrypted_password,
-    email_confirmed_at,
-    created_at,
-    updated_at,
-    last_sign_in_at,
-    raw_app_meta_data,
-    raw_user_meta_data,
-    is_super_admin
-  )
-  VALUES (
-    gen_random_uuid(),
-    admin_email,
-    crypt(admin_password, gen_salt('bf')),
-    now(),
-    now(),
-    now(),
-    now(),
-    '{}'::jsonb,
-    '{}'::jsonb,
-    false
-  )
-  RETURNING id INTO new_user_id;
-  
-  -- Add admin to team_members
+  -- Add user to team_members as admin
   INSERT INTO team_members (user_id, team_id, email, role)
-  VALUES (new_user_id, new_team_id, admin_email, 'admin');
+  VALUES (user_id, new_team_id, admin_email, 'admin');
   
   RETURN json_build_object(
     'success', true,
-    'team_id', new_team_id,
-    'user_id', new_user_id
+    'team_id', new_team_id
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Function to add a member to a team (admin only)
-CREATE OR REPLACE FUNCTION add_team_member(
+-- Function to add an existing user to a team (admin only)
+CREATE OR REPLACE FUNCTION add_user_to_team(
   team_id_param UUID,
-  member_email TEXT,
-  member_password TEXT
+  user_id_param UUID,
+  member_email TEXT
 )
 RETURNS JSON AS $$
 DECLARE
   team_domain TEXT;
-  new_user_id UUID;
   current_user_id UUID;
   current_user_role TEXT;
 BEGIN
@@ -112,45 +82,18 @@ BEGIN
     RETURN json_build_object('error', 'Email must belong to the team domain');
   END IF;
   
-  -- Check if user already exists
-  IF EXISTS (SELECT 1 FROM auth.users WHERE email = member_email) THEN
-    RETURN json_build_object('error', 'User already exists');
+  -- Check if user already exists in team
+  IF EXISTS (SELECT 1 FROM team_members WHERE user_id = user_id_param AND team_id = team_id_param) THEN
+    RETURN json_build_object('error', 'User already in team');
   END IF;
   
-  -- Create the member user in auth.users with all required fields
-  INSERT INTO auth.users (
-    id,
-    email,
-    encrypted_password,
-    email_confirmed_at,
-    created_at,
-    updated_at,
-    last_sign_in_at,
-    raw_app_meta_data,
-    raw_user_meta_data,
-    is_super_admin
-  )
-  VALUES (
-    gen_random_uuid(),
-    member_email,
-    crypt(member_password, gen_salt('bf')),
-    now(),
-    now(),
-    now(),
-    now(),
-    '{}'::jsonb,
-    '{}'::jsonb,
-    false
-  )
-  RETURNING id INTO new_user_id;
-  
-  -- Add member to team_members
+  -- Add user to team_members
   INSERT INTO team_members (user_id, team_id, email, role)
-  VALUES (new_user_id, team_id_param, member_email, 'member');
+  VALUES (user_id_param, team_id_param, member_email, 'member');
   
   RETURN json_build_object(
     'success', true,
-    'user_id', new_user_id
+    'user_id', user_id_param
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -194,6 +137,6 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Grant execute permissions on functions
 GRANT EXECUTE ON FUNCTION validate_email_domain TO authenticated;
-GRANT EXECUTE ON FUNCTION create_team_with_admin TO authenticated;
-GRANT EXECUTE ON FUNCTION add_team_member TO authenticated;
+GRANT EXECUTE ON FUNCTION create_team_and_add_user TO authenticated;
+GRANT EXECUTE ON FUNCTION add_user_to_team TO authenticated;
 GRANT EXECUTE ON FUNCTION get_user_team_info TO authenticated;
