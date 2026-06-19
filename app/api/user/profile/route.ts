@@ -17,7 +17,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const { data, error } = await supabase
-      .from('team_member')
+      .from('users')
       .update({
         name,
         profile_photo_url,

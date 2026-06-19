@@ -48,7 +48,7 @@ export function TeamProvider({ children }: { children: ReactNode }) {
         if (session?.user) {
           // Load user data from database using Supabase Auth user ID
           const { data: userData, error: userError } = await supabase
-            .from('team_member')
+            .from('users')
             .select('*')
             .eq('id', session.user.id)
             .single();
@@ -105,7 +105,7 @@ export function TeamProvider({ children }: { children: ReactNode }) {
         if (event === 'SIGNED_IN' && session?.user && supabase) {
           // Reload data from database
           const { data: userData } = await supabase
-            .from('team_member')
+            .from('users')
             .select('*')
             .eq('id', session.user.id)
             .single();
@@ -152,7 +152,7 @@ export function TeamProvider({ children }: { children: ReactNode }) {
           {
             event: 'UPDATE',
             schema: 'public',
-            table: 'team_member',
+            table: 'users',
             filter: `id=eq.${user.id}`,
           },
           async (payload) => {

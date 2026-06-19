@@ -32,9 +32,9 @@ export async function POST(request: NextRequest) {
     // Generate a UUID for the user
     const userId = crypto.randomUUID();
 
-    // Create user record in team_member table (without Supabase Auth)
+    // Create user record in users table (without Supabase Auth)
     const { data: userData, error: userError } = await supabase
-      .from('team_member')
+      .from('users')
       .insert({
         id: userId,
         team_id,
@@ -72,7 +72,7 @@ export async function DELETE(request: NextRequest) {
 
     // Get user to check role
     const { data: user, error: userError } = await supabase
-      .from('team_member')
+      .from('users')
       .select('role')
       .eq('id', id)
       .eq('team_id', team_id)
@@ -89,7 +89,7 @@ export async function DELETE(request: NextRequest) {
 
     // Delete user record (no Supabase Auth to delete)
     const { error: deleteError } = await supabase
-      .from('team_member')
+      .from('users')
       .delete()
       .eq('id', id)
       .eq('team_id', team_id);
