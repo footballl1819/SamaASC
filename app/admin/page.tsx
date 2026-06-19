@@ -149,7 +149,7 @@ export default function AdminPage() {
     console.log('Starting to load all data for team:', team.id);
     setLoading(true);
     try {
-      const [p, m, a, s, g, c, ps, l, comp, tm] = await Promise.all([
+      const [p, m, a, s, g, c, ps, l, comp, u] = await Promise.all([
         fetch(`/api/data/players?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/matches?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/announcements?team_id=${team.id}`).then(r => r.json()),
@@ -159,10 +159,9 @@ export default function AdminPage() {
         fetch(`/api/data/player-stats?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/match-lineup?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/competitions?team_id=${team.id}`).then(r => r.json()),
-        supabase ? supabase.from('team_members').select('*').eq('team_id', team.id) : Promise.resolve({ data: [] }),
+        fetch(`/api/data/users?team_id=${team.id}`).then(r => r.json()).catch(() => []),
       ]);
       
-      const u = tm.data || [];
       console.log('Team members loaded:', u);
       console.log('Data loaded successfully:', { players: p.length, matches: m.length, announcements: a.length });
       
