@@ -90,9 +90,29 @@ export default function LoginPage() {
         return;
       }
 
-      // Store team info in localStorage for later use
-      localStorage.setItem('team_id', result.team_id || '');
-      localStorage.setItem('user_role', result.user_role || '');
+      // Store team info in localStorage for the old context compatibility
+      localStorage.setItem('user', JSON.stringify({
+        id: authData.user.id,
+        team_id: result.team_id,
+        username: email.split('@')[0],
+        name: email.split('@')[0],
+        email: email,
+        role: result.user_role
+      }));
+      
+      localStorage.setItem('team', JSON.stringify({
+        id: result.team_id,
+        name: 'Team',
+        slug: result.team_id,
+        domain: '',
+        logo_url: null,
+        team_photo_url: null,
+        primary_color: '#3b82f6',
+        secondary_color: '#1e40af',
+        accent_color: '#f59e0b',
+        nav_color: '#3b82f6',
+        description: null
+      }));
 
       // Redirect to dashboard
       router.push('/');

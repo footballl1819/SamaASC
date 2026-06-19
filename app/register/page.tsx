@@ -86,6 +86,30 @@ export default function RegisterPage() {
         return;
       }
 
+      // Store team info in localStorage for the old context compatibility
+      localStorage.setItem('user', JSON.stringify({
+        id: authData.user.id,
+        team_id: result.team_id,
+        username: adminEmail.split('@')[0],
+        name: adminEmail.split('@')[0],
+        email: adminEmail,
+        role: 'admin'
+      }));
+      
+      localStorage.setItem('team', JSON.stringify({
+        id: result.team_id,
+        name: teamName,
+        slug: domain,
+        domain: domain,
+        logo_url: null,
+        team_photo_url: null,
+        primary_color: '#3b82f6',
+        secondary_color: '#1e40af',
+        accent_color: '#f59e0b',
+        nav_color: '#3b82f6',
+        description: null
+      }));
+
       setSuccess(true);
       
       // Wait a moment for database to commit
