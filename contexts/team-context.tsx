@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
+import { User } from '@/lib/types';
 
 interface Team {
   id: string;
@@ -15,15 +16,6 @@ interface Team {
   accent_color: string;
   nav_color: string;
   description: string | null;
-}
-
-interface User {
-  id: string;
-  team_id: string;
-  username: string;
-  name: string;
-  email: string;
-  role: 'admin' | 'member';
 }
 
 interface TeamContextType {
@@ -60,6 +52,8 @@ export function TeamProvider({ children }: { children: ReactNode }) {
             name: userData.name,
             email: userData.email || '',
             role: userData.role as 'admin' | 'member',
+            profile_photo_url: userData.profile_photo_url || null,
+            created_at: userData.created_at || new Date().toISOString(),
           });
           
           setTeam(teamData);
@@ -89,6 +83,8 @@ export function TeamProvider({ children }: { children: ReactNode }) {
           name: userData.name,
           email: userData.email || '',
           role: userData.role as 'admin' | 'member',
+          profile_photo_url: userData.profile_photo_url || null,
+          created_at: userData.created_at || new Date().toISOString(),
         });
         
         setTeam(teamData);
