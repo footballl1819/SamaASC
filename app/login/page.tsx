@@ -67,7 +67,10 @@ export default function LoginPage() {
         password,
       });
 
+      console.log('Login auth result:', authData, authError);
+
       if (authError) {
+        console.error('Auth error:', authError);
         setError('Email ou mot de passe incorrect');
         setLoading(false);
         return;
@@ -76,7 +79,10 @@ export default function LoginPage() {
       // Get user team info
       const { data: teamInfo, error: teamError } = await supabase.rpc('get_user_team_info');
 
+      console.log('Team info result:', teamInfo, teamError);
+
       if (teamError || !teamInfo) {
+        console.error('Team info error:', teamError);
         setError('Erreur lors de la récupération des informations de l\'équipe');
         setLoading(false);
         return;
