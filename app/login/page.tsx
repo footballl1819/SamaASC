@@ -3,11 +3,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { User, ArrowRight, Plus, Users, Download } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Plus, Users, Download } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [slug, setSlug] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -59,22 +60,44 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
-      // Check if team exists with this slug
-      const { data: team, error: teamError } = await supabase
-        .from('teams')
-        .select('*')
-        .eq('slug', slug)
-        .single();
 
-      if (teamError || !team) {
-        setError('Équipe non trouvée');
+      // Sign in with Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError) {
+        setError('Email ou mot de passe incorrect');
         setLoading(false);
         return;
       }
 
-      // Redirect to user login with team slug
-      router.push(`/user-login?team=${slug}`);
+      // Get user team info
+      const { data: teamInfo, error: teamError } = await supabase.rpc('get_user_team_info');
+
+      if (teamError || !teamInfo) {
+        setError('Erreur lors de la récupération des informations de l\'équipe');
+        setLoading(false);
+        return;
+      }
+
+      const result = teamInfo as { success?: boolean; error?: string; team_id?: string; user_role?: string };
+
+      if (result.error) {
+        setError(result.error);
+        setLoading(false);
+        return;
+      }
+
+      // Store team info in localStorage for later use
+      localStorage.setItem('team_id', result.team_id || '');
+      localStorage.setItem('user_role', result.user_role || '');
+
+      // Redirect to dashboard
+      router.push('/');
     } catch (err) {
+      console.error('Erreur lors de la connexion:', err);
       setError('Erreur lors de la connexion');
       setLoading(false);
     }
@@ -131,13 +154,27 @@ export default function LoginPage() {
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-[#22D3EE]" size={20} />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-[#22D3EE]" size={20} />
                 <input
-                  type="text"
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-12 pr-4 py-4 rounded-2xl bg-[#020617]/50 border border-[#22D3EE]/30 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/50 focus:border-[#22D3EE] backdrop-blur-sm transition-all"
-                  placeholder="Identifiant de l'ASC"
+                  placeholder="Email"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-[#22D3EE]" size={20} />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-[#020617]/50 border border-[#22D3EE]/30 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/50 focus:border-[#22D3EE] backdrop-blur-sm transition-all"
+                  placeholder="Mot de passe"
                   required
                 />
               </div>

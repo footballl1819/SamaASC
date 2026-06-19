@@ -3,6 +3,7 @@
 import { Home, Users, Trophy, Image, ScrollText, Heart, Settings } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTeam } from '@/contexts/team-context';
+import { useUser } from '@/lib/auth-context';
 
 const NAV_ITEMS = [
   { icon: Home, label: 'Accueil', path: '/' },
@@ -18,11 +19,12 @@ const NAV_ITEMS = [
 export default function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
-  const { team, user } = useTeam();
+  const { team } = useTeam();
+  const { userRole } = useUser();
 
   const filteredNavItems = NAV_ITEMS.filter(item => {
     if (item.adminOnly) {
-      return user?.role === 'admin';
+      return userRole === 'admin';
     }
     return true;
   });

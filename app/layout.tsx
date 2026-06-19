@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { TeamProvider } from '@/contexts/team-context';
+import { UserProvider } from '@/lib/auth-context';
 import SplashScreen from '@/components/splash-screen';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -34,7 +35,9 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} antialiased`}>
         <SplashScreen />
-        <TeamProvider>{children}</TeamProvider>
+        <UserProvider>
+          <TeamProvider>{children}</TeamProvider>
+        </UserProvider>
       </body>
     </html>
   );

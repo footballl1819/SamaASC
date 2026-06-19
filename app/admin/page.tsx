@@ -7,7 +7,8 @@ import { Player, Match, Announcement, Standing, GalleryItem, Coach, PlayerStat, 
 import AppShell from '@/components/app-shell';
 import FileUpload from '@/components/file-upload';
 import { useTeam } from '@/contexts/team-context';
-import { Users, Calendar, Megaphone, Trophy, Image, Settings, Plus, Trash2, Edit2, Save, X, ChevronDown, Target, Shirt, Check, Play } from 'lucide-react';
+import { useUser } from '@/lib/auth-context';
+import { Users, Calendar, Megaphone, Trophy, Image, Settings, Plus, Trash2, Edit2, Save, X, ChevronDown, Target, Shirt, Check, Play, ShieldAlert } from 'lucide-react';
 
 type Tab = 'players' | 'matches' | 'lineup' | 'announcements' | 'standings' | 'gallery' | 'coach' | 'stats' | 'competitions' | 'users';
 
@@ -48,6 +49,7 @@ const Select = ({ label, field, options, value, onChange }: { label: string; fie
 
 export default function AdminPage() {
   const router = useRouter();
+  const { userRole, loading: userLoading } = useUser();
   const { team, user, loading: contextLoading } = useTeam();
   const [tab, setTab] = useState<Tab>('players');
   const [players, setPlayers] = useState<Player[]>([]);
@@ -73,6 +75,43 @@ export default function AdminPage() {
   const [lineupPositions, setLineupPositions] = useState<Record<number, string>>({});
   const [standingsComp, setStandingsComp] = useState<string>('');
   const [statsComp, setStatsComp] = useState<string>('');
+
+  // Check if user is admin, redirect if not
+  useEffect(() => {
+    if (!userLoading && userRole !== 'admin') {
+      router.push('/');
+    }
+  }, [userRole, userLoading, router]);
+
+  // Show loading or access denied while checking admin role
+  if (userLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#020617] via-[#071A3D] to-[#2D0A5B] flex items-center justify-center">
+        <div className="text-white text-center">
+          <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p>Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (userRole !== 'admin') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#020617] via-[#071A3D] to-[#2D0A5B] flex items-center justify-center p-4">
+        <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 text-center max-w-md">
+          <ShieldAlert size={64} className="text-red-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">Accès refusé</h2>
+          <p className="text-white/70 mb-6">Seuls les administrateurs peuvent accéder à cette page.</p>
+          <button
+            onClick={() => router.push('/')}
+            className="px-6 py-3 bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] text-white rounded-xl font-medium hover:shadow-lg transition-all"
+          >
+            Retour à l'accueil
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Formation positions mapping
   const FORMATION_POSITIONS: Record<string, string[]> = {
@@ -114,7 +153,7 @@ export default function AdminPage() {
         fetch(`/api/data/player-stats?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/match-lineup?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/competitions?team_id=${team.id}`).then(r => r.json()),
-        fetch(`/api/data/users?team_id=${team.id}`).then(r => r.json()).catch(() => []),
+        supabase.from('team_members').select('*').eq('team_id', team.id),
       ]);
       setPlayers(p);
       setMatches(m);
@@ -459,34 +498,30 @@ export default function AdminPage() {
   };
 
   const handleUserSubmit = async () => {
-    if (!team || !form.username || !form.name || !form.password) return;
+    if (!team || !form.email || !form.password) return;
 
     try {
-      const email = `${form.username}@${team.slug}.com`;
-      const payload = {
-        email,
-        password: form.password,
-        username: email,
-        name: form.name,
-        team_id: team.id,
-        role: 'member',
-      };
-
-      const response = await fetch('/api/admin/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+      // Call RPC function to add team member
+      const { data, error } = await supabase.rpc('add_team_member', {
+        team_id_param: team.id,
+        member_email: form.email,
+        member_password: form.password
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to create user');
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      const result = data as { success?: boolean; error?: string; user_id?: string };
+
+      if (result.error) {
+        throw new Error(result.error);
       }
 
       setShowForm(false); setEditing(null); setForm({}); loadAll();
     } catch (error) {
       console.error('Error saving user:', error);
-      alert('Erreur lors de la création de l\'utilisateur: ' + (error as Error).message);
+      alert('Erreur lors de la création du membre: ' + (error as Error).message);
     }
   };
 
@@ -1346,12 +1381,12 @@ export default function AdminPage() {
             {showForm && tab === 'users' && (
               <div className="rounded-2xl bg-white p-4 shadow-lg space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold">{editing ? 'Modifier' : 'Ajouter'} un utilisateur</h3>
+                  <h3 className="text-sm font-bold">{editing ? 'Modifier' : 'Ajouter'} un membre</h3>
                   <button onClick={() => { setShowForm(false); setEditing(null); setForm({}); }} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
-                <Input label="Nom d'utilisateur" field="username" placeholder="Ex: joueur1" value={form.username || ''} onChange={(value) => setForm(prev => ({ ...prev, username: value }))} />
-                <Input label="Nom complet" field="name" placeholder="Ex: Jean Dupont" value={form.name || ''} onChange={(value) => setForm(prev => ({ ...prev, name: value }))} />
+                <Input label="Email" field="email" type="email" placeholder={`Ex: membre@${team?.domain || 'team.com'}`} value={form.email || ''} onChange={(value) => setForm(prev => ({ ...prev, email: value }))} />
                 <Input label="Mot de passe" field="password" type="password" placeholder="Mot de passe" value={form.password || ''} onChange={(value) => setForm(prev => ({ ...prev, password: value }))} />
+                <p className="text-xs text-gray-500">L'email doit appartenir au domaine de l'équipe: {team?.domain || team?.slug}</p>
                 <button onClick={handleUserSubmit} className="w-full py-2.5 rounded-xl text-white text-sm font-semibold btn-shadow flex items-center justify-center gap-2" style={{ backgroundColor: team?.secondary_color || '#22c55e' }}>
                   <Save size={16} /> {editing ? 'Mettre à jour' : 'Ajouter'}
                 </button>
@@ -1361,8 +1396,7 @@ export default function AdminPage() {
               {users.map(u => (
                 <div key={u.id} className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-md">
                   <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-sm text-gray-900 truncate">{u.name}</div>
-                    <div className="text-xs text-gray-500">{u.username}@{team?.slug}.com</div>
+                    <div className="font-semibold text-sm text-gray-900 truncate">{u.email}</div>
                     <div className="text-xs text-gray-400">{u.role === 'admin' ? 'Admin' : 'Membre'}</div>
                   </div>
                   {u.role !== 'admin' && (
@@ -1370,6 +1404,9 @@ export default function AdminPage() {
                   )}
                 </div>
               ))}
+              {users.length === 0 && !showForm && (
+                <div className="text-center py-8 text-gray-400 text-sm">Aucun membre dans l'équipe</div>
+              )}
             </div>
           </>
         )}

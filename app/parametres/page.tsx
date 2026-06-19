@@ -5,11 +5,13 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import AppShell from '@/components/app-shell';
 import { useTeam } from '@/contexts/team-context';
-import { Palette, Upload, Save, X, Check } from 'lucide-react';
+import { useUser } from '@/lib/auth-context';
+import { Palette, Upload, Save, X, Check, ShieldAlert } from 'lucide-react';
 
 export default function ParametresPage() {
   const router = useRouter();
   const { team, user, loading: contextLoading } = useTeam();
+  const { userRole, loading: userLoading } = useUser();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -31,17 +33,45 @@ export default function ParametresPage() {
         router.push('/login');
         return;
       }
-      if (!user) {
-        router.push('/user-login');
-        return;
-      }
-      // Check if user is admin
-      if (user.role !== 'admin') {
-        router.push('/');
-        return;
-      }
     }
-  }, [team, user, contextLoading, router]);
+  }, [team, contextLoading, router]);
+
+  // Check if user is admin
+  useEffect(() => {
+    if (!userLoading && userRole !== 'admin') {
+      router.push('/');
+    }
+  }, [userRole, userLoading, router]);
+
+  // Show loading or access denied while checking admin role
+  if (userLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#020617] via-[#071A3D] to-[#2D0A5B] flex items-center justify-center">
+        <div className="text-white text-center">
+          <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p>Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (userRole !== 'admin') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#020617] via-[#071A3D] to-[#2D0A5B] flex items-center justify-center p-4">
+        <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 text-center max-w-md">
+          <ShieldAlert size={64} className="text-red-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">Accès refusé</h2>
+          <p className="text-white/70 mb-6">Seuls les administrateurs peuvent accéder à cette page.</p>
+          <button
+            onClick={() => router.push('/')}
+            className="px-6 py-3 bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] text-white rounded-xl font-medium hover:shadow-lg transition-all"
+          >
+            Retour à l'accueil
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     if (team) {

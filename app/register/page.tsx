@@ -3,19 +3,25 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { User, ArrowRight, Check } from 'lucide-react';
+import { User, Mail, Lock, ArrowRight, Check } from 'lucide-react';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [name, setName] = useState('');
-  const [slug, setSlug] = useState('');
+  const [teamName, setTeamName] = useState('');
+  const [domain, setDomain] = useState('');
+  const [adminEmail, setAdminEmail] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
-  const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-    setSlug(value);
+  const handleDomainChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9.-]/g, '');
+    setDomain(value);
+    // Auto-fill admin email with domain
+    if (value && !adminEmail) {
+      setAdminEmail(`admin@${value}`);
+    }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -29,61 +35,39 @@ export default function RegisterPage() {
         setLoading(false);
         return;
       }
-      // Check if slug already exists
-      const { data: existingTeam } = await supabase
-        .from('teams')
-        .select('id')
-        .eq('slug', slug)
-        .single();
 
-      if (existingTeam) {
-        setError('Cet identifiant est déjà utilisé');
+      // Validate email domain
+      const emailDomain = adminEmail.split('@')[1];
+      if (emailDomain !== domain) {
+        setError('L\'email doit appartenir au domaine de l\'équipe');
         setLoading(false);
         return;
       }
 
-      // Create team
-      const { data: team, error: teamError } = await supabase
-        .from('teams')
-        .insert({
-          name,
-          slug,
-          primary_color: '#3b82f6',
-          secondary_color: '#1e40af',
-          accent_color: '#f59e0b',
-        })
-        .select()
-        .single();
-
-      if (teamError) throw teamError;
-
-      // Create custom user record for admin (without Supabase Auth)
-      const adminEmail = `admin@${slug}.com`;
-      const adminPassword = 'admin123';
-      
-      const { hashPassword } = await import('@/lib/auth-utils');
-      const hashedPassword = await hashPassword(adminPassword);
-
-      const { error: userError } = await supabase.from('users').insert({
-        id: crypto.randomUUID(),
-        team_id: team.id,
-        username: adminEmail,
-        password: hashedPassword,
-        name: 'Admin',
-        role: 'admin',
+      // Call RPC function to create team with admin
+      const { data, error: rpcError } = await supabase.rpc('create_team_with_admin', {
+        team_name: teamName,
+        team_domain: domain,
+        admin_email: adminEmail,
+        admin_password: adminPassword
       });
 
-      if (userError) {
-        console.error('Error creating admin user:', userError);
-        throw new Error('Erreur lors de la création du compte admin: ' + userError.message);
+      if (rpcError) throw rpcError;
+
+      const result = data as { success?: boolean; error?: string; team_id?: string; user_id?: string };
+
+      if (result.error) {
+        setError(result.error);
+        setLoading(false);
+        return;
       }
 
       setSuccess(true);
       
-      // Redirect to user login with team slug
+      // Redirect to login page
       setTimeout(() => {
-        router.push(`/user-login?team=${slug}`);
-      }, 1500);
+        router.push('/login');
+      }, 2000);
     } catch (err) {
       console.error('Erreur lors de la création de l\'équipe:', err);
       setError('Erreur lors de la création de l\'équipe: ' + (err as Error).message);
@@ -99,7 +83,7 @@ export default function RegisterPage() {
             <Check size={40} className="text-green-600" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Équipe créée avec succès !</h2>
-          <p className="text-gray-600">Un compte admin a été créé automatiquement (admin/admin123)</p>
+          <p className="text-gray-600">Votre compte admin a été créé</p>
           <p className="text-gray-500 text-sm mt-2">Redirection vers la connexion...</p>
         </div>
       </div>
@@ -123,14 +107,14 @@ export default function RegisterPage() {
           <form onSubmit={handleRegister} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nom de l'ASC
+                Nom de l'équipe
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                 <input
                   type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={teamName}
+                  onChange={(e) => setTeamName(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
                   placeholder="Ex: ASC Diambars"
                   required
@@ -140,22 +124,57 @@ export default function RegisterPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Identifiant (Slug)
+                Domaine
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                 <input
                   type="text"
-                  value={slug}
-                  onChange={handleSlugChange}
+                  value={domain}
+                  onChange={handleDomainChange}
                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
-                  placeholder="Ex: asc-diambars"
+                  placeholder="Ex: asc-diambars.com"
                   required
                 />
               </div>
               <p className="text-xs text-gray-500 mt-1">
-                Utilisé pour l'URL de votre équipe
+                Utilisé pour valider les emails de l'équipe
               </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email admin
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  type="email"
+                  value={adminEmail}
+                  onChange={(e) => setAdminEmail(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
+                  placeholder="Ex: admin@asc-diambars.com"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Mot de passe admin
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  type="password"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
+                  placeholder="••••••••"
+                  required
+                  minLength={6}
+                />
+              </div>
             </div>
 
             {error && (
