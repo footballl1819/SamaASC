@@ -143,7 +143,7 @@ export default function AdminPage() {
     if (!team) return;
     setLoading(true);
     try {
-      const [p, m, a, s, g, c, ps, l, comp, u] = await Promise.all([
+      const [p, m, a, s, g, c, ps, l, comp, tm] = await Promise.all([
         fetch(`/api/data/players?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/matches?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/announcements?team_id=${team.id}`).then(r => r.json()),
@@ -153,8 +153,11 @@ export default function AdminPage() {
         fetch(`/api/data/player-stats?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/match-lineup?team_id=${team.id}`).then(r => r.json()),
         fetch(`/api/data/competitions?team_id=${team.id}`).then(r => r.json()),
-        supabase.from('team_members').select('*').eq('team_id', team.id),
+        supabase ? supabase.from('team_members').select('*').eq('team_id', team.id) : Promise.resolve({ data: [] }),
       ]);
+      
+      const u = tm.data || [];
+      
       setPlayers(p);
       setMatches(m);
       setAnnouncements(a);
@@ -498,7 +501,7 @@ export default function AdminPage() {
   };
 
   const handleUserSubmit = async () => {
-    if (!team || !form.email || !form.password) return;
+    if (!team || !form.email || !form.password || !supabase) return;
 
     try {
       // Call RPC function to add team member

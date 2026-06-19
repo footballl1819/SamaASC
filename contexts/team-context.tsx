@@ -7,6 +7,7 @@ interface Team {
   id: string;
   name: string;
   slug: string;
+  domain: string;
   logo_url: string | null;
   team_photo_url: string | null;
   primary_color: string;
@@ -21,6 +22,7 @@ interface User {
   team_id: string;
   username: string;
   name: string;
+  email: string;
   role: 'admin' | 'member';
 }
 
@@ -56,6 +58,7 @@ export function TeamProvider({ children }: { children: ReactNode }) {
             team_id: userData.team_id,
             username: userData.username,
             name: userData.name,
+            email: userData.email || '',
             role: userData.role as 'admin' | 'member',
           });
           
@@ -84,6 +87,7 @@ export function TeamProvider({ children }: { children: ReactNode }) {
           team_id: userData.team_id,
           username: userData.username,
           name: userData.name,
+          email: userData.email || '',
           role: userData.role as 'admin' | 'member',
         });
         

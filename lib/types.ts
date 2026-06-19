@@ -3,6 +3,7 @@ export interface User {
   team_id: string;
   username: string;
   name: string;
+  email: string;
   role: 'admin' | 'member';
   created_at: string;
 }
