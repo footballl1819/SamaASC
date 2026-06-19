@@ -22,9 +22,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    // Fetch user data from custom users table
+    // Fetch user data from custom team_member table
     const { data: userData, error: userError } = await supabase
-      .from('users')
+      .from('team_member')
       .select('*')
       .eq('id', user.id)
       .single();

@@ -37,31 +37,6 @@ export function TeamProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        // First check localStorage for custom auth (primary method)
-        const storedUser = localStorage.getItem('user');
-        const storedTeam = localStorage.getItem('team');
-        
-        if (storedUser && storedTeam) {
-          const userData = JSON.parse(storedUser);
-          const teamData = JSON.parse(storedTeam);
-          
-          setUser({
-            id: userData.id,
-            team_id: userData.team_id,
-            username: userData.username,
-            name: userData.name,
-            email: userData.email || '',
-            role: userData.role as 'admin' | 'member',
-            profile_photo_url: userData.profile_photo_url || null,
-            created_at: userData.created_at || new Date().toISOString(),
-          });
-          
-          setTeam(teamData);
-          setLoading(false);
-          return;
-        }
-
-        // Fallback to Supabase Auth if localStorage is empty
         if (!supabase) {
           setLoading(false);
           return;
@@ -73,7 +48,7 @@ export function TeamProvider({ children }: { children: ReactNode }) {
         if (session?.user) {
           // Load user data from database using Supabase Auth user ID
           const { data: userData, error: userError } = await supabase
-            .from('users')
+            .from('team_member')
             .select('*')
             .eq('id', session.user.id)
             .single();
@@ -109,6 +84,10 @@ export function TeamProvider({ children }: { children: ReactNode }) {
           });
 
           setTeam(teamData);
+        } else {
+          // No session - redirect to login
+          setUser(null);
+          setTeam(null);
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
@@ -126,7 +105,7 @@ export function TeamProvider({ children }: { children: ReactNode }) {
         if (event === 'SIGNED_IN' && session?.user && supabase) {
           // Reload data from database
           const { data: userData } = await supabase
-            .from('users')
+            .from('team_member')
             .select('*')
             .eq('id', session.user.id)
             .single();
@@ -173,7 +152,7 @@ export function TeamProvider({ children }: { children: ReactNode }) {
           {
             event: 'UPDATE',
             schema: 'public',
-            table: 'users',
+            table: 'team_member',
             filter: `id=eq.${user.id}`,
           },
           async (payload) => {
@@ -213,52 +192,16 @@ export function TeamProvider({ children }: { children: ReactNode }) {
         .subscribe();
     }
 
-    // Listen for localStorage changes (for custom auth fallback)
-    const handleStorageChange = () => {
-      const storedUser = localStorage.getItem('user');
-      const storedTeam = localStorage.getItem('team');
-      
-      if (storedUser && storedTeam) {
-        const userData = JSON.parse(storedUser);
-        const teamData = JSON.parse(storedTeam);
-        
-        setUser({
-          id: userData.id,
-          team_id: userData.team_id,
-          username: userData.username,
-          name: userData.name,
-          email: userData.email || '',
-          role: userData.role as 'admin' | 'member',
-          profile_photo_url: userData.profile_photo_url || null,
-          created_at: userData.created_at || new Date().toISOString(),
-        });
-        
-        setTeam(teamData);
-      } else {
-        setUser(null);
-        setTeam(null);
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('localStorageUpdated', handleStorageChange);
-
     return () => {
       authSubscription?.unsubscribe();
       if (userChannel) supabase?.removeChannel(userChannel);
       if (teamChannel) supabase?.removeChannel(teamChannel);
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('localStorageUpdated', handleStorageChange);
     };
   }, []);
 
   const logout = async () => {
     // Sign out from Supabase Auth
     await supabase?.auth.signOut();
-    
-    // Clear localStorage
-    localStorage.removeItem('user');
-    localStorage.removeItem('team');
     
     setTeam(null);
     setUser(null);

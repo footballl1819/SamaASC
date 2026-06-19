@@ -57,9 +57,9 @@ BEGIN
   -- Generate user ID
   v_user_id := gen_random_uuid();
   
-  -- Create the admin user in users table with custom password hash
+  -- Create the admin user in team_member table with custom password hash
   -- The admin is automatically counted as a member (role: admin)
-  INSERT INTO users (id, team_id, username, password, name, email, role)
+  INSERT INTO team_member (id, team_id, username, password, name, email, role)
   VALUES (
     v_user_id,
     v_team_id,

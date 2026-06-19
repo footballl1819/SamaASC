@@ -191,7 +191,7 @@ export default function AdminPage() {
     if (!team || !supabase) return;
 
     const channels: any[] = [];
-    const tables = ['players', 'matches', 'announcements', 'standings', 'gallery', 'coach', 'player_stats', 'match_lineup', 'competitions', 'users'];
+    const tables = ['players', 'matches', 'announcements', 'standings', 'gallery', 'coach', 'player_stats', 'match_lineup', 'competitions', 'team_member'];
 
     tables.forEach(table => {
       const channel = supabase!
@@ -229,7 +229,7 @@ export default function AdminPage() {
         'player_stats': 'stats',
         'gallery': 'gallery',
         'competitions': 'competitions',
-        'users': 'users',
+        'team_member': 'users',
       };
 
       const apiTable = tableMap[table];
@@ -1429,7 +1429,7 @@ export default function AdminPage() {
                     <div className="text-xs text-gray-400">{u.role === 'admin' ? 'Admin' : 'Membre'}</div>
                   </div>
                   {u.role !== 'admin' && (
-                    <button onClick={() => handleDelete('users', u.id)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
+                    <button onClick={() => handleDelete('team_member', u.id)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
                   )}
                 </div>
               ))}

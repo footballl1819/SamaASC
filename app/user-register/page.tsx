@@ -75,7 +75,7 @@ export default function UserRegisterPage() {
 
       // Check if username already exists in this team
       const { data: existingUser } = await supabase
-        .from('users')
+        .from('team_member')
         .select('id')
         .eq('team_id', team.id)
         .eq('username', usernameOnly)
@@ -103,7 +103,7 @@ export default function UserRegisterPage() {
         const hashedPassword = await hashPassword(password);
 
         const { data: user, error: userError } = await supabase
-          .from('users')
+          .from('team_member')
           .insert({
             id: authData.user.id,
             team_id: team.id,

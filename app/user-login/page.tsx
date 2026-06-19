@@ -65,7 +65,7 @@ export default function UserLoginPage() {
       }
       
       const { data: user, error: userError } = await supabase
-        .from('users')
+        .from('team_member')
         .select('*')
         .eq('team_id', team.id)
         .eq('username', username)

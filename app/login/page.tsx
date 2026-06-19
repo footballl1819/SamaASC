@@ -84,10 +84,10 @@ export default function LoginPage() {
         return;
       }
 
-      // Get user from custom users table
+      // Get user from custom team_member table
       const username = email.split('@')[0];
       const { data: user, error: userError } = await supabase
-        .from('users')
+        .from('team_member')
         .select('*')
         .eq('team_id', team.id)
         .eq('username', username)
