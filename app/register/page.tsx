@@ -50,8 +50,18 @@ export default function RegisterPage() {
         password: adminPassword,
       });
 
-      if (authError) throw authError;
-      if (!authData.user) throw new Error('Failed to create user');
+      console.log('Auth signup result:', authData, authError);
+
+      if (authError) {
+        console.error('Auth error:', authError);
+        throw authError;
+      }
+      if (!authData.user) {
+        console.error('No user data returned');
+        throw new Error('Failed to create user - no user data returned');
+      }
+
+      console.log('User created successfully:', authData.user.id);
 
       // Then create the team and add the user to team_members via RPC
       const { data, error: rpcError } = await supabase.rpc('create_team_and_add_user', {
@@ -61,7 +71,12 @@ export default function RegisterPage() {
         user_id: authData.user.id
       });
 
-      if (rpcError) throw rpcError;
+      console.log('RPC result:', data, rpcError);
+
+      if (rpcError) {
+        console.error('RPC error:', rpcError);
+        throw rpcError;
+      }
 
       const result = data as { success?: boolean; error?: string; team_id?: string };
 
