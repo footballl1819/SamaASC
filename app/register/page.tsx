@@ -88,10 +88,24 @@ export default function RegisterPage() {
 
       setSuccess(true);
       
-      // Redirect to login page
-      setTimeout(() => {
-        router.push('/login');
-      }, 2000);
+      // Automatically sign in the user after registration
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: adminEmail,
+        password: adminPassword,
+      });
+
+      if (signInError) {
+        console.error('Auto sign-in error:', signInError);
+        // If auto sign-in fails, still redirect to login
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
+      } else {
+        // Redirect to home page after successful sign-in
+        setTimeout(() => {
+          router.push('/');
+        }, 2000);
+      }
     } catch (err) {
       console.error('Erreur lors de la création de l\'équipe:', err);
       setError('Erreur lors de la création de l\'équipe: ' + (err as Error).message);
@@ -108,7 +122,7 @@ export default function RegisterPage() {
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Équipe créée avec succès !</h2>
           <p className="text-gray-600">Votre compte admin a été créé</p>
-          <p className="text-gray-500 text-sm mt-2">Redirection vers la connexion...</p>
+          <p className="text-gray-500 text-sm mt-2">Connexion automatique et redirection...</p>
         </div>
       </div>
     );
