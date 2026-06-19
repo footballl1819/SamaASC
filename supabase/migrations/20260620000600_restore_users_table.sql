@@ -4,8 +4,13 @@
 -- - team_members: junction table linking users to teams (user_id, team_id, email, role)
 -- - teams: table storing team information (including domain)
 
--- Rename team_member back to users
-ALTER TABLE team_member RENAME TO users;
+-- Rename team_member back to users if it exists
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'team_member' AND table_schema = 'public') THEN
+    ALTER TABLE team_member RENAME TO users;
+  END IF;
+END $$;
 
 -- Update RLS policies
 DROP POLICY IF EXISTS "team_member_public_select" ON users;
@@ -13,17 +18,17 @@ DROP POLICY IF EXISTS "team_member_auth_insert" ON users;
 DROP POLICY IF EXISTS "team_member_auth_update" ON users;
 DROP POLICY IF EXISTS "team_member_auth_delete" ON users;
 
-CREATE POLICY "users_public_select" ON users FOR SELECT TO anon USING (true);
-CREATE POLICY "users_auth_insert" ON users FOR INSERT TO authenticated WITH CHECK (true);
-CREATE POLICY "users_auth_update" ON users FOR UPDATE TO authenticated WITH CHECK (true);
-CREATE POLICY "users_auth_delete" ON users FOR DELETE TO authenticated USING (true);
+CREATE POLICY IF NOT EXISTS "users_public_select" ON users FOR SELECT TO anon USING (true);
+CREATE POLICY IF NOT EXISTS "users_auth_insert" ON users FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY IF NOT EXISTS "users_auth_update" ON users FOR UPDATE TO authenticated WITH CHECK (true);
+CREATE POLICY IF NOT EXISTS "users_auth_delete" ON users FOR DELETE TO authenticated USING (true);
 
 -- Update indexes
 DROP INDEX IF EXISTS idx_team_member_team_id;
 DROP INDEX IF EXISTS idx_team_member_username;
 
-CREATE INDEX idx_users_team_id ON users(team_id);
-CREATE INDEX idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_users_team_id ON users(team_id);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 
 -- Ensure team_members table exists with correct structure
 CREATE TABLE IF NOT EXISTS team_members (
