@@ -177,7 +177,7 @@ export default function AdminPage() {
     }
   }, [team]);
 
-  useEffect(() => { loadAll(); }, [loadAll]);
+  useEffect(() => { loadAll(); }, [team]);
 
   // Setup realtime subscriptions
   useEffect(() => {
