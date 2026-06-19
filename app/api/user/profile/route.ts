@@ -24,8 +24,7 @@ export async function PUT(request: NextRequest) {
       })
       .eq('id', id)
       .eq('team_id', team_id)
-      .select()
-      .single();
+      .select();
 
     if (error) {
       return NextResponse.json(
@@ -34,7 +33,14 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(data);
+    if (!data || data.length === 0) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(data[0]);
   } catch (error) {
     console.error('Error updating profile:', error);
     return NextResponse.json(

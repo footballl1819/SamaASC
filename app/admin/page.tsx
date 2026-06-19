@@ -509,39 +509,33 @@ export default function AdminPage() {
   };
 
   const handleUserSubmit = async () => {
-    if (!team || !form.email || !form.password || !supabase) return;
+    if (!team || !form.email || !form.password) return;
 
     try {
-      // First, create the user using Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: form.email,
-        password: form.password,
+      // Create user via API endpoint (uses custom users table, not Supabase Auth)
+      const response = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password,
+          username: form.email.split('@')[0],
+          name: form.name || form.email.split('@')[0],
+          team_id: team.id,
+          role: 'member',
+        }),
       });
 
-      if (authError) throw authError;
-      if (!authData.user) throw new Error('Failed to create user');
-
-      // Then add the user to team_members via RPC
-      const { data, error } = await supabase.rpc('add_user_to_team', {
-        team_id_param: team.id,
-        user_id_param: authData.user.id,
-        member_email: form.email
-      });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      const result = data as { success?: boolean; error?: string; user_id?: string };
-
-      if (result.error) {
-        throw new Error(result.error);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create user');
       }
 
       // Show success notification
       setSuccessMessage(`Utilisateur ${form.email} créé avec succès !`);
       setTimeout(() => setSuccessMessage(null), 3000);
 
+      // Reset form but stay on admin page
       setShowForm(false); 
       setEditing(null); 
       setForm({}); 

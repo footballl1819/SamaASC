@@ -88,7 +88,7 @@ export default function LoginPage() {
         return;
       }
 
-      const result = teamInfo as { success?: boolean; error?: string; team_id?: string; user_role?: string };
+      const result = teamInfo as { success?: boolean; error?: string; team_id?: string; user_role?: string; team_name?: string; team_domain?: string };
 
       if (result.error) {
         setError(result.error);
@@ -108,9 +108,9 @@ export default function LoginPage() {
       
       localStorage.setItem('team', JSON.stringify({
         id: result.team_id,
-        name: 'Team',
-        slug: result.team_id,
-        domain: '',
+        name: result.team_name || 'Team',
+        slug: result.team_domain || result.team_id,
+        domain: result.team_domain || '',
         logo_url: null,
         team_photo_url: null,
         primary_color: '#3b82f6',
