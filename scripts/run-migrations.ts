@@ -26,16 +26,18 @@ async function executeMigration(filePath: string, description: string) {
 
     for (const statement of statements) {
       if (statement.trim()) {
-        const { error } = await supabase.rpc('exec_sql', {
-          query: statement
-        }).catch(err => {
-          // If exec_sql doesn't exist, we need to handle this differently
-          console.log('Note: Could not execute via RPC, checking migrations manually...');
-          return { error: err };
-        });
+        try {
+          const { error } = await supabase.rpc('exec_sql', {
+            query: statement
+          });
 
-        if (error && !error.message.includes('function')) {
-          console.error(`Error executing statement: ${error.message}`);
+          if (error && !error.message.includes('function')) {
+            console.error(`Error executing statement: ${error.message}`);
+            return false;
+          }
+        } catch (err) {
+          // If exec_sql doesn't exist, we need to handle this differently
+          console.log('Note: Could not execute via RPC, migrations must be applied manually in Supabase');
           return false;
         }
       }
