@@ -37,6 +37,31 @@ export function TeamProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        // First check localStorage for custom auth (primary method)
+        const storedUser = localStorage.getItem('user');
+        const storedTeam = localStorage.getItem('team');
+        
+        if (storedUser && storedTeam) {
+          const userData = JSON.parse(storedUser);
+          const teamData = JSON.parse(storedTeam);
+          
+          setUser({
+            id: userData.id,
+            team_id: userData.team_id,
+            username: userData.username,
+            name: userData.name,
+            email: userData.email || '',
+            role: userData.role as 'admin' | 'member',
+            profile_photo_url: userData.profile_photo_url || null,
+            created_at: userData.created_at || new Date().toISOString(),
+          });
+          
+          setTeam(teamData);
+          setLoading(false);
+          return;
+        }
+
+        // Fallback to Supabase Auth if localStorage is empty
         if (!supabase) {
           setLoading(false);
           return;
@@ -84,28 +109,6 @@ export function TeamProvider({ children }: { children: ReactNode }) {
           });
 
           setTeam(teamData);
-        } else {
-          // Check localStorage as fallback for custom auth
-          const storedUser = localStorage.getItem('user');
-          const storedTeam = localStorage.getItem('team');
-          
-          if (storedUser && storedTeam) {
-            const userData = JSON.parse(storedUser);
-            const teamData = JSON.parse(storedTeam);
-            
-            setUser({
-              id: userData.id,
-              team_id: userData.team_id,
-              username: userData.username,
-              name: userData.name,
-              email: userData.email || '',
-              role: userData.role as 'admin' | 'member',
-              profile_photo_url: userData.profile_photo_url || null,
-              created_at: userData.created_at || new Date().toISOString(),
-            });
-            
-            setTeam(teamData);
-          }
         }
       } catch (error) {
         console.error('Error initializing auth:', error);

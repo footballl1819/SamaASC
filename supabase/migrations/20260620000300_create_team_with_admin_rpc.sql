@@ -1,6 +1,11 @@
 -- Create team and admin user in the users table (custom auth)
 -- This replaces the Supabase Auth approach with the custom users table approach
 
+-- Drop existing function if it exists to avoid conflicts (with different argument types)
+DROP FUNCTION IF EXISTS create_team_with_admin(TEXT, TEXT, TEXT, TEXT, TEXT);
+DROP FUNCTION IF EXISTS create_team_with_admin(TEXT, TEXT, TEXT, TEXT, TEXT) CASCADE;
+DROP FUNCTION IF EXISTS create_team_with_admin CASCADE;
+
 CREATE OR REPLACE FUNCTION create_team_with_admin(
   p_team_name TEXT,
   p_team_domain TEXT,
