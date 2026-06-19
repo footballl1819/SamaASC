@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useTeam } from '@/contexts/team-context';
-import { LogOut } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 
 const TITLES: Record<string, string> = {
   '/': 'Accueil',
@@ -19,7 +19,7 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const title = TITLES[pathname] || 'Accueil';
-  const { logout, team } = useTeam();
+  const { logout, team, user } = useTeam();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-[100] backdrop-blur-xl border-b border-white/10 relative overflow-hidden" style={{ backgroundColor: 'rgba(2, 6, 23, 0.95)' }}>
@@ -42,14 +42,31 @@ export default function Header() {
           <h1 className="text-lg font-bold text-white tracking-tight drop-shadow-lg">{team?.name || title}</h1>
         </div>
 
-        {/* Logout button */}
-        <button
-          onClick={logout}
-          className="p-2 rounded-lg hover:bg-white/10 transition-colors border border-transparent hover:border-sky-400/30"
-          title="Déconnexion"
-        >
-          <LogOut size={18} className="text-sky-400" />
-        </button>
+        {/* User profile photo and logout button */}
+        <div className="flex items-center gap-2">
+          {/* User profile photo */}
+          <div 
+            className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden border-2 border-sky-400/30"
+            title={user?.name || user?.username || 'Utilisateur'}
+          >
+            {user?.profile_photo_url ? (
+              <img src={user.profile_photo_url} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full rounded-lg flex items-center justify-center bg-gradient-to-br from-sky-400 to-sky-600">
+                <User size={16} className="text-white" />
+              </div>
+            )}
+          </div>
+          
+          {/* Logout button */}
+          <button
+            onClick={logout}
+            className="p-2 rounded-lg hover:bg-white/10 transition-colors border border-transparent hover:border-sky-400/30"
+            title="Déconnexion"
+          >
+            <LogOut size={18} className="text-sky-400" />
+          </button>
+        </div>
       </div>
     </header>
   );

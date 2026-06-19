@@ -16,9 +16,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, password, username, name, team_id, role } = body;
 
-    if (!email || !password || !username || !name || !team_id) {
+    if (!email || !password || !team_id) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
+
+    // Extract username from email if not provided (e.g., ama1@amazakh.com -> ama1)
+    const extractedUsername = username || email.split('@')[0];
+    
+    // Use extracted username as name if not provided
+    const extractedName = name || extractedUsername;
 
     // Hash the password
     const hashedPassword = await hashPassword(password);
@@ -32,9 +38,9 @@ export async function POST(request: NextRequest) {
       .insert({
         id: userId,
         team_id,
-        username,
+        username: extractedUsername,
         password: hashedPassword,
-        name,
+        name: extractedName,
         email,
         role: role || 'member',
       })

@@ -36,15 +36,24 @@ BEGIN
     RETURN json_build_object('error', 'This team name is already in use');
   END IF;
   
-  -- Create the team
-  INSERT INTO teams (name, domain, slug)
-  VALUES (p_team_name, p_team_domain, p_team_domain)
+  -- Create the team with default colors
+  INSERT INTO teams (name, domain, slug, primary_color, secondary_color, accent_color, nav_color)
+  VALUES (
+    p_team_name, 
+    p_team_domain, 
+    p_team_domain,
+    '#3b82f6',
+    '#1e40af',
+    '#f59e0b',
+    '#3b82f6'
+  )
   RETURNING id INTO v_team_id;
   
   -- Generate user ID
   v_user_id := gen_random_uuid();
   
   -- Create the admin user in users table with custom password hash
+  -- The admin is automatically counted as a member (role: admin)
   INSERT INTO users (id, team_id, username, password, name, email, role)
   VALUES (
     v_user_id,
@@ -60,7 +69,7 @@ BEGIN
     'success', true,
     'team_id', v_team_id,
     'user_id', v_user_id,
-    'message', 'Team and admin user created successfully'
+    'message', 'Team and admin user created successfully. Admin is automatically the first member.'
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
