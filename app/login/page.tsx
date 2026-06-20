@@ -77,19 +77,19 @@ export default function LoginPage() {
         .from('teams')
         .select('*')
         .eq('domain', domain)
-        .single();
+        .limit(1);
 
-      if (!domainError && teamByDomain) {
-        team = teamByDomain;
+      if (!domainError && teamByDomain && teamByDomain.length > 0) {
+        team = teamByDomain[0];
       } else {
         const { data: teamBySlug, error: slugError } = await supabase
           .from('teams')
           .select('*')
           .eq('slug', domain)
-          .single();
+          .limit(1);
 
-        if (!slugError && teamBySlug) {
-          team = teamBySlug;
+        if (!slugError && teamBySlug && teamBySlug.length > 0) {
+          team = teamBySlug[0];
         } else {
           teamError = slugError || domainError;
         }
