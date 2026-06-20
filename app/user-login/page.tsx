@@ -55,10 +55,10 @@ export default function UserLoginPage() {
       }
 
       // Get user from custom users table
-      // Validate that email domain matches team slug
+      // Validate that email domain matches team domain or slug
       const emailDomain = username.includes('@') ? username.split('@')[1] : null;
       
-      if (emailDomain !== `${teamSlug}.com`) {
+      if (emailDomain !== team.domain && emailDomain !== team.slug) {
         setError('Identifiants incorrects');
         setLoading(false);
         return;

@@ -69,9 +69,6 @@ export default function LoginPage() {
         return;
       }
 
-      // Remove .com or similar TLD for matching
-      domain = domain.replace('.com', '').replace('.fr', '');
-
       const { data: team, error: teamError } = await supabase
         .from('teams')
         .select('*')
