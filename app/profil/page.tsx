@@ -124,8 +124,6 @@ export default function ProfilPage() {
         name,
         profile_photo_url: profilePhotoUrl,
       };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      window.dispatchEvent(new Event('localStorageUpdated'));
     } catch (error) {
       console.error('Error saving profile:', error);
       alert('Erreur lors de la sauvegarde: ' + (error as Error).message);

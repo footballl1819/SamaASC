@@ -93,23 +93,26 @@ export default function UserRegisterPage() {
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: userEmail,
         password: password,
+        options: {
+          data: {
+            username: usernameOnly,
+            name: name,
+          }
+        }
       });
 
       if (authError) throw authError;
 
-      // Create custom user record linked to Supabase Auth
+      // Create custom user record linked to Supabase Auth (without password)
       if (authData.user) {
-        const { hashPassword } = await import('@/lib/auth-utils');
-        const hashedPassword = await hashPassword(password);
-
         const { data: user, error: userError } = await supabase
           .from('users')
           .insert({
             id: authData.user.id,
             team_id: team.id,
             username: usernameOnly,
-            password: hashedPassword,
             name,
+            email: userEmail,
             role: 'member',
           })
           .select()
@@ -124,13 +127,6 @@ export default function UserRegisterPage() {
           email: userEmail,
           password: password,
         });
-        
-        // Store user in localStorage for session management
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('team', JSON.stringify(team));
-        
-        // Dispatch custom event to notify team context
-        window.dispatchEvent(new Event('localStorageUpdated'));
         
         // Reset form fields
         setUsername('');

@@ -44,18 +44,15 @@ export default function RegisterPage() {
         return;
       }
 
-      // Import hashPassword for custom password hashing
-      const { hashPassword } = await import('@/lib/auth-utils');
       const adminUsername = adminEmail.split('@')[0];
-      const hashedPassword = await hashPassword(adminPassword);
 
-      // Create team and admin user via RPC (using custom users table, not Supabase Auth)
+      // Create team and admin user via RPC (without password, using Supabase Auth)
       const { data, error: rpcError } = await supabase.rpc('create_team_with_admin', {
         p_team_name: teamName,
         p_team_domain: domain,
         p_admin_email: adminEmail,
         p_admin_username: adminUsername,
-        p_admin_password_hash: hashedPassword
+        p_admin_password_hash: '' // Not used anymore
       });
 
       console.log('RPC result:', data, rpcError);
@@ -79,38 +76,31 @@ export default function RegisterPage() {
         return;
       }
 
-      // Store team info in localStorage for the old context compatibility
-      localStorage.setItem('user', JSON.stringify({
-        id: result.user_id,
-        team_id: result.team_id,
-        username: adminUsername,
-        name: adminUsername,
+      // Sign up user in Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email: adminEmail,
-        role: 'admin'
-      }));
-      
-      localStorage.setItem('team', JSON.stringify({
-        id: result.team_id,
-        name: teamName,
-        slug: domain,
-        domain: domain,
-        logo_url: null,
-        team_photo_url: null,
-        primary_color: '#3b82f6',
-        secondary_color: '#1e40af',
-        accent_color: '#f59e0b',
-        nav_color: '#3b82f6',
-        description: null
-      }));
+        password: adminPassword,
+        options: {
+          data: {
+            user_id: result.user_id,
+            team_id: result.team_id,
+            username: adminUsername,
+          }
+        }
+      });
+
+      if (authError) {
+        console.error('Auth error:', authError);
+        setError('Erreur lors de la création du compte: ' + authError.message);
+        setLoading(false);
+        return;
+      }
 
       setSuccess(true);
       
-      // Dispatch custom event to notify team context
-      window.dispatchEvent(new Event('localStorageUpdated'));
-      
-      // Redirect to home page after a moment
+      // Redirect to login page after a moment
       setTimeout(() => {
-        router.push('/');
+        router.push('/login');
       }, 2000);
     } catch (err) {
       console.error('Erreur lors de la création de l\'équipe:', err);

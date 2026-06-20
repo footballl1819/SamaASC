@@ -1,5 +1,5 @@
--- Create team and admin user in the users table (custom auth)
--- This replaces the Supabase Auth approach with the custom users table approach
+-- Create team and admin user using Supabase Auth
+-- This uses Supabase Auth for authentication and stores additional data in users table
 
 -- Drop existing function if it exists to avoid conflicts (with different argument types)
 DROP FUNCTION IF EXISTS create_team_with_admin(TEXT, TEXT, TEXT, TEXT, TEXT);
@@ -58,14 +58,13 @@ BEGIN
   -- Generate user ID
   v_user_id := gen_random_uuid();
   
-  -- Create the admin user in users table with custom password hash
+  -- Create the admin user in users table (without password, using Supabase Auth)
   -- The admin is automatically counted as a member (role: admin)
-  INSERT INTO users (id, team_id, username, password, name, email, role)
+  INSERT INTO users (id, team_id, username, name, email, role)
   VALUES (
     v_user_id,
     v_team_id,
     p_admin_username,
-    p_admin_password_hash,
     p_admin_username,
     p_admin_email,
     'admin'
@@ -75,7 +74,7 @@ BEGIN
     'success', true,
     'team_id', v_team_id,
     'user_id', v_user_id,
-    'message', 'Team and admin user created successfully. Admin is automatically the first member.'
+    'message', 'Team created successfully. Please sign up with Supabase Auth using the provided email.'
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

@@ -198,10 +198,6 @@ export default function ParametresPage() {
           logo_url: logoUrl,
           team_photo_url: teamPhotoUrl,
         };
-        // Update localStorage to reflect changes
-        localStorage.setItem('team', JSON.stringify(updatedTeam));
-        // Dispatch event to notify team context
-        window.dispatchEvent(new Event('localStorageUpdated'));
       }
     } catch (error) {
       console.error('Error saving team settings:', error);

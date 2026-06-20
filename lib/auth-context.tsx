@@ -57,10 +57,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
       } else {
         setUserRole(result.user_role as 'admin' | 'member');
         setTeamId(result.team_id || null);
-        
-        // Store in localStorage for persistence
-        localStorage.setItem('team_id', result.team_id || '');
-        localStorage.setItem('user_role', result.user_role || '');
       }
     } catch (error) {
       console.error('Error refreshing user info:', error);
@@ -72,17 +68,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    // Check localStorage first for immediate load
-    const storedTeamId = localStorage.getItem('team_id');
-    const storedUserRole = localStorage.getItem('user_role');
-    
-    if (storedTeamId && storedUserRole) {
-      setTeamId(storedTeamId);
-      setUserRole(storedUserRole as 'admin' | 'member');
-      setLoading(false);
-    }
-
-    // Then refresh from server
+    // Refresh from server
     refreshUserInfo();
 
     // Listen for auth changes
@@ -93,8 +79,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         } else if (event === 'SIGNED_OUT') {
           setUserRole(null);
           setTeamId(null);
-          localStorage.removeItem('team_id');
-          localStorage.removeItem('user_role');
         }
       });
 

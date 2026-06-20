@@ -41,6 +41,24 @@ export default function UserLoginPage() {
         return;
       }
 
+      // Sign in with Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: username,
+        password: password,
+      });
+
+      if (authError) {
+        setError('Identifiants incorrects');
+        setLoading(false);
+        return;
+      }
+
+      if (!authData.user) {
+        setError('Erreur lors de la connexion');
+        setLoading(false);
+        return;
+      }
+
       // Get team by slug
       const { data: team, error: teamError } = await supabase
         .from('teams')
@@ -54,21 +72,12 @@ export default function UserLoginPage() {
         return;
       }
 
-      // Get user from custom users table
-      // Validate that email domain matches team domain or slug
-      const emailDomain = username.includes('@') ? username.split('@')[1] : null;
-      
-      if (emailDomain !== team.domain && emailDomain !== team.slug) {
-        setError('Identifiants incorrects');
-        setLoading(false);
-        return;
-      }
-      
+      // Get user from custom users table using Supabase Auth user ID
       const { data: user, error: userError } = await supabase
         .from('users')
         .select('*')
+        .eq('id', authData.user.id)
         .eq('team_id', team.id)
-        .eq('username', username)
         .single();
 
       if (userError || !user) {
@@ -76,46 +85,6 @@ export default function UserLoginPage() {
         setLoading(false);
         return;
       }
-
-      // Verify password
-      const { verifyPassword } = await import('@/lib/auth-utils');
-      const isValid = await verifyPassword(password, user.password);
-
-      if (!isValid) {
-        setError('Identifiants incorrects');
-        setLoading(false);
-        return;
-      }
-
-      // Create Supabase Auth session using email and password
-      // First, try to sign up the user in Supabase Auth if they don't exist
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: username,
-        password: password,
-        options: {
-          emailRedirectTo: undefined,
-        }
-      });
-
-      // If user already exists, try to sign in
-      if (authError?.message?.includes('already registered')) {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: username,
-          password: password,
-        });
-
-        if (signInError) {
-          console.error('Error signing in to Supabase Auth:', signInError);
-          // Continue anyway since custom auth succeeded
-        }
-      }
-
-      // Store user in localStorage for session management
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('team', JSON.stringify(team));
-      
-      // Dispatch custom event to notify team context
-      window.dispatchEvent(new Event('localStorageUpdated'));
 
       // Redirect to home
       router.push('/');
