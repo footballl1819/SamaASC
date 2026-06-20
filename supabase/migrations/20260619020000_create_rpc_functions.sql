@@ -115,11 +115,11 @@ BEGIN
     t.id as team_id,
     t.name as team_name,
     t.domain as team_domain,
-    tm.role as user_role
+    u.role as user_role
   INTO team_info
-  FROM team_members tm
-  JOIN teams t ON tm.team_id = t.id
-  WHERE tm.user_id = current_user_id;
+  FROM users u
+  JOIN teams t ON u.team_id = t.id
+  WHERE u.id = current_user_id;
   
   IF team_info.team_id IS NULL THEN
     RETURN json_build_object('error', 'User not associated with any team');
