@@ -69,11 +69,31 @@ export default function LoginPage() {
         return;
       }
 
-      const { data: team, error: teamError } = await supabase
+      // Try to find team by domain first, then by slug
+      let team = null;
+      let teamError = null;
+
+      const { data: teamByDomain, error: domainError } = await supabase
         .from('teams')
         .select('*')
-        .or(`domain.eq.${domain},slug.eq.${domain}`)
+        .eq('domain', domain)
         .single();
+
+      if (!domainError && teamByDomain) {
+        team = teamByDomain;
+      } else {
+        const { data: teamBySlug, error: slugError } = await supabase
+          .from('teams')
+          .select('*')
+          .eq('slug', domain)
+          .single();
+
+        if (!slugError && teamBySlug) {
+          team = teamBySlug;
+        } else {
+          teamError = slugError || domainError;
+        }
+      }
 
       if (teamError || !team) {
         setError('Domaine d\'équipe non trouvé');
