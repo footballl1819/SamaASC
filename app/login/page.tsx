@@ -107,6 +107,29 @@ export default function LoginPage() {
         return;
       }
 
+      // Create Supabase Auth session using email and password
+      // First, try to sign up the user in Supabase Auth if they don't exist
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          emailRedirectTo: undefined,
+        }
+      });
+
+      // If user already exists, try to sign in
+      if (authError?.message?.includes('already registered')) {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: email,
+          password: password,
+        });
+
+        if (signInError) {
+          console.error('Error signing in to Supabase Auth:', signInError);
+          // Continue anyway since custom auth succeeded
+        }
+      }
+
       // Store user and team in localStorage
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('team', JSON.stringify(team));
